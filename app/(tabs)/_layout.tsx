@@ -1,13 +1,18 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { Tabs } from 'expo-router'
+import React from 'react'
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { HapticTab } from '@/components/haptic-tab'
+import { Colors } from '@/constants/theme'
+import { useColorScheme } from '@/hooks/use-color-scheme'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
+
+import ExploreIcon from '@/components/icons/ExploreIcon'
+import FavoriteIcon from '@/components/icons/FavoriteIcon'
+import SettingsIcon from '@/components/icons/SettingsIcon'
+import TasbihIcon from '@/components/icons/TasbihIcon'
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const colorScheme = useColorScheme()
 
   return (
     <Tabs
@@ -15,21 +20,61 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
         tabBarButton: HapticTab,
-      }}>
+      }}
+    >
       <Tabs.Screen
-        name="index"
+        name='index'
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarIcon: ({ focused, color, size }) => (
+            <MaterialCommunityIcons
+              name={focused ? 'home' : 'home-outline'}
+              size={size ?? 28}
+              color={color}
+            />
+          ),
         }}
       />
+
       <Tabs.Screen
-        name="explore"
+        name='explore'
         options={{
           title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          tabBarIcon: ({ focused, color, size }) => (
+            <ExploreIcon color={color} size={size ?? 20} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name='tasbih'
+        options={{
+          title: 'Tasbih',
+          tabBarIcon: ({ focused, color, size }) => (
+            <TasbihIcon color={color} size={size ?? 20} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name='favorites'
+        options={{
+          title: 'Favorites',
+          tabBarIcon: ({ focused, color, size }) => (
+            <FavoriteIcon color={color} size={size ?? 20} filled={focused} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name='settings'
+        options={{
+          title: 'Settings',
+          tabBarIcon: ({ focused, color, size }) => (
+            <SettingsIcon color={color} size={size ?? 20} />
+          ),
         }}
       />
     </Tabs>
-  );
+  )
 }
