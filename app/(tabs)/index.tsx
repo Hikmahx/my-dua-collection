@@ -1,98 +1,240 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { useColorScheme } from '@/hooks/use-color-scheme'
+import tw from '@/lib/tailwind'
+import * as Font from 'expo-font'
+import { useEffect, useState } from 'react'
+import { ScrollView, Text, View } from 'react-native'
 
 export default function HomeScreen() {
+  const colorScheme = useColorScheme()
+  const isDark = colorScheme === 'dark'
+  const [fontsLoaded, setFontsLoaded] = useState(false)
+
+  useEffect(() => {
+    async function loadFonts() {
+      try {
+        await Font.loadAsync({
+          BerkshireSwash_400Regular: require('@expo-google-fonts/berkshire-swash/BerkshireSwash_400Regular.ttf'),
+          NunitoSans_400Regular: require('@expo-google-fonts/nunito-sans/NunitoSans_400Regular.ttf'),
+          NunitoSans_700Bold: require('@expo-google-fonts/nunito-sans/NunitoSans_700Bold.ttf'),
+        })
+        setFontsLoaded(true)
+      } catch (e) {
+        console.log('Font loading error:', e)
+        setFontsLoaded(true) // Continue anyway
+      }
+    }
+    loadFonts()
+  }, [])
+
+  if (!fontsLoaded) {
+    return (
+      <View
+        style={tw`flex-1 items-center justify-center bg-light-bg dark:bg-very-dark-bg`}
+      >
+        <Text>Loading fonts...</Text>
+      </View>
+    )
+  }
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+    <ScrollView
+      style={tw`flex-1 bg-light-bg dark:bg-very-dark-bg`}
+      contentContainerStyle={tw`px-6 py-8`}
+    >
+      {/* Header with Berkshire Swash */}
+      <Text
+        style={tw`text-4xl font-berkshire text-dark-emerald mb-6 text-center`}
+      >
+        My Dua Collection
+      </Text>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
-  );
+      {/* Mode Indicator */}
+      <Text
+        style={tw`text-sm font-nunito text-dark-grayish-text dark:text-light-grayish-text-muted mb-8 text-center`}
+      >
+        Mode: {isDark ? '🌙 Dark' : '☀️ Light'} (Toggle device settings)
+      </Text>
+
+      {/* Primary Gradient Colors */}
+      <View style={tw`mb-8`}>
+        <Text
+          style={tw`text-lg font-nunito font-bold text-dark-text dark:text-light-grayish-text mb-3`}
+        >
+          Primary Colors (Green)
+        </Text>
+
+        <View style={tw`flex-row gap-4 mb-3`}>
+          <View
+            style={tw`flex-1 h-24 rounded-lg items-center justify-center bg-dark-emerald`}
+          >
+            <Text style={tw`text-white text-sm font-nunito`}>Emerald Dark</Text>
+            <Text style={tw`text-white text-xs opacity-80`}>#066653</Text>
+          </View>
+
+          <View
+            style={tw`flex-1 h-24 rounded-lg items-center justify-center bg-soft-emerald`}
+          >
+            <Text style={tw`text-white text-sm font-nunito`}>Emerald Soft</Text>
+            <Text style={tw`text-white text-xs opacity-80`}>#27A88D</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Secondary Gradient Colors */}
+      <View style={tw`mb-8`}>
+        <Text
+          style={tw`text-lg font-nunito font-bold text-dark-text dark:text-light-grayish-text mb-3`}
+        >
+          Secondary Colors (Gold)
+        </Text>
+
+        <View style={tw`flex-row gap-4 mb-3`}>
+          <View
+            style={tw`flex-1 h-24 rounded-lg items-center justify-center bg-dark-gold`}
+          >
+            <Text style={tw`text-white text-sm font-nunito`}>Gold Dark</Text>
+            <Text style={tw`text-white text-xs opacity-80`}>#C0A25E</Text>
+          </View>
+
+          <View
+            style={tw`flex-1 h-24 rounded-lg items-center justify-center bg-soft-gold`}
+          >
+            <Text style={tw`text-dark-text text-sm font-nunito`}>
+              Gold Soft
+            </Text>
+            <Text style={tw`text-dark-text text-xs opacity-80`}>#E4D0A4</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Accent Color */}
+      <View style={tw`mb-8`}>
+        <Text
+          style={tw`text-lg font-nunito font-bold text-dark-text dark:text-light-grayish-text mb-3`}
+        >
+          Accent Color (Icons)
+        </Text>
+
+        <View
+          style={tw`h-24 rounded-lg items-center justify-center bg-bright-gold`}
+        >
+          <Text style={tw`text-white text-sm font-nunito`}>Gold Accent</Text>
+          <Text style={tw`text-white text-xs opacity-80`}>#C2A462</Text>
+        </View>
+      </View>
+
+      {/* Background & UI Colors */}
+      <View style={tw`mb-8`}>
+        <Text
+          style={tw`text-lg font-nunito font-bold text-dark-text dark:text-light-grayish-text mb-3`}
+        >
+          UI Colors (Mode-specific)
+        </Text>
+
+        <View style={tw`gap-3`}>
+          <View
+            style={tw`p-4 rounded-lg border border-very-light-grayish-border dark:border-dark-grayish-border bg-very-light-grayish-bg dark:bg-very-dark-bg`}
+          >
+            <Text
+              style={tw`text-dark-text dark:text-light-grayish-text font-nunito font-bold mb-1`}
+            >
+              Card Background
+            </Text>
+            <Text
+              style={tw`text-dark-text dark:text-light-grayish-text opacity-80 text-xs`}
+            >
+              {isDark ? '#013241' : '#F9F9F9'}
+            </Text>
+          </View>
+
+          <View
+            style={tw`p-4 rounded-lg border border-very-light-grayish-border dark:border-dark-grayish-border bg-light-bg dark:bg-very-dark-nav-bg`}
+          >
+            <Text
+              style={tw`text-dark-text dark:text-light-grayish-text font-nunito font-bold mb-1`}
+            >
+              Tab Bar Background
+            </Text>
+            <Text
+              style={tw`text-dark-text dark:text-light-grayish-text opacity-80 text-xs`}
+            >
+              {isDark ? '#00242F' : '#FFFFFF'}
+            </Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Font Demo */}
+      <View style={tw`mb-8`}>
+        <Text
+          style={tw`text-lg font-nunito font-bold text-dark-text dark:text-light-grayish-text mb-3`}
+        >
+          Fonts
+        </Text>
+
+        <View style={tw`gap-4`}>
+          <View
+            style={tw`p-4 rounded-lg bg-very-light-grayish-bg dark:bg-very-dark-bg`}
+          >
+            <Text style={tw`text-3xl font-berkshire text-dark-emerald mb-1`}>
+              Berkshire Swash
+            </Text>
+            <Text
+              style={tw`text-xs font-nunito text-dark-grayish-text dark:text-light-grayish-text-muted`}
+            >
+              Elegant, decorative serif font
+            </Text>
+          </View>
+
+          <View
+            style={tw`p-4 rounded-lg bg-very-light-grayish-bg dark:bg-very-dark-bg`}
+          >
+            <Text
+              style={tw`text-lg font-nunito font-bold text-soft-emerald mb-1`}
+            >
+              Nunito Sans Bold
+            </Text>
+            <Text
+              style={tw`text-sm font-nunito text-dark-grayish-text dark:text-light-grayish-text-muted`}
+            >
+              Clean, modern sans-serif (Regular & Bold)
+            </Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Gradient Preview */}
+      <View style={tw`mb-12`}>
+        <Text
+          style={tw`text-lg font-nunito font-bold text-dark-text dark:text-light-grayish-text mb-3`}
+        >
+          Gradient Examples
+        </Text>
+
+        {/* Primary Gradient */}
+        <View
+          style={tw`h-32 rounded-lg items-center justify-center mb-4 bg-dark-emerald`}
+        >
+          <Text style={tw`text-base font-nunito font-bold text-white`}>
+            Primary Gradient
+          </Text>
+          <Text style={tw`text-xs font-nunito text-white opacity-75`}>
+            (dark-emerald to soft-emerald)
+          </Text>
+        </View>
+
+        {/* Secondary Gradient */}
+        <View
+          style={tw`h-32 rounded-lg items-center justify-center bg-dark-gold`}
+        >
+          <Text style={tw`text-base font-nunito font-bold text-white`}>
+            Secondary Gradient
+          </Text>
+          <Text style={tw`text-xs font-nunito text-white opacity-75`}>
+            (dark-gold to soft-gold)
+          </Text>
+        </View>
+      </View>
+    </ScrollView>
+  )
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
