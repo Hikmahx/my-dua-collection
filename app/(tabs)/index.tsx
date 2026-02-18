@@ -1,30 +1,22 @@
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import tw from '@/lib/tailwind'
-import * as Font from 'expo-font'
-import { useEffect, useState } from 'react'
+import { BerkshireSwash_400Regular } from '@expo-google-fonts/berkshire-swash'
+import {
+  NunitoSans_400Regular,
+  NunitoSans_700Bold,
+} from '@expo-google-fonts/nunito-sans'
+import { useFonts } from 'expo-font'
 import { ScrollView, Text, View } from 'react-native'
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme()
   const isDark = colorScheme === 'dark'
-  const [fontsLoaded, setFontsLoaded] = useState(false)
 
-  useEffect(() => {
-    async function loadFonts() {
-      try {
-        await Font.loadAsync({
-          BerkshireSwash_400Regular: require('@expo-google-fonts/berkshire-swash/BerkshireSwash_400Regular.ttf'),
-          NunitoSans_400Regular: require('@expo-google-fonts/nunito-sans/NunitoSans_400Regular.ttf'),
-          NunitoSans_700Bold: require('@expo-google-fonts/nunito-sans/NunitoSans_700Bold.ttf'),
-        })
-        setFontsLoaded(true)
-      } catch (e) {
-        console.log('Font loading error:', e)
-        setFontsLoaded(true) // Continue anyway
-      }
-    }
-    loadFonts()
-  }, [])
+  const [fontsLoaded] = useFonts({
+    BerkshireSwash_400Regular,
+    NunitoSans_400Regular,
+    NunitoSans_700Bold,
+  })
 
   if (!fontsLoaded) {
     return (
