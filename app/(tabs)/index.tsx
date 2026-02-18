@@ -1,16 +1,23 @@
+import { DuaCard } from '@/components/ui/dua-card'
+import { FeaturedDuaBanner } from '@/components/ui/featured-dua-banner'
+import { TabSelector } from '@/components/ui/tab-selector'
 import { useColorScheme } from '@/hooks/use-color-scheme'
-import tw from '@/lib/tailwind'
+import { RootState } from '@/redux/store'
 import { BerkshireSwash_400Regular } from '@expo-google-fonts/berkshire-swash'
 import {
   NunitoSans_400Regular,
   NunitoSans_700Bold,
 } from '@expo-google-fonts/nunito-sans'
 import { useFonts } from 'expo-font'
-import { ScrollView, Text, View } from 'react-native'
+import { useRouter } from 'expo-router'
+import { useCallback, useState } from 'react'
+import { Pressable, ScrollView, Text, View } from 'react-native'
+import { useSelector } from 'react-redux'
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme()
   const isDark = colorScheme === 'dark'
+  const router = useRouter()
 
   const [fontsLoaded] = useFonts({
     BerkshireSwash_400Regular,
@@ -18,215 +25,126 @@ export default function HomeScreen() {
     NunitoSans_700Bold,
   })
 
+  const [activeTab, setActiveTab] = useState('all')
+
+  // Get duas from Redux
+  const duas = useSelector((state: RootState) => state.duas.items)
+
+  const tabs = [
+    { label: 'All', id: 'all' },
+    { label: 'My Collections', id: 'my-collections' },
+    { label: 'Pre-made', id: 'pre-made' },
+  ]
+
+  // Filter duas based on active tab
+  const filteredDuas = useCallback(() => {
+    if (activeTab === 'all') return duas
+    if (activeTab === 'my-collections')
+      return duas.filter((dua) => dua.isUserCreated)
+    if (activeTab === 'pre-made')
+      return duas.filter((dua) => !dua.isUserCreated)
+    return duas
+  }, [activeTab, duas])
+
+  const handleAddDua = useCallback(() => {
+    router.push('/modal')
+  }, [router])
+
   if (!fontsLoaded) {
     return (
       <View
-        style={tw`flex-1 items-center justify-center bg-light-bg dark:bg-very-dark-bg`}
+        className={`flex-1 items-center justify-center ${isDark ? 'bg-very-dark-bg' : 'bg-light-bg'}`}
       >
-        <Text>Loading fonts...</Text>
+        <Text className='text-dark-text dark:text-light-grayish-text'>
+          Loading...
+        </Text>
       </View>
     )
   }
 
+  const headerBgColor = isDark ? 'bg-very-dark-bg' : 'bg-light-bg'
+  const textColor = isDark ? 'text-light-grayish-text' : 'text-dark-text'
+
   return (
-    <ScrollView
-      style={tw`flex-1 bg-light-bg dark:bg-very-dark-bg`}
-      contentContainerStyle={tw`px-6 py-8`}
-    >
-      {/* Header with Berkshire Swash */}
-      <Text
-        style={tw`text-4xl font-berkshire text-dark-emerald mb-6 text-center`}
+    <View className='flex-1'>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        className={`flex-1 ${headerBgColor}`}
+        contentContainerStyle={{ paddingBottom: 120 }}
       >
-        My Dua Collection
-      </Text>
-
-      {/* Mode Indicator */}
-      <Text
-        style={tw`text-sm font-nunito text-dark-grayish-text dark:text-light-grayish-text-muted mb-8 text-center`}
-      >
-        Mode: {isDark ? '🌙 Dark' : '☀️ Light'} (Toggle device settings)
-      </Text>
-
-      {/* Primary Gradient Colors */}
-      <View style={tw`mb-8`}>
-        <Text
-          style={tw`text-lg font-nunito font-bold text-dark-text dark:text-light-grayish-text mb-3`}
-        >
-          Primary Colors (Green)
-        </Text>
-
-        <View style={tw`flex-row gap-4 mb-3`}>
-          <View
-            style={tw`flex-1 h-24 rounded-lg items-center justify-center bg-dark-emerald`}
-          >
-            <Text style={tw`text-white text-sm font-nunito`}>Emerald Dark</Text>
-            <Text style={tw`text-white text-xs opacity-80`}>#066653</Text>
-          </View>
-
-          <View
-            style={tw`flex-1 h-24 rounded-lg items-center justify-center bg-soft-emerald`}
-          >
-            <Text style={tw`text-white text-sm font-nunito`}>Emerald Soft</Text>
-            <Text style={tw`text-white text-xs opacity-80`}>#27A88D</Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Secondary Gradient Colors */}
-      <View style={tw`mb-8`}>
-        <Text
-          style={tw`text-lg font-nunito font-bold text-dark-text dark:text-light-grayish-text mb-3`}
-        >
-          Secondary Colors (Gold)
-        </Text>
-
-        <View style={tw`flex-row gap-4 mb-3`}>
-          <View
-            style={tw`flex-1 h-24 rounded-lg items-center justify-center bg-dark-gold`}
-          >
-            <Text style={tw`text-white text-sm font-nunito`}>Gold Dark</Text>
-            <Text style={tw`text-white text-xs opacity-80`}>#C0A25E</Text>
-          </View>
-
-          <View
-            style={tw`flex-1 h-24 rounded-lg items-center justify-center bg-soft-gold`}
-          >
-            <Text style={tw`text-dark-text text-sm font-nunito`}>
-              Gold Soft
-            </Text>
-            <Text style={tw`text-dark-text text-xs opacity-80`}>#E4D0A4</Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Accent Color */}
-      <View style={tw`mb-8`}>
-        <Text
-          style={tw`text-lg font-nunito font-bold text-dark-text dark:text-light-grayish-text mb-3`}
-        >
-          Accent Color (Icons)
-        </Text>
-
+        {/* Header */}
         <View
-          style={tw`h-24 rounded-lg items-center justify-center bg-bright-gold`}
+          className={`px-6 pt-6 pb-4 flex-row items-center justify-between`}
         >
-          <Text style={tw`text-white text-sm font-nunito`}>Gold Accent</Text>
-          <Text style={tw`text-white text-xs opacity-80`}>#C2A462</Text>
+          <Text className={`text-2xl font-berkshire text-dark-emerald`}>
+            Home
+          </Text>
+          <Pressable className='p-2' onPress={() => {}}>
+            <Text className='text-xl'>⚙️</Text>
+          </Pressable>
         </View>
-      </View>
 
-      {/* Background & UI Colors */}
-      <View style={tw`mb-8`}>
-        <Text
-          style={tw`text-lg font-nunito font-bold text-dark-text dark:text-light-grayish-text mb-3`}
-        >
-          UI Colors (Mode-specific)
-        </Text>
+        {/* Featured Banner */}
+        <View className='px-6 mb-8'>
+          <FeaturedDuaBanner
+            title='Quranic Dua'
+            arabicText='فَإِن شَكَّ‌تُم أَن شَكَّ‌تُم إِنَّهُ لَا إِلَـٰهَ إِلَّا أَنتَ الظَّالِمِين'
+            englishTranslation='There is no deity but You. Indeed, I have been of the wrongdoers.'
+            onMoreInfo={() => {}}
+          />
+        </View>
 
-        <View style={tw`gap-3`}>
-          <View
-            style={tw`p-4 rounded-lg border border-very-light-grayish-border dark:border-dark-grayish-border bg-very-light-grayish-bg dark:bg-very-dark-bg`}
-          >
-            <Text
-              style={tw`text-dark-text dark:text-light-grayish-text font-nunito font-bold mb-1`}
-            >
-              Card Background
-            </Text>
-            <Text
-              style={tw`text-dark-text dark:text-light-grayish-text opacity-80 text-xs`}
-            >
-              {isDark ? '#013241' : '#F9F9F9'}
-            </Text>
+        {/* Dua Collection Section */}
+        <View className='px-6'>
+          <Text className={`text-xl font-bold ${textColor} mb-4`}>
+            Dua Collection
+          </Text>
+
+          {/* Tabs */}
+          <View className='mb-6'>
+            <TabSelector
+              tabs={tabs}
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+            />
           </View>
 
-          <View
-            style={tw`p-4 rounded-lg border border-very-light-grayish-border dark:border-dark-grayish-border bg-light-bg dark:bg-very-dark-nav-bg`}
-          >
-            <Text
-              style={tw`text-dark-text dark:text-light-grayish-text font-nunito font-bold mb-1`}
-            >
-              Tab Bar Background
-            </Text>
-            <Text
-              style={tw`text-dark-text dark:text-light-grayish-text opacity-80 text-xs`}
-            >
-              {isDark ? '#00242F' : '#FFFFFF'}
-            </Text>
+          {/* Dua Grid */}
+          <View className='gap-4 mb-8'>
+            {filteredDuas().length > 0 ? (
+              <View className='gap-3'>
+                {filteredDuas().map((dua, index) => (
+                  <DuaCard
+                    key={dua.id}
+                    title={dua.title}
+                    count={11} // Placeholder - can be dynamic later
+                    onPress={() => {
+                      // Navigate to dua detail screen
+                    }}
+                  />
+                ))}
+              </View>
+            ) : (
+              <Text
+                className={`text-center py-8 ${isDark ? 'text-light-grayish-text-muted' : 'text-dark-grayish-text'}`}
+              >
+                No duas in this category
+              </Text>
+            )}
           </View>
         </View>
+      </ScrollView>
+
+      {/* Floating Add Button */}
+      <View className='absolute bottom-24 right-6'>
+        <Pressable
+          onPress={handleAddDua}
+          className='w-16 h-16 rounded-full bg-dark-emerald items-center justify-center shadow-lg'
+          style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
+        >
+          <Text className='text-3xl text-white font-bold'>+</Text>
+        </Pressable>
       </View>
-
-      {/* Font Demo */}
-      <View style={tw`mb-8`}>
-        <Text
-          style={tw`text-lg font-nunito font-bold text-dark-text dark:text-light-grayish-text mb-3`}
-        >
-          Fonts
-        </Text>
-
-        <View style={tw`gap-4`}>
-          <View
-            style={tw`p-4 rounded-lg bg-very-light-grayish-bg dark:bg-very-dark-bg`}
-          >
-            <Text style={tw`text-3xl font-berkshire text-dark-emerald mb-1`}>
-              Berkshire Swash
-            </Text>
-            <Text
-              style={tw`text-xs font-nunito text-dark-grayish-text dark:text-light-grayish-text-muted`}
-            >
-              Elegant, decorative serif font
-            </Text>
-          </View>
-
-          <View
-            style={tw`p-4 rounded-lg bg-very-light-grayish-bg dark:bg-very-dark-bg`}
-          >
-            <Text
-              style={tw`text-lg font-nunito font-bold text-soft-emerald mb-1`}
-            >
-              Nunito Sans Bold
-            </Text>
-            <Text
-              style={tw`text-sm font-nunito text-dark-grayish-text dark:text-light-grayish-text-muted`}
-            >
-              Clean, modern sans-serif (Regular & Bold)
-            </Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Gradient Preview */}
-      <View style={tw`mb-12`}>
-        <Text
-          style={tw`text-lg font-nunito font-bold text-dark-text dark:text-light-grayish-text mb-3`}
-        >
-          Gradient Examples
-        </Text>
-
-        {/* Primary Gradient */}
-        <View
-          style={tw`h-32 rounded-lg items-center justify-center mb-4 bg-dark-emerald`}
-        >
-          <Text style={tw`text-base font-nunito font-bold text-white`}>
-            Primary Gradient
-          </Text>
-          <Text style={tw`text-xs font-nunito text-white opacity-75`}>
-            (dark-emerald to soft-emerald)
-          </Text>
-        </View>
-
-        {/* Secondary Gradient */}
-        <View
-          style={tw`h-32 rounded-lg items-center justify-center bg-dark-gold`}
-        >
-          <Text style={tw`text-base font-nunito font-bold text-white`}>
-            Secondary Gradient
-          </Text>
-          <Text style={tw`text-xs font-nunito text-white opacity-75`}>
-            (dark-gold to soft-gold)
-          </Text>
-        </View>
-      </View>
-    </ScrollView>
+    </View>
   )
 }
