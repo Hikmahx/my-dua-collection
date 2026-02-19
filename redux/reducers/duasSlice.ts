@@ -8,6 +8,8 @@ export interface Dua {
   category: string
   isFavorite: boolean
   isUserCreated?: boolean
+  iconPath?: string // Path to the icon SVG
+  verseReference?: string // For Quranic duas (e.g., 'Quran 21:87')
 }
 
 interface DuasState {
@@ -26,6 +28,8 @@ const initialState: DuasState = {
         'There is no deity but You. Indeed, I have been of the wrongdoers.',
       category: 'Quranic',
       isFavorite: false,
+      iconPath: '@/assets/icons/duas/book.svg',
+      verseReference: 'Quran 21:87',
     },
     {
       id: '2',
@@ -35,6 +39,7 @@ const initialState: DuasState = {
         'We have reached the morning upon the fitrah of Allah',
       category: 'Morning',
       isFavorite: false,
+      iconPath: '@/assets/icons/duas/sun.svg',
     },
     {
       id: '3',
@@ -43,6 +48,7 @@ const initialState: DuasState = {
       englishTranslation: 'All praise be to Allah, a praise that is abundant',
       category: 'Night',
       isFavorite: false,
+      iconPath: '@/assets/icons/duas/lamp.svg',
     },
     {
       id: '4',
@@ -51,6 +57,8 @@ const initialState: DuasState = {
       englishTranslation: 'O Answerer of Supplications',
       category: 'General',
       isFavorite: false,
+      isUserCreated: true,
+      iconPath: '@/assets/icons/duas/journal.svg',
     },
     {
       id: '5',
@@ -59,6 +67,17 @@ const initialState: DuasState = {
       englishTranslation: 'O Allah, You are As-Salam (The Source of Peace)',
       category: 'Prayer',
       isFavorite: false,
+      iconPath: '@/assets/icons/duas/hands.svg',
+    },
+    {
+      id: '6',
+      title: 'Evening Dua',
+      arabicText: 'أمسينا على فطرة الله',
+      englishTranslation:
+        'We have reached the evening upon the fitrah of Allah',
+      category: 'Evening',
+      isFavorite: false,
+      iconPath: '@/assets/icons/duas/moon.svg',
     },
   ],
   favorites: [],

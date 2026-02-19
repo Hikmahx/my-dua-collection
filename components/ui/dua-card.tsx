@@ -1,12 +1,13 @@
 import { useColorScheme } from '@/hooks/use-color-scheme'
-import { Pressable, Text, View } from 'react-native'
+import { Image, Pressable, Text, View } from 'react-native'
 
 interface DuaCardProps {
   title: string
   count: number
-  icon?: React.ReactNode
+  icon?: string // Path to icon SVG
   onPress?: () => void
   backgroundColor?: string
+  verseReference?: string // For Quranic duas
 }
 
 export function DuaCard({
@@ -15,6 +16,7 @@ export function DuaCard({
   icon,
   onPress,
   backgroundColor,
+  verseReference,
 }: DuaCardProps) {
   const colorScheme = useColorScheme()
   const isDark = colorScheme === 'dark'
@@ -41,8 +43,21 @@ export function DuaCard({
         <View className='flex-1'>
           <Text className={`font-semibold text-lg ${textColor}`}>{title}</Text>
           <Text className={`text-sm mt-1 ${secondaryText}`}>{count} Duas</Text>
+          {verseReference && (
+            <Text className={`text-xs mt-2 ${secondaryText}`}>
+              {verseReference}
+            </Text>
+          )}
         </View>
-        {icon && <View className='ml-3'>{icon}</View>}
+        {icon && (
+          <View className='ml-3'>
+            <Image
+              source={{ uri: icon }}
+              style={{ width: 28, height: 28 }}
+              resizeMode='contain'
+            />
+          </View>
+        )}
       </View>
     </Pressable>
   )

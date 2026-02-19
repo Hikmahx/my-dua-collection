@@ -90,6 +90,7 @@ export default function HomeScreen() {
             title='Quranic Dua'
             arabicText='فَإِن شَكَّ‌تُم أَن شَكَّ‌تُم إِنَّهُ لَا إِلَـٰهَ إِلَّا أَنتَ الظَّالِمِين'
             englishTranslation='There is no deity but You. Indeed, I have been of the wrongdoers.'
+            verseReference='Quran 21:87'
             onMoreInfo={() => {}}
           />
         </View>
@@ -118,6 +119,8 @@ export default function HomeScreen() {
                     key={dua.id}
                     title={dua.title}
                     count={11} // Placeholder - can be dynamic later
+                    icon={dua.iconPath}
+                    verseReference={dua.verseReference}
                     onPress={() => {
                       // Navigate to dua detail screen
                     }}
