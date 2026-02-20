@@ -1,4 +1,5 @@
 import { useColorScheme } from '@/hooks/use-color-scheme'
+import tw from '@/lib/tailwind'
 import { Pressable, Text, View } from 'react-native'
 
 interface TabItem {
@@ -17,34 +18,29 @@ export function TabSelector({
   activeTab,
   onTabChange,
 }: TabSelectorProps) {
-  const colorScheme = useColorScheme()
-  const isDark = colorScheme === 'dark'
+  const isDark = useColorScheme() === 'dark'
 
   return (
-    <View className='flex-row gap-3'>
+    <View style={tw`flex-row items-center gap-3`}>
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id
-        const bgColor = isActive
-          ? 'bg-bright-gold'
-          : isDark
-            ? 'bg-very-dark-nav-bg'
-            : 'bg-very-light-grayish-bg'
-        const textColor = isActive
+        const bgClass = isActive ? 'bg-soft-gold' : 'bg-transparent'
+        const paddingClass = isActive ? 'px-4' : 'px-2'
+        const textClass = isActive
           ? 'text-dark-text'
           : isDark
-            ? 'text-light-grayish-text'
+            ? 'text-light-grayish-text-muted'
             : 'text-dark-grayish-text'
-
         return (
           <Pressable
             key={tab.id}
             onPress={() => onTabChange(tab.id)}
-            className={`px-4 py-2 rounded-full ${bgColor}`}
-            style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
+            style={({ pressed }) => [
+              tw`py-2 rounded-full ${bgClass} ${paddingClass}`,
+              { opacity: pressed ? 0.85 : 1 },
+            ]}
           >
-            <Text className={`text-sm font-semibold ${textColor}`}>
-              {tab.label}
-            </Text>
+            <Text style={tw`text-sm font-semibold ${textClass}`}>{tab.label}</Text>
           </Pressable>
         )
       })}
