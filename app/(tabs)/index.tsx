@@ -1,23 +1,27 @@
-import { DuaCard } from '@/components/ui/dua-card'
+import { CollectionCard } from '@/components/ui/collection-card'
 import { FeaturedDuaBanner } from '@/components/ui/featured-dua-banner'
 import { TabSelector } from '@/components/ui/tab-selector'
+import { COLLECTION_DEFS } from '@/constants/collections'
 import { useColorScheme } from '@/hooks/use-color-scheme'
+import tw from '@/lib/tailwind'
 import { RootState } from '@/redux/store'
 import { BerkshireSwash_400Regular } from '@expo-google-fonts/berkshire-swash'
 import {
   NunitoSans_400Regular,
   NunitoSans_700Bold,
 } from '@expo-google-fonts/nunito-sans'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { useFonts } from 'expo-font'
 import { useRouter } from 'expo-router'
-import { useCallback, useState } from 'react'
-import { Pressable, ScrollView, Text, View } from 'react-native'
+import { useCallback, useMemo, useState } from 'react'
+import { Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native'
 import { useSelector } from 'react-redux'
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme()
   const isDark = colorScheme === 'dark'
   const router = useRouter()
+  const { width: screenWidth } = useWindowDimensions()
 
   const [fontsLoaded] = useFonts({
     BerkshireSwash_400Regular,
@@ -27,7 +31,6 @@ export default function HomeScreen() {
 
   const [activeTab, setActiveTab] = useState('all')
 
-  // Get duas from Redux
   const duas = useSelector((state: RootState) => state.duas.items)
 
   const tabs = [
@@ -36,15 +39,28 @@ export default function HomeScreen() {
     { label: 'Pre-made', id: 'pre-made' },
   ]
 
-  // Filter duas based on active tab
-  const filteredDuas = useCallback(() => {
-    if (activeTab === 'all') return duas
+  // Build collection list with counts; filter by tab
+  const collectionsWithCounts = useMemo(() => {
+    return COLLECTION_DEFS.map((col) => ({
+      ...col,
+      count: duas.filter((d) => d.category === col.id).length,
+      hasUserCreated: duas.some(
+        (d) => d.category === col.id && d.isUserCreated
+      ),
+      allPreMade: duas
+        .filter((d) => d.category === col.id)
+        .every((d) => !d.isUserCreated),
+    }))
+  }, [duas])
+
+  const filteredCollections = useCallback(() => {
+    if (activeTab === 'all') return collectionsWithCounts
     if (activeTab === 'my-collections')
-      return duas.filter((dua) => dua.isUserCreated)
+      return collectionsWithCounts.filter((c) => c.hasUserCreated)
     if (activeTab === 'pre-made')
-      return duas.filter((dua) => !dua.isUserCreated)
-    return duas
-  }, [activeTab, duas])
+      return collectionsWithCounts.filter((c) => c.allPreMade && c.count > 0)
+    return collectionsWithCounts
+  }, [activeTab, collectionsWithCounts])
 
   const handleAddDua = useCallback(() => {
     router.push('/modal')
@@ -53,56 +69,59 @@ export default function HomeScreen() {
   if (!fontsLoaded) {
     return (
       <View
-        className={`flex-1 items-center justify-center ${isDark ? 'bg-very-dark-bg' : 'bg-light-bg'}`}
+        style={tw`flex-1 items-center justify-center ${isDark ? 'bg-very-dark-bg' : 'bg-light-bg'}`}
       >
-        <Text className='text-dark-text dark:text-light-grayish-text'>
+        <Text style={tw`${isDark ? 'text-light-grayish-text' : 'text-dark-text'}`}>
           Loading...
         </Text>
       </View>
     )
   }
 
-  const headerBgColor = isDark ? 'bg-very-dark-bg' : 'bg-light-bg'
-  const textColor = isDark ? 'text-light-grayish-text' : 'text-dark-text'
-
   return (
-    <View className='flex-1'>
+    <View style={tw`flex-1`}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        className={`flex-1 ${headerBgColor}`}
+        style={tw`flex-1 ${isDark ? 'bg-very-dark-bg' : 'bg-light-bg'}`}
         contentContainerStyle={{ paddingBottom: 120 }}
       >
         {/* Header */}
-        <View
-          className={`px-6 pt-6 pb-4 flex-row items-center justify-between`}
-        >
-          <Text className={`text-2xl font-berkshire text-dark-emerald`}>
+        <View style={tw`px-6 pt-6 pb-4 flex-row items-center justify-between`}>
+          <Text
+            style={tw`text-2xl font-bold ${isDark ? 'text-white' : 'text-dark-text'}`}
+          >
             Home
           </Text>
-          <Pressable className='p-2' onPress={() => {}}>
-            <Text className='text-xl'>⚙️</Text>
+          <Pressable
+            style={({ pressed }) => [tw`p-2`, { opacity: pressed ? 0.7 : 1 }]}
+            onPress={() => {}}
+          >
+            <MaterialCommunityIcons
+              name='tune-variant'
+              size={24}
+              color={isDark ? '#ECEDEE' : '#11181C'}
+            />
           </Pressable>
         </View>
 
-        {/* Featured Banner */}
-        <View className='px-6 mb-8'>
+        {/* Featured Banner - full screen width */}
+        <View style={[tw`mb-6`, { width: screenWidth }]}>
           <FeaturedDuaBanner
             title='Quranic Dua'
-            arabicText='فَإِن شَكَّ‌تُم أَن شَكَّ‌تُم إِنَّهُ لَا إِلَـٰهَ إِلَّا أَنتَ الظَّالِمِين'
-            englishTranslation='There is no deity but You. Indeed, I have been of the wrongdoers.'
+            arabicText='لَّا إِلَهَ إِلَّا أَنتَ سُبْحْنَكَ إِنِّي كُنتُ مِنَ الظَّالِمِينَ'
+            englishTranslation="There is no deity but You. Indeed, I have been of the wrongdoers."
             verseReference='Quran 21:87'
-            onMoreInfo={() => {}}
           />
         </View>
 
         {/* Dua Collection Section */}
-        <View className='px-6'>
-          <Text className={`text-xl font-bold ${textColor} mb-4`}>
-            Dua Collection
-          </Text>
-
-          {/* Tabs */}
-          <View className='mb-6'>
+        <View style={tw`px-6`}>
+          <View style={tw`flex-row items-center justify-between mb-4`}>
+            <Text
+              style={tw`text-xl font-bold ${isDark ? 'text-light-grayish-text' : 'text-dark-text'}`}
+            >
+              Dua Collection
+            </Text>
             <TabSelector
               tabs={tabs}
               activeTab={activeTab}
@@ -110,42 +129,42 @@ export default function HomeScreen() {
             />
           </View>
 
-          {/* Dua Grid */}
-          <View className='gap-4 mb-8'>
-            {filteredDuas().length > 0 ? (
-              <View className='gap-3'>
-                {filteredDuas().map((dua, index) => (
-                  <DuaCard
-                    key={dua.id}
-                    title={dua.title}
-                    count={11} // Placeholder - can be dynamic later
-                    icon={dua.iconPath}
-                    verseReference={dua.verseReference}
-                    onPress={() => {
-                      // Navigate to dua detail screen
-                    }}
+          {/* Collections Grid (2 columns) */}
+          <View style={tw`flex-row flex-wrap gap-3 mb-8`}>
+            {filteredCollections().length > 0 ? (
+              filteredCollections().map((col) => (
+                <View key={col.id} style={{ width: '47%' }}>
+                  <CollectionCard
+                    title={col.name}
+                    count={col.count}
+                    iconKey={col.iconKey}
+                    onPress={() => {}}
                   />
-                ))}
-              </View>
+                </View>
+              ))
             ) : (
-              <Text
-                className={`text-center py-8 ${isDark ? 'text-light-grayish-text-muted' : 'text-dark-grayish-text'}`}
-              >
-                No duas in this category
-              </Text>
+              <View style={tw`w-full py-8`}>
+                <Text
+                  style={tw`text-center ${isDark ? 'text-light-grayish-text-muted' : 'text-dark-grayish-text'}`}
+                >
+                  No collections in this category
+                </Text>
+              </View>
             )}
           </View>
         </View>
       </ScrollView>
 
       {/* Floating Add Button */}
-      <View className='absolute bottom-24 right-6'>
+      <View style={tw`absolute bottom-24 right-6`}>
         <Pressable
           onPress={handleAddDua}
-          className='w-16 h-16 rounded-full bg-dark-emerald items-center justify-center shadow-lg'
-          style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
+          style={({ pressed }) => [
+            tw`w-16 h-16 rounded-full bg-dark-emerald items-center justify-center`,
+            { opacity: pressed ? 0.8 : 1, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 4, elevation: 5 },
+          ]}
         >
-          <Text className='text-3xl text-white font-bold'>+</Text>
+          <Text style={tw`text-3xl text-white font-bold`}>+</Text>
         </Pressable>
       </View>
     </View>
