@@ -1,5 +1,9 @@
-import { Pressable, Text, View } from 'react-native'
+import FeaturedBannerHandsIcon from '@/components/icons/FeaturedBannerHandsIcon'
+import tw from '@/lib/tailwind'
+import React from 'react'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { BannerBackground } from './banner-background'
+import { BannerGradient } from './bannerGradient'
 
 interface FeaturedDuaBannerProps {
   title: string
@@ -10,52 +14,59 @@ interface FeaturedDuaBannerProps {
   verseReference?: string
 }
 
-export function FeaturedDuaBanner({
+const FeaturedDuaBanner = ({
   title,
   arabicText,
   englishTranslation,
   onPress,
   onMoreInfo,
   verseReference,
-}: FeaturedDuaBannerProps) {
+}: FeaturedDuaBannerProps) => {
   return (
-    <Pressable
-      onPress={onPress}
-      className='rounded-3xl p-6 mb-6 overflow-hidden'
-      style={({ pressed }) => [{ opacity: pressed ? 0.9 : 1 }]}
-    >
-      {/* Background SVG */}
-      <View className='absolute inset-0'>
-        <BannerBackground style={{ width: '100%', height: '100%' }} />
-      </View>
-
-      {/* Content */}
-      <View className='flex-row items-start justify-between relative z-10'>
-        <View className='flex-1 pr-8'>
-          <Text className='text-light-grayish-text font-semibold text-base mb-3'>
-            🕌 {title}
-          </Text>
-          <Text className='text-light-grayish-text text-base font-berkshire mb-3 leading-relaxed'>
-            {arabicText}
-          </Text>
-          <Text className='text-light-grayish-text-muted text-xs leading-relaxed mb-4'>
-            {englishTranslation}
-          </Text>
-          {verseReference && (
-            <Text className='text-light-grayish-text-muted text-xs mb-3'>
-              {verseReference}
+    <View style={tw`w-full`}>
+      <Pressable
+        onPress={onPress}
+        style={({ pressed }) => [
+          tw`w-full rounded-3xl p-6 relative overflow-hidden`,
+          styles.shadow,
+          { opacity: pressed ? 0.9 : 1 },
+        ]}
+      >
+        <BannerGradient style={tw`absolute inset-0 w-full h-full`} />
+        <BannerBackground style={tw`absolute inset-0 w-full h-full`} />
+        <View style={tw`flex-row items-start justify-between relative z-10`}>
+          <View style={tw`flex-1 pr-8`}>
+            <View style={tw`flex-row items-center gap-2 mb-3`}>
+              <FeaturedBannerHandsIcon size={20} color="white" />
+              <Text style={tw`text-white font-semibold text-base`}>{title}</Text>
+            </View>
+            <Text
+              style={[tw`text-base mb-2 leading-relaxed`, { color: '#fff', fontFamily: 'BerkshireSwash_400Regular' }]}
+            >
+              {arabicText}
             </Text>
-          )}
-          <Pressable
-            onPress={onMoreInfo}
-            className='bg-light-grayish-text/20 rounded-full px-4 py-2 self-start'
-          >
-            <Text className='text-light-grayish-text text-xs font-semibold'>
-              Open in life
-            </Text>
-          </Pressable>
+            <Text style={tw`text-white text-xs leading-relaxed mb-2 opacity-90`}>{englishTranslation}</Text>
+            {verseReference && <Text style={tw`text-white text-xs opacity-80`}>{verseReference}</Text>}
+            {onMoreInfo && (
+              <Pressable onPress={onMoreInfo} style={tw`rounded-full px-4 py-2 self-start mt-3 bg-white/20`}>
+                <Text style={tw`text-white text-xs font-semibold`}>More info</Text>
+              </Pressable>
+            )}
+          </View>
         </View>
-      </View>
-    </Pressable>
+      </Pressable>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  shadow: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.25,
+    shadowRadius: 20,
+    elevation: 5,
+  },
+})
+
+export { FeaturedDuaBanner }
