@@ -1,4 +1,6 @@
+import { AddDuaOptionRow } from '@/components/ui/add-dua-option-row'
 import { useColorScheme } from '@/hooks/use-color-scheme'
+import tw from '@/lib/tailwind'
 import { addDua } from '@/redux/reducers/duasSlice'
 import { BerkshireSwash_400Regular } from '@expo-google-fonts/berkshire-swash'
 import {
@@ -10,6 +12,7 @@ import { useRouter } from 'expo-router'
 import { useCallback, useState } from 'react'
 import {
   Alert,
+  Dimensions,
   Pressable,
   ScrollView,
   Text,
@@ -17,6 +20,9 @@ import {
   View,
 } from 'react-native'
 import { useDispatch } from 'react-redux'
+
+const { height: SCREEN_HEIGHT } = Dimensions.get('window')
+const SHEET_HEIGHT = SCREEN_HEIGHT * 0.5
 
 export default function AddDuaModal() {
   const colorScheme = useColorScheme()
@@ -34,6 +40,7 @@ export default function AddDuaModal() {
   const [arabicText, setArabicText] = useState('')
   const [englishTranslation, setEnglishTranslation] = useState('')
   const [category, setCategory] = useState('General')
+  const [verseReference, setVerseReference] = useState('')
   const [selectedMethod, setSelectedMethod] = useState<
     'upload' | 'ai' | 'manual' | null
   >(null)
@@ -61,19 +68,20 @@ export default function AddDuaModal() {
       category,
       isFavorite: false,
       isUserCreated: true,
+      ...(verseReference.trim() && { verseReference: verseReference.trim() }),
     }
 
     dispatch(addDua(newDua))
     Alert.alert('Success', 'Dua added successfully!')
     router.back()
-  }, [title, arabicText, englishTranslation, category, dispatch, router])
+  }, [title, arabicText, englishTranslation, category, verseReference, dispatch, router])
 
   if (!fontsLoaded) {
     return (
       <View
-        className={`flex-1 items-center justify-center ${isDark ? 'bg-very-dark-bg' : 'bg-light-bg'}`}
+        style={tw`flex-1 items-center justify-center ${isDark ? 'bg-very-dark-bg' : 'bg-light-bg'}`}
       >
-        <Text className='text-dark-text dark:text-light-grayish-text'>
+        <Text style={tw`${isDark ? 'text-light-grayish-text' : 'text-dark-text'}`}>
           Loading...
         </Text>
       </View>
@@ -85,113 +93,97 @@ export default function AddDuaModal() {
   const inputBgColor = isDark
     ? 'bg-very-dark-nav-bg'
     : 'bg-very-light-grayish-bg'
-  const inputTextColor = isDark ? 'text-light-grayish-text' : 'text-dark-text'
   const borderColor = isDark
     ? 'border-dark-grayish-border'
     : 'border-very-light-grayish-border'
 
+  const sheetBg = isDark ? '#00242F' : '#FFFFFF'
+
   return (
-    <View className={`flex-1 ${bgColor}`}>
+    <View style={tw`flex-1`}>
+      {/* Faded black backdrop - tap to close */}
+      <Pressable
+        style={[
+          tw`absolute inset-0`,
+          { backgroundColor: 'rgba(0,0,0,0.5)' },
+        ]}
+        onPress={() => router.back()}
+      />
+      {/* Half-screen sheet */}
+      <View
+        style={[
+          tw`absolute left-0 right-0 rounded-t-3xl overflow-hidden`,
+          {
+            height: SHEET_HEIGHT,
+            bottom: 0,
+            backgroundColor: sheetBg,
+          },
+        ]}
+      >
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 40 }}
-        className='flex-1'
+        style={tw`flex-1`}
       >
-        {/* Header */}
-        <View className='px-6 pt-6 pb-6 flex-row items-center justify-between'>
-          <Text className={`text-2xl font-berkshire text-dark-emerald`}>
-            Add Dua
-          </Text>
-          <Pressable onPress={() => router.back()} className='p-2'>
-            <Text className='text-2xl'>✕</Text>
-          </Pressable>
-        </View>
-
         {/* Method Selection - Only show if not already selected */}
         {!selectedMethod ? (
-          <View className='px-6 mb-8'>
-            <Text className={`text-lg font-bold ${textColor} mb-4`}>
+          <View style={tw`px-6 pt-6`}>
+            <Text
+              style={[tw`text-lg font-bold ${textColor} mb-2 text-center`, { paddingHorizontal: 8 }]}
+            >
               Choose how you'd like to add your dua
             </Text>
 
-            {/* Upload Image */}
-            <Pressable
-              onPress={() => setSelectedMethod('upload')}
-              className={`flex-row items-center px-5 py-5 rounded-2xl mb-3 ${inputBgColor} border border-${borderColor}`}
-              style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
-            >
-              <View className='w-12 h-12 rounded-full bg-bright-gold items-center justify-center mr-4'>
-                <Text className='text-lg'>📷</Text>
-              </View>
-              <View className='flex-1'>
-                <Text className={`font-semibold ${textColor}`}>
-                  Upload Image
-                </Text>
-                <Text
-                  className={`text-xs ${isDark ? 'text-light-grayish-text-muted' : 'text-dark-grayish-text'}`}
-                >
-                  Scan screenshot or camera text
-                </Text>
-              </View>
-              <Text className='text-xl'>›</Text>
-            </Pressable>
-
-            {/* AI Generated */}
-            <Pressable
-              onPress={() => setSelectedMethod('ai')}
-              className={`flex-row items-center px-5 py-5 rounded-2xl mb-3 ${inputBgColor} border border-${borderColor}`}
-              style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
-            >
-              <View className='w-12 h-12 rounded-full bg-bright-gold items-center justify-center mr-4'>
-                <Text className='text-lg'>✨</Text>
-              </View>
-              <View className='flex-1'>
-                <Text className={`font-semibold ${textColor}`}>
-                  AI generated Dua
-                </Text>
-                <Text
-                  className={`text-xs ${isDark ? 'text-light-grayish-text-muted' : 'text-dark-grayish-text'}`}
-                >
-                  Ask the AI for the dua you want to add
-                </Text>
-              </View>
-              <Text className='text-xl'>›</Text>
-            </Pressable>
-
-            {/* Manual */}
-            <Pressable
-              onPress={() => setSelectedMethod('manual')}
-              className={`flex-row items-center px-5 py-5 rounded-2xl ${inputBgColor} border border-${borderColor}`}
-              style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
-            >
-              <View className='w-12 h-12 rounded-full bg-bright-gold items-center justify-center mr-4'>
-                <Text className='text-lg'>✍️</Text>
-              </View>
-              <View className='flex-1'>
-                <Text className={`font-semibold ${textColor}`}>Manual</Text>
-                <Text
-                  className={`text-xs ${isDark ? 'text-light-grayish-text-muted' : 'text-dark-grayish-text'}`}
-                >
-                  Add Dua using a form
-                </Text>
-              </View>
-              <Text className='text-xl'>›</Text>
-            </Pressable>
+            <View style={tw`mt-4`}>
+              <AddDuaOptionRow
+                type='upload'
+                title='Upload Image'
+                description='Scan screenshot or camera text'
+                onPress={() => setSelectedMethod('upload')}
+              />
+              <AddDuaOptionRow
+                type='ai'
+                title='AI generated Dua'
+                description='Ask the AI for the dua you want to add'
+                onPress={() => setSelectedMethod('ai')}
+              />
+              <AddDuaOptionRow
+                type='manual'
+                title='Manual'
+                description='Add Dua using a form'
+                onPress={() => setSelectedMethod('manual')}
+              />
+            </View>
           </View>
         ) : (
-          /* Manual Form */
-          <View className='px-6'>
-            <Pressable
-              onPress={() => setSelectedMethod(null)}
-              className='flex-row items-center mb-6'
-            >
-              <Text className='text-2xl mr-2'>‹</Text>
-              <Text className={`font-semibold ${textColor}`}>Back</Text>
-            </Pressable>
+          /* Manual Form (or future upload/AI screens) */
+          <View style={tw`px-6 pt-6`}>
+            <View style={tw`flex-row items-center justify-between mb-6`}>
+              <Pressable
+                onPress={() => setSelectedMethod(null)}
+                style={({ pressed }) => [tw`flex-row items-center`, { opacity: pressed ? 0.7 : 1 }]}
+              >
+                <Text style={tw`text-2xl mr-2 ${textColor}`}>‹</Text>
+                <Text style={tw`font-semibold ${textColor}`}>Back</Text>
+              </Pressable>
+              <Pressable onPress={() => router.back()} style={tw`p-2`}>
+                <Text style={tw`text-xl ${textColor}`}>✕</Text>
+              </Pressable>
+            </View>
 
+            {selectedMethod !== 'manual' ? (
+              <View style={tw`py-8`}>
+                <Text
+                  style={tw`text-center ${isDark ? 'text-light-grayish-text-muted' : 'text-dark-grayish-text'}`}
+                >
+                  Coming soon
+                </Text>
+              </View>
+            ) : (
+              <>
             {/* Title */}
-            <View className='mb-5'>
-              <Text className={`text-sm font-semibold ${textColor} mb-2`}>
+            <View style={tw`mb-5`}>
+              <Text style={tw`text-sm font-semibold ${textColor} mb-2`}>
                 Title *
               </Text>
               <TextInput
@@ -199,13 +191,13 @@ export default function AddDuaModal() {
                 placeholderTextColor={isDark ? '#A0A0A0' : '#666666'}
                 value={title}
                 onChangeText={setTitle}
-                className={`p-3 rounded-lg border border-${borderColor} ${inputBgColor} ${inputTextColor}`}
+                style={tw`p-3 rounded-lg border ${borderColor} ${inputBgColor} ${textColor}`}
               />
             </View>
 
             {/* Arabic Text */}
-            <View className='mb-5'>
-              <Text className={`text-sm font-semibold ${textColor} mb-2`}>
+            <View style={tw`mb-5`}>
+              <Text style={tw`text-sm font-semibold ${textColor} mb-2`}>
                 Arabic Text *
               </Text>
               <TextInput
@@ -215,14 +207,13 @@ export default function AddDuaModal() {
                 onChangeText={setArabicText}
                 multiline
                 numberOfLines={4}
-                className={`p-3 rounded-lg border border-${borderColor} ${inputBgColor} ${inputTextColor}`}
-                style={{ textAlign: 'right' }}
+                style={[tw`p-3 rounded-lg border ${borderColor} ${inputBgColor} ${textColor}`, { textAlign: 'right' }]}
               />
             </View>
 
             {/* English Translation */}
-            <View className='mb-5'>
-              <Text className={`text-sm font-semibold ${textColor} mb-2`}>
+            <View style={tw`mb-5`}>
+              <Text style={tw`text-sm font-semibold ${textColor} mb-2`}>
                 English Translation *
               </Text>
               <TextInput
@@ -232,29 +223,27 @@ export default function AddDuaModal() {
                 onChangeText={setEnglishTranslation}
                 multiline
                 numberOfLines={4}
-                className={`p-3 rounded-lg border border-${borderColor} ${inputBgColor} ${inputTextColor}`}
+                style={tw`p-3 rounded-lg border ${borderColor} ${inputBgColor} ${textColor}`}
               />
             </View>
 
             {/* Category */}
-            <View className='mb-8'>
-              <Text className={`text-sm font-semibold ${textColor} mb-2`}>
+            <View style={tw`mb-5`}>
+              <Text style={tw`text-sm font-semibold ${textColor} mb-2`}>
                 Category
               </Text>
-              <View className='flex-row flex-wrap gap-2'>
+              <View style={tw`flex-row flex-wrap gap-2`}>
                 {categories.map((cat) => (
                   <Pressable
                     key={cat}
                     onPress={() => setCategory(cat)}
-                    className={`px-4 py-2 rounded-full ${
-                      category === cat ? 'bg-dark-emerald' : inputBgColor
-                    } border border-${borderColor}`}
-                    style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
+                    style={({ pressed }) => [
+                      tw`px-4 py-2 rounded-full border ${borderColor} ${category === cat ? 'bg-dark-emerald' : inputBgColor}`,
+                      { opacity: pressed ? 0.8 : 1 },
+                    ]}
                   >
                     <Text
-                      className={`text-sm font-semibold ${
-                        category === cat ? 'text-light-grayish-text' : textColor
-                      }`}
+                      style={tw`text-sm font-semibold ${category === cat ? 'text-light-grayish-text' : textColor}`}
                     >
                       {cat}
                     </Text>
@@ -263,31 +252,52 @@ export default function AddDuaModal() {
               </View>
             </View>
 
+            {/* Verse reference (e.g. Quran 21:87) - for Quranic duas */}
+            <View style={tw`mb-8`}>
+              <Text style={tw`text-sm font-semibold ${textColor} mb-2`}>
+                Verse / source reference (optional)
+              </Text>
+              <TextInput
+                placeholder='e.g. Quran 21:87 or Hadith reference'
+                placeholderTextColor={isDark ? '#A0A0A0' : '#666666'}
+                value={verseReference}
+                onChangeText={setVerseReference}
+                style={tw`p-3 rounded-lg border ${borderColor} ${inputBgColor} ${textColor}`}
+              />
+            </View>
+
             {/* Action Buttons */}
-            <View className='flex-row gap-3 mb-4'>
+            <View style={tw`flex-row gap-3 mb-4`}>
               <Pressable
                 onPress={() => router.back()}
-                className={`flex-1 px-4 py-3 rounded-lg ${inputBgColor} border border-${borderColor}`}
-                style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
+                style={({ pressed }) => [
+                  tw`flex-1 px-4 py-3 rounded-lg border ${inputBgColor} ${borderColor}`,
+                  { opacity: pressed ? 0.8 : 1 },
+                ]}
               >
-                <Text className={`text-center font-semibold ${textColor}`}>
+                <Text style={tw`text-center font-semibold ${textColor}`}>
                   Cancel
                 </Text>
               </Pressable>
 
               <Pressable
                 onPress={handleAddDua}
-                className='flex-1 px-4 py-3 rounded-lg bg-dark-emerald'
-                style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
+                style={({ pressed }) => [
+                  tw`flex-1 px-4 py-3 rounded-lg bg-dark-emerald`,
+                  { opacity: pressed ? 0.8 : 1 },
+                ]}
               >
-                <Text className='text-center font-semibold text-light-grayish-text'>
+                <Text style={tw`text-center font-semibold text-light-grayish-text`}>
                   Add Dua
                 </Text>
               </Pressable>
             </View>
+              </>
+            )}
           </View>
         )}
       </ScrollView>
+      </View>
     </View>
   )
 }
