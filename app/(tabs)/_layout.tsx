@@ -1,10 +1,12 @@
 import { Tabs } from 'expo-router'
 import React from 'react'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { HapticTab } from '@/components/haptic-tab'
 import { Colors } from '@/constants/theme'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
+import tw from '@/lib/tailwind'
 
 import ExploreIcon from '@/components/icons/ExploreIcon'
 import FavoriteIcon from '@/components/icons/FavoriteIcon'
@@ -13,13 +15,27 @@ import TasbihIcon from '@/components/icons/TasbihIcon'
 
 export default function TabLayout() {
   const colorScheme = useColorScheme()
+  const colors = Colors[colorScheme ?? 'light']
+  const insets = useSafeAreaInsets()
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: colors.tabActive,
+        tabBarInactiveTintColor: colors.tabInactive,
         headerShown: false,
         tabBarButton: HapticTab,
+        sceneStyle: { backgroundColor: colors.screenBackground },
+        tabBarStyle: {
+          backgroundColor: colors.tabBarBackground,
+          borderTopColor: colors.tabBarBorder,
+          borderTopWidth: 1,
+          height: 56 + insets.bottom,
+          paddingTop: 10,
+          elevation: 0,
+        },
+        // font size follows the user's accessibility font setting automatically
+        tabBarLabelStyle: [tw`font-nunito`, { fontSize: 12 }],
       }}
     >
       <Tabs.Screen

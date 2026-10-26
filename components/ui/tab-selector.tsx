@@ -1,6 +1,8 @@
+import { themeColors } from '@/constants/themeColors'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import tw from '@/lib/tailwind'
-import { Pressable, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
+import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg'
 
 interface TabItem {
   label: string
@@ -21,26 +23,40 @@ export function TabSelector({
   const isDark = useColorScheme() === 'dark'
 
   return (
-    <View style={tw`flex-row items-center gap-3`}>
+    <View
+      style={tw`flex-row items-center p-1 rounded-full ${isDark ? 'bg-very-dark-bg' : 'bg-pill-bg'}`}
+    >
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id
-        const bgClass = isActive ? 'bg-soft-gold' : 'bg-transparent'
-        const paddingClass = isActive ? 'px-4' : 'px-2'
         const textClass = isActive
-          ? 'text-dark-text'
+          ? 'text-white font-nunito-semibold'
           : isDark
-            ? 'text-light-grayish-text-muted'
-            : 'text-dark-grayish-text'
+            ? 'text-light-grayish-text-muted font-nunito'
+            : 'text-dark-grayish-text font-nunito'
         return (
           <Pressable
             key={tab.id}
             onPress={() => onTabChange(tab.id)}
             style={({ pressed }) => [
-              tw`py-2 rounded-full ${bgClass} ${paddingClass}`,
+              tw`rounded-full overflow-hidden items-center justify-center min-h-[20px] ${isActive ? 'px-[11px] mr-[5px]' : 'px-[6px]'}`,
               { opacity: pressed ? 0.85 : 1 },
             ]}
           >
-            <Text style={tw`text-sm font-semibold ${textClass}`}>{tab.label}</Text>
+            {isActive && (
+              // gold gradient behind the active label
+              <Svg style={StyleSheet.absoluteFill} preserveAspectRatio='none'>
+                <Defs>
+                  <LinearGradient id='pillGold' x1='0' y1='0' x2='1' y2='1'>
+                    <Stop offset='0' stopColor={themeColors.softGold} />
+                    <Stop offset='1' stopColor={themeColors.darkGold} />
+                  </LinearGradient>
+                </Defs>
+                <Rect width='100%' height='100%' fill='url(#pillGold)' />
+              </Svg>
+            )}
+            <Text numberOfLines={1} style={tw`text-[9px] ${textClass}`}>
+              {tab.label}
+            </Text>
           </Pressable>
         )
       })}

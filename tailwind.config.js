@@ -20,6 +20,9 @@ module.exports = {
         'very-dark-bg': '#013241', // Dark mode background (very dark teal)
         'very-light-grayish-bg': '#F9F9F9', // Light mode card/secondary bg
         'very-dark-nav-bg': '#00242F', // Dark mode tab/nav background
+        'deep-bg': '#002230', // Dark mode screen background (behind the cards)
+        'pill-bg': '#F7F8F8', // Light mode tab-selector container
+        'tab-navy': '#14142B', // Light mode inactive tab icon/label
 
         // Text colors
         'dark-text': '#1A1A1A', // Light mode primary text (very dark)
@@ -33,8 +36,12 @@ module.exports = {
       },
 
       fontFamily: {
+        // One family per class: React Native can't pick a weight from a family list
         berkshire: ['BerkshireSwash_400Regular'],
-        nunito: ['NunitoSans_400Regular', 'NunitoSans_700Bold'],
+        nunito: ['NunitoSans_400Regular'],
+        'nunito-semibold': ['NunitoSans_600SemiBold'],
+        'nunito-bold': ['NunitoSans_700Bold'],
+        'nunito-extrabold': ['NunitoSans_800ExtraBold'],
       },
 
       fontSize: {
