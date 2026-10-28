@@ -31,7 +31,7 @@ export const Colors = {
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
     // Home / tab bar design
-    tabActive: '#066653',
+    tabActive: '#C2A462', // gold in dark mode,
     tabInactive: '#FFFFFF',
     tabBarBackground: '#00242F',
     tabBarBorder: '#00242F',
