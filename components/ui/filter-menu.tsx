@@ -1,40 +1,9 @@
 import { themeColors } from '@/constants/themeColors'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import tw from '@/lib/tailwind'
+import type { FilterMenuProps } from '@/lib/types'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { Modal, Pressable, Text, useWindowDimensions, View } from 'react-native'
-
-type IconName = keyof typeof MaterialCommunityIcons.glyphMap
-
-export interface FilterMenuOption {
-  id: string
-  label: string
-  icon?: IconName
-  selected?: boolean
-  onSelect: () => void
-}
-
-/** One titled group of options. Add a new section object to grow the menu. */
-export interface FilterMenuSection {
-  id: string
-  title: string
-  options: FilterMenuOption[]
-}
-
-export interface FilterMenuAnchor {
-  x: number
-  y: number
-  width: number
-  height: number
-}
-
-interface FilterMenuProps {
-  visible: boolean
-  anchor: FilterMenuAnchor | null
-  sections: FilterMenuSection[]
-  onClose: () => void
-  closeOnSelect?: boolean
-}
 
 /**
  * Dropdown popup pinned under the element it was opened from (the header filter icon).
