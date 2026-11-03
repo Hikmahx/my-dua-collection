@@ -1,16 +1,19 @@
 import { CollectionCard } from '@/components/ui/collection-card'
 import { FeaturedDuaBanner } from '@/components/ui/featured-dua-banner'
+import { FilterMenu } from '@/components/ui/filter-menu'
 import { TabSelector } from '@/components/ui/tab-selector'
 import { COLLECTION_DEFS } from '@/constants/collections'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import tw from '@/lib/tailwind'
+import type { FilterMenuAnchor, FilterMenuSection } from '@/lib/types'
+import { setTheme } from '@/redux/reducers/settingsSlice'
 import { RootState } from '@/redux/store'
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 const SIDE_MARGIN = 30
 const GRID_GAP = 10
@@ -29,7 +32,45 @@ export default function HomeScreen() {
 
   const [activeTab, setActiveTab] = useState('all')
 
+  const dispatch = useDispatch()
   const duas = useSelector((state: RootState) => state.duas.items)
+  const theme = useSelector((state: RootState) => state.settings.theme)
+
+  // Filter / settings dropdown (opens under the header icon)
+  const filterButtonRef = useRef<View>(null)
+  const [menuAnchor, setMenuAnchor] = useState<FilterMenuAnchor | null>(null)
+  const [menuOpen, setMenuOpen] = useState(false)
+
+  const openMenu = useCallback(() => {
+    filterButtonRef.current?.measureInWindow((x, y, width, height) => {
+      setMenuAnchor({ x, y, width, height })
+      setMenuOpen(true)
+    })
+  }, [])
+
+  // Add new sections here as more options arrive (sort, filter by type, ...)
+  const menuSections: FilterMenuSection[] = [
+    {
+      id: 'appearance',
+      title: 'Appearance',
+      options: [
+        {
+          id: 'dark',
+          label: 'Dark',
+          icon: 'weather-night',
+          selected: theme === 'dark',
+          onSelect: () => dispatch(setTheme('dark')),
+        },
+        {
+          id: 'light',
+          label: 'Light',
+          icon: 'white-balance-sunny',
+          selected: theme === 'light',
+          onSelect: () => dispatch(setTheme('light')),
+        },
+      ],
+    },
+  ]
 
   const tabs = [
     { label: 'All', id: 'all' },
@@ -82,9 +123,10 @@ export default function HomeScreen() {
               Home
             </Text>
             <Pressable
+              ref={filterButtonRef}
               hitSlop={12}
               style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
-              onPress={() => {}}
+              onPress={openMenu}
             >
               <MaterialCommunityIcons
                 name='tune-variant'
@@ -139,6 +181,13 @@ export default function HomeScreen() {
           </View>
         </View>
       </ScrollView>
+
+      <FilterMenu
+        visible={menuOpen}
+        anchor={menuAnchor}
+        sections={menuSections}
+        onClose={() => setMenuOpen(false)}
+      />
 
       {/* Floating Add Button */}
       <View style={tw`absolute right-[28px] bottom-[24px]`}>
