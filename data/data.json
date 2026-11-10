@@ -1,0 +1,235 @@
+[
+  {
+    "id": "1",
+    "title": "Quranic Dua",
+    "arabicText": "لَّا إِلَٰهَ إِلَّا أَنتَ سُبْحَٰنَكَ إِنِّي كُنتُ مِنَ ٱلظَّٰلِمِينَ",
+    "transliteration": "La ilaha illa anta subhanaka inni kuntu minaz-zalimin",
+    "translations": {
+      "en": "There is no deity but You. Indeed, I have been of the wrongdoers."
+    },
+    "categories": [
+      "Quranic"
+    ],
+    "source": "quran",
+    "reference": "21:87",
+    "info": "<p>The dua of Prophet Yunus (peace be upon him) when he called out from the darkness.</p>",
+    "origin": "builtin",
+    "isFavorite": false,
+    "iconPath": "@/assets/icons/duas/book.svg"
+  },
+  {
+    "id": "2",
+    "title": "Morning Dua",
+    "arabicText": "أصبحنا على فطرة الله",
+    "translations": {
+      "en": "We have reached the morning upon the fitrah of Allah"
+    },
+    "categories": [
+      "Morning"
+    ],
+    "origin": "builtin",
+    "isFavorite": false,
+    "iconPath": "@/assets/icons/duas/sun.svg"
+  },
+  {
+    "id": "3",
+    "title": "Tahjjud Dua",
+    "arabicText": "الحمد لله حمدا كثيرا",
+    "translations": {
+      "en": "All praise be to Allah, a praise that is abundant"
+    },
+    "categories": [
+      "Night"
+    ],
+    "origin": "builtin",
+    "isFavorite": false,
+    "iconPath": "@/assets/icons/duas/lamp.svg"
+  },
+  {
+    "id": "4",
+    "title": "The Power of Prayer",
+    "arabicText": "يا مجيب الدعاء",
+    "translations": {
+      "en": "O Answerer of Supplications"
+    },
+    "categories": [
+      "General"
+    ],
+    "origin": "manual",
+    "isFavorite": false,
+    "iconPath": "@/assets/icons/duas/journal.svg"
+  },
+  {
+    "id": "5",
+    "title": "After Prayer",
+    "arabicText": "اللهم أنت السلام",
+    "translations": {
+      "en": "O Allah, You are As-Salam (The Source of Peace)"
+    },
+    "categories": [
+      "Prayer"
+    ],
+    "origin": "builtin",
+    "isFavorite": false,
+    "iconPath": "@/assets/icons/duas/hands.svg"
+  },
+  {
+    "id": "6",
+    "title": "Evening Dua",
+    "arabicText": "أمسينا على فطرة الله",
+    "translations": {
+      "en": "We have reached the evening upon the fitrah of Allah"
+    },
+    "categories": [
+      "Evening"
+    ],
+    "origin": "builtin",
+    "isFavorite": false,
+    "iconPath": "@/assets/icons/duas/moon.svg"
+  },
+  {
+    "id": "7",
+    "title": "Good in This World and the Next",
+    "arabicText": "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ",
+    "translations": {
+      "en": "Our Lord, give us good in this world and good in the Hereafter, and protect us from the punishment of the Fire."
+    },
+    "categories": [
+      "Quranic"
+    ],
+    "source": "quran",
+    "reference": "2:201",
+    "origin": "builtin",
+    "isFavorite": false,
+    "iconPath": "@/assets/icons/duas/book.svg"
+  },
+  {
+    "id": "8",
+    "title": "Ease My Task",
+    "arabicText": "رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي",
+    "translations": {
+      "en": "My Lord, expand my chest for me and ease my task for me."
+    },
+    "categories": [
+      "Quranic"
+    ],
+    "source": "quran",
+    "reference": "20:25-26",
+    "origin": "builtin",
+    "isFavorite": false,
+    "iconPath": "@/assets/icons/duas/book.svg"
+  },
+  {
+    "id": "9",
+    "title": "Increase Me in Knowledge",
+    "arabicText": "رَّبِّ زِدْنِي عِلْمًا",
+    "translations": {
+      "en": "My Lord, increase me in knowledge."
+    },
+    "categories": [
+      "Quranic"
+    ],
+    "source": "quran",
+    "reference": "20:114",
+    "origin": "builtin",
+    "isFavorite": false,
+    "iconPath": "@/assets/icons/duas/book.svg"
+  },
+  {
+    "id": "10",
+    "title": "Steadfast Hearts",
+    "arabicText": "رَبَّنَا لَا تُزِغْ قُلُوبَنَا بَعْدَ إِذْ هَدَيْتَنَا وَهَبْ لَنَا مِن لَّدُنكَ رَحْمَةً ۚ إِنَّكَ أَنتَ الْوَهَّابُ",
+    "translations": {
+      "en": "Our Lord, do not let our hearts deviate after You have guided us, and grant us mercy from Yourself. Indeed, You are the Bestower."
+    },
+    "categories": [
+      "Quranic"
+    ],
+    "source": "quran",
+    "reference": "3:8",
+    "origin": "builtin",
+    "isFavorite": false,
+    "iconPath": "@/assets/icons/duas/book.svg"
+  },
+  {
+    "id": "11",
+    "title": "Mercy for Parents",
+    "arabicText": "رَّبِّ ارْحَمْهُمَا كَمَا رَبَّيَانِي صَغِيرًا",
+    "translations": {
+      "en": "My Lord, have mercy upon them as they brought me up when I was small."
+    },
+    "categories": [
+      "General"
+    ],
+    "source": "quran",
+    "reference": "17:24",
+    "origin": "builtin",
+    "isFavorite": false,
+    "iconPath": "@/assets/icons/duas/journal.svg"
+  },
+  {
+    "id": "12",
+    "title": "Before Sleeping",
+    "arabicText": "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا",
+    "translations": {
+      "en": "In Your name, O Allah, I die and I live."
+    },
+    "categories": [
+      "Night"
+    ],
+    "source": "hadith",
+    "reference": "Bukhari 6324",
+    "origin": "builtin",
+    "isFavorite": false,
+    "iconPath": "@/assets/icons/duas/lamp.svg"
+  },
+  {
+    "id": "13",
+    "title": "Upon Waking",
+    "arabicText": "الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا وَإِلَيْهِ النُّشُورُ",
+    "translations": {
+      "en": "All praise is for Allah who gave us life after having taken it from us, and to Him is the resurrection."
+    },
+    "categories": [
+      "Morning"
+    ],
+    "source": "hadith",
+    "reference": "Bukhari 6312",
+    "origin": "builtin",
+    "isFavorite": false,
+    "iconPath": "@/assets/icons/duas/sun.svg"
+  },
+  {
+    "id": "14",
+    "title": "Master of Seeking Forgiveness",
+    "arabicText": "اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ خَلَقْتَنِي وَأَنَا عَبْدُكَ وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ وَأَبُوءُ لَكَ بِذَنْبِي فَاغْفِرْ لِي فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ",
+    "translations": {
+      "en": "O Allah, You are my Lord, there is no deity but You. You created me and I am Your servant, and I keep Your covenant and promise as best I can. I seek refuge in You from the evil of what I have done. I acknowledge Your favor upon me and I acknowledge my sin, so forgive me, for none forgives sins but You."
+    },
+    "categories": [
+      "Morning",
+      "Evening"
+    ],
+    "source": "hadith",
+    "reference": "Bukhari 6306",
+    "origin": "builtin",
+    "isFavorite": false,
+    "iconPath": "@/assets/icons/duas/sun.svg"
+  },
+  {
+    "id": "15",
+    "title": "Seeking Pardon",
+    "arabicText": "اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي",
+    "translations": {
+      "en": "O Allah, You are Pardoning and love to pardon, so pardon me."
+    },
+    "categories": [
+      "General"
+    ],
+    "source": "hadith",
+    "reference": "Tirmidhi 3513",
+    "origin": "builtin",
+    "isFavorite": false,
+    "iconPath": "@/assets/icons/duas/journal.svg"
+  }
+]
