@@ -20,6 +20,7 @@ A comprehensive Islamic dua management application designed to help Muslims orga
 - [Dua Features](#dua-features)
   - [Adding Duas](#adding-duas)
   - [Dua Properties](#dua-properties)
+  - [Dua Data Model](#dua-data-model)
   - [Collection Properties](#collection-properties)
 - [Key Features](#key-features)
   - [Collections System](#collections-system)
@@ -295,7 +296,7 @@ The "+" button on the home screen opens a modal with **three methods**:
 - **Arabic text input** (textarea with Arabic keyboard support)
 - **Transliteration** (text input)
 - **Translation** (multiple language options via dropdown)
-- **Source/reference** (text input for Hadith, Quran, etc.)
+- **Source** (select Quran or Hadith) and **Reference** (text input; the placeholder changes with the selected source, e.g. `11:38` for Quran, `Qudsi 234` for Hadith)
 - **Audio upload** (optional file upload)
 - **Tags** (comma-separated or tag selector)
 - **Add to collections** (multi-select checkbox)
@@ -332,7 +333,7 @@ The "+" button on the home screen opens a modal with **three methods**:
 2. **Metadata:**
    - Collection(s) it belongs to (can be multiple)
    - Tags for categorization
-   - Source/reference (Hadith, Quran, etc.)
+   - Source and reference (see [Dua Data Model](#dua-data-model))
 
 3. **Interactive Elements:**
    - **Tasbih Counter:**
@@ -354,6 +355,38 @@ The "+" button on the home screen opens a modal with **three methods**:
    - Edit button
    - Delete button
    - These only appear for duas the user created
+
+### Dua Data Model
+
+```typescript
+export type DuaSource = 'quran' | 'hadith'
+export type DuaOrigin = 'builtin' | 'manual' | 'ai' | 'image' | 'shared'
+
+export interface Dua {
+  id: string
+  title: string
+  arabicText: string
+  transliteration?: string
+  translations: Record<string, string> // keyed by language code
+  categories: string[]
+  source?: DuaSource
+  reference?: string // '21:87' or '11:39-42'
+  info?: string // HTML from the rich editor
+  origin: DuaOrigin
+  isFavorite: boolean
+  iconPath?: string
+}
+```
+
+- **Source and reference:** `source` is a fixed option (Quran, Hadith) and `reference` is the detail within it. Both are optional, so duas without a known source (manual or AI-generated) don't need them. Quran references can be a single verse (`21:87`) or a range (`11:39-42`), validated with `/^\d{1,3}:\d{1,3}(-\d{1,3})?$/` plus a check that the surah number is 114 or less. The reference input placeholder changes with the selected source (`11:38` for Quran, `Qudsi 234` for Hadith).
+- **Translations:** stored per language code. The user picks a language in Settings and the app shows `translations[language]`, falling back to `translations.en` if that language is missing.
+- **Transliteration:** optional per dua, and shown or hidden with a `showTransliteration` toggle in Settings.
+- **Categories:** an array, since a dua can belong to several categories.
+- **Info:** rich text (bold, bullet points, titles) about the dua, stored as HTML. It must be sanitized before rendering.
+- **Origin:** where the dua came from: `builtin` (ships with the app), `manual` (typed by the user), `ai`, `image` (scanned), or `shared` (from another user). This replaces `isUserCreated`; edit and delete actions apply to anything other than `builtin`.
+- **Favorites:** tracked only through `isFavorite` on each dua. There is no separate favorites array.
+- **Settings:** `settingsSlice` holds `language` (default `'en'`) and `showTransliteration`.
+- **Data source:** for now, duas load from a cached `data.json` file containing 10 to 20 duas.
 
 ### Collection Properties
 
@@ -701,6 +734,7 @@ The "+" button on the home screen opens a modal with **three methods**:
 - [ ] Widget support (daily dua on home screen)
 - [ ] Apple Watch / Wear OS companion app
 - [ ] Family sharing features
+- [ ] Share duas with friends (the first time a dua is shared with someone, the app asks if they should be added as a friend)
 - [ ] Prayer time integration (optional)
 - [ ] Qibla direction finder
 - [ ] Integration with Quran apps
