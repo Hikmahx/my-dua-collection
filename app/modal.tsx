@@ -1,7 +1,13 @@
 import { AddDuaOptionRow } from '@/components/ui/add-dua-option-row'
 import { useColorScheme } from '@/hooks/use-color-scheme'
+import {
+  isValidReference,
+  REFERENCE_PLACEHOLDERS,
+  SOURCE_LABELS,
+} from '@/lib/dua-utils'
 import tw from '@/lib/tailwind'
-import { addDua } from '@/redux/reducers/duasSlice'
+import { addDua, type Dua, type DuaSource } from '@/redux/reducers/duasSlice'
+import type { RootState } from '@/redux/store'
 import { BerkshireSwash_400Regular } from '@expo-google-fonts/berkshire-swash'
 import {
   NunitoSans_400Regular,
@@ -19,7 +25,7 @@ import {
   TextInput,
   View,
 } from 'react-native'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window')
 const SHEET_HEIGHT = SCREEN_HEIGHT * 0.5
@@ -29,6 +35,7 @@ export default function AddDuaModal() {
   const isDark = colorScheme === 'dark'
   const router = useRouter()
   const dispatch = useDispatch()
+  const language = useSelector((state: RootState) => state.settings.language)
 
   const [fontsLoaded] = useFonts({
     BerkshireSwash_400Regular,
@@ -38,14 +45,17 @@ export default function AddDuaModal() {
 
   const [title, setTitle] = useState('')
   const [arabicText, setArabicText] = useState('')
-  const [englishTranslation, setEnglishTranslation] = useState('')
-  const [category, setCategory] = useState('General')
-  const [verseReference, setVerseReference] = useState('')
+  const [translation, setTranslation] = useState('')
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([
+    'General',
+  ])
+  const [source, setSource] = useState<DuaSource | null>(null)
+  const [reference, setReference] = useState('')
   const [selectedMethod, setSelectedMethod] = useState<
     'upload' | 'ai' | 'manual' | null
   >(null)
 
-  const categories = [
+  const categoryOptions = [
     'General',
     'Morning',
     'Evening',
@@ -54,27 +64,60 @@ export default function AddDuaModal() {
     'Night',
   ]
 
+  // Select or deselect a category (at least one stays selected)
+  const toggleCategory = useCallback((cat: string) => {
+    setSelectedCategories((current) => {
+      if (!current.includes(cat)) return [...current, cat]
+      return current.length > 1 ? current.filter((c) => c !== cat) : current
+    })
+  }, [])
+
+  // Tap the selected source again to clear it (and its reference)
+  const toggleSource = useCallback((value: DuaSource) => {
+    setSource((current) => (current === value ? null : value))
+    setReference('')
+  }, [])
+
   const handleAddDua = useCallback(() => {
-    if (!title.trim() || !arabicText.trim() || !englishTranslation.trim()) {
+    if (!title.trim() || !arabicText.trim() || !translation.trim()) {
       Alert.alert('Missing Fields', 'Please fill in all required fields')
       return
     }
 
-    const newDua = {
+    if (source && reference.trim() && !isValidReference(source, reference)) {
+      Alert.alert(
+        'Invalid Reference',
+        `Use a format like ${REFERENCE_PLACEHOLDERS[source]}`
+      )
+      return
+    }
+
+    const newDua: Dua = {
       id: Date.now().toString(),
       title: title.trim(),
       arabicText: arabicText.trim(),
-      englishTranslation: englishTranslation.trim(),
-      category,
+      translations: { [language]: translation.trim() },
+      categories: selectedCategories,
+      origin: 'manual',
       isFavorite: false,
-      isUserCreated: true,
-      ...(verseReference.trim() && { verseReference: verseReference.trim() }),
+      ...(source && { source }),
+      ...(source && reference.trim() && { reference: reference.trim() }),
     }
 
     dispatch(addDua(newDua))
     Alert.alert('Success', 'Dua added successfully!')
     router.back()
-  }, [title, arabicText, englishTranslation, category, verseReference, dispatch, router])
+  }, [
+    title,
+    arabicText,
+    translation,
+    selectedCategories,
+    source,
+    reference,
+    language,
+    dispatch,
+    router,
+  ])
 
   if (!fontsLoaded) {
     return (
@@ -211,39 +254,39 @@ export default function AddDuaModal() {
               />
             </View>
 
-            {/* English Translation */}
+            {/* Translation (saved in the language chosen in Settings) */}
             <View style={tw`mb-5`}>
               <Text style={tw`text-sm font-semibold ${textColor} mb-2`}>
-                English Translation *
+                Translation *
               </Text>
               <TextInput
-                placeholder='Enter English translation'
+                placeholder='Enter translation'
                 placeholderTextColor={isDark ? '#A0A0A0' : '#666666'}
-                value={englishTranslation}
-                onChangeText={setEnglishTranslation}
+                value={translation}
+                onChangeText={setTranslation}
                 multiline
                 numberOfLines={4}
                 style={tw`p-3 rounded-lg border ${borderColor} ${inputBgColor} ${textColor}`}
               />
             </View>
 
-            {/* Category */}
+            {/* Categories (a dua can belong to several) */}
             <View style={tw`mb-5`}>
               <Text style={tw`text-sm font-semibold ${textColor} mb-2`}>
-                Category
+                Categories
               </Text>
               <View style={tw`flex-row flex-wrap gap-2`}>
-                {categories.map((cat) => (
+                {categoryOptions.map((cat) => (
                   <Pressable
                     key={cat}
-                    onPress={() => setCategory(cat)}
+                    onPress={() => toggleCategory(cat)}
                     style={({ pressed }) => [
-                      tw`px-4 py-2 rounded-full border ${borderColor} ${category === cat ? 'bg-dark-emerald' : inputBgColor}`,
+                      tw`px-4 py-2 rounded-full border ${borderColor} ${selectedCategories.includes(cat) ? 'bg-dark-emerald' : inputBgColor}`,
                       { opacity: pressed ? 0.8 : 1 },
                     ]}
                   >
                     <Text
-                      style={tw`text-sm font-semibold ${category === cat ? 'text-light-grayish-text' : textColor}`}
+                      style={tw`text-sm font-semibold ${selectedCategories.includes(cat) ? 'text-light-grayish-text' : textColor}`}
                     >
                       {cat}
                     </Text>
@@ -252,16 +295,44 @@ export default function AddDuaModal() {
               </View>
             </View>
 
-            {/* Verse reference (e.g. Quran 21:87) - for Quranic duas */}
+            {/* Source (optional) */}
+            <View style={tw`mb-5`}>
+              <Text style={tw`text-sm font-semibold ${textColor} mb-2`}>
+                Source (optional)
+              </Text>
+              <View style={tw`flex-row flex-wrap gap-2`}>
+                {(Object.keys(SOURCE_LABELS) as DuaSource[]).map((value) => (
+                  <Pressable
+                    key={value}
+                    onPress={() => toggleSource(value)}
+                    style={({ pressed }) => [
+                      tw`px-4 py-2 rounded-full border ${borderColor} ${source === value ? 'bg-dark-emerald' : inputBgColor}`,
+                      { opacity: pressed ? 0.8 : 1 },
+                    ]}
+                  >
+                    <Text
+                      style={tw`text-sm font-semibold ${source === value ? 'text-light-grayish-text' : textColor}`}
+                    >
+                      {SOURCE_LABELS[value]}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
+
+            {/* Reference (optional) - placeholder follows the selected source */}
             <View style={tw`mb-8`}>
               <Text style={tw`text-sm font-semibold ${textColor} mb-2`}>
-                Verse / source reference (optional)
+                Reference (optional)
               </Text>
               <TextInput
-                placeholder='e.g. Quran 21:87 or Hadith reference'
+                placeholder={
+                  source ? REFERENCE_PLACEHOLDERS[source] : 'Choose a source first'
+                }
                 placeholderTextColor={isDark ? '#A0A0A0' : '#666666'}
-                value={verseReference}
-                onChangeText={setVerseReference}
+                value={reference}
+                onChangeText={setReference}
+                editable={source !== null}
                 style={tw`p-3 rounded-lg border ${borderColor} ${inputBgColor} ${textColor}`}
               />
             </View>
