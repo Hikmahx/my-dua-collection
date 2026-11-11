@@ -14,8 +14,6 @@ interface FeaturedDuaBannerProps {
   reference?: string
 }
 
-// Artwork canvas is 315 x 150; the card is 150 tall and as wide as its container.
-const ART_RATIO = 315 / 150
 const RADIUS = 22
 
 const FeaturedDuaBanner = ({
@@ -26,14 +24,16 @@ const FeaturedDuaBanner = ({
   onMoreInfo,
   reference,
 }: FeaturedDuaBannerProps) => {
-  // The mosque artwork follows the card's HEIGHT (not its width), so it keeps the
-  // same size and stays pinned bottom-right on phones and tablets alike.
-  const [height, setHeight] = useState(150)
+  // The artwork is sized from the measured card, so it always spans the full width.
+  const [size, setSize] = useState({ width: 0, height: 150 })
 
   return (
     // Outer view: shadow only (iOS drops shadows on views that clip their children)
     <View
-      onLayout={(e) => setHeight(e.nativeEvent.layout.height)}
+      onLayout={(e) => {
+        const { width, height } = e.nativeEvent.layout
+        setSize({ width, height })
+      }}
       style={[
         tw`w-full bg-dark-emerald`,
         {
@@ -55,14 +55,10 @@ const FeaturedDuaBanner = ({
         ]}
       >
         <BannerGradient style={StyleSheet.absoluteFill} />
-        <View
-          pointerEvents='none'
-          style={[
-            tw`absolute right-0 top-0`,
-            { height, width: height * ART_RATIO },
-          ]}
-        >
-          <BannerBackground style={StyleSheet.absoluteFill} />
+        <View pointerEvents='none' style={StyleSheet.absoluteFill}>
+          {size.width > 0 && (
+            <BannerBackground cardWidth={size.width} cardHeight={size.height} />
+          )}
         </View>
 
         <View

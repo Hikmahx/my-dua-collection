@@ -17,6 +17,8 @@ export function BannerGradient(props: SvgProps) {
 
   return (
     <Svg
+      width='100%'
+      height='100%'
       viewBox={`0 0 ${viewBox.width} ${viewBox.height}`}
       fill='none'
       preserveAspectRatio='none'
