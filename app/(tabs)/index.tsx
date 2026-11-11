@@ -4,6 +4,7 @@ import { FilterMenu } from '@/components/ui/filter-menu'
 import { TabSelector } from '@/components/ui/tab-selector'
 import { COLLECTION_DEFS } from '@/constants/collections'
 import { useColorScheme } from '@/hooks/use-color-scheme'
+import { formatReference, getTranslation, isBuiltin } from '@/lib/dua-utils'
 import tw from '@/lib/tailwind'
 import type { FilterMenuAnchor, FilterMenuSection } from '@/lib/types'
 import { setTheme } from '@/redux/reducers/settingsSlice'
@@ -17,6 +18,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 const SIDE_MARGIN = 30
 const GRID_GAP = 10
+const FEATURED_DUA_ID = '1'
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme()
@@ -35,6 +37,8 @@ export default function HomeScreen() {
   const dispatch = useDispatch()
   const duas = useSelector((state: RootState) => state.duas.items)
   const theme = useSelector((state: RootState) => state.settings.theme)
+  const language = useSelector((state: RootState) => state.settings.language)
+  const featuredDua = duas.find((d) => d.id === FEATURED_DUA_ID)
 
   // Filter / settings dropdown (opens under the header icon)
   const filterButtonRef = useRef<View>(null)
@@ -82,13 +86,13 @@ export default function HomeScreen() {
   const collectionsWithCounts = useMemo(() => {
     return COLLECTION_DEFS.map((col) => ({
       ...col,
-      count: duas.filter((d) => d.category === col.id).length,
+      count: duas.filter((d) => d.categories.includes(col.id)).length,
       hasUserCreated: duas.some(
-        (d) => d.category === col.id && d.isUserCreated
+        (d) => d.categories.includes(col.id) && !isBuiltin(d)
       ),
       allPreMade: duas
-        .filter((d) => d.category === col.id)
-        .every((d) => !d.isUserCreated),
+        .filter((d) => d.categories.includes(col.id))
+        .every(isBuiltin),
     }))
   }, [duas])
 
@@ -137,12 +141,14 @@ export default function HomeScreen() {
           </View>
 
           {/* Featured banner */}
-          <FeaturedDuaBanner
-            title='Quranic Dua'
-            arabicText='لَّا إِلَٰهَ إِلَّا أَنتَ سُبْحَٰنَكَ إِنِّي كُنتُ مِنَ ٱلظَّٰلِمِينَ'
-            englishTranslation='There is no deity but You. Indeed, I have been of the wrongdoers.'
-            verseReference='Quran 21:87'
-          />
+          {featuredDua && (
+            <FeaturedDuaBanner
+              title={featuredDua.title}
+              arabicText={featuredDua.arabicText}
+              translation={getTranslation(featuredDua, language)}
+              reference={formatReference(featuredDua)}
+            />
+          )}
 
           {/* Dua Collection section */}
           <View style={tw`flex-row items-center justify-between mt-[34px] mb-[30px]`}>

@@ -21,7 +21,9 @@ import { Provider, useDispatch, useSelector } from 'react-redux'
 
 import { Colors } from '@/constants/theme'
 import { useColorScheme } from '@/hooks/use-color-scheme'
+import { loadCachedDuas, saveCachedDuas } from '@/lib/duas-storage'
 import { loadThemePreference, saveThemePreference } from '@/lib/settings-storage'
+import { setDuas } from '@/redux/reducers/duasSlice'
 import { setTheme } from '@/redux/reducers/settingsSlice'
 import store, { RootState } from '@/redux/store'
 
@@ -42,9 +44,11 @@ export default function RootLayout() {
 function AppShell() {
   const dispatch = useDispatch()
   const theme = useSelector((state: RootState) => state.settings.theme)
+  const duas = useSelector((state: RootState) => state.duas.items)
   const colorScheme = useColorScheme()
   const isDark = colorScheme === 'dark'
   const [themeReady, setThemeReady] = useState(false)
+  const [duasReady, setDuasReady] = useState(false)
 
   // Load fonts once for the whole app (tab bar labels need them too)
   const [fontsLoaded] = useFonts({
@@ -78,7 +82,26 @@ function AppShell() {
     saveThemePreference(theme)
   }, [theme, themeReady])
 
-  const ready = fontsLoaded && themeReady
+  // 3) Restore the cached duas (falls back to data/data.json on first launch),
+  //    then save every later change (add, remove, favorite, ...).
+  useEffect(() => {
+    let active = true
+    loadCachedDuas().then((cached) => {
+      if (!active) return
+      if (cached) dispatch(setDuas(cached))
+      setDuasReady(true)
+    })
+    return () => {
+      active = false
+    }
+  }, [dispatch])
+
+  useEffect(() => {
+    if (!duasReady) return
+    saveCachedDuas(duas)
+  }, [duas, duasReady])
+
+  const ready = fontsLoaded && themeReady && duasReady
   useEffect(() => {
     if (ready) SplashScreen.hideAsync()
   }, [ready])

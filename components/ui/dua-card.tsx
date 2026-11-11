@@ -7,7 +7,7 @@ interface DuaCardProps {
   icon?: string // Path to icon SVG
   onPress?: () => void
   backgroundColor?: string
-  verseReference?: string // For Quranic duas
+  reference?: string // e.g. 'Quran 21:87'
 }
 
 export function DuaCard({
@@ -16,7 +16,7 @@ export function DuaCard({
   icon,
   onPress,
   backgroundColor,
-  verseReference,
+  reference,
 }: DuaCardProps) {
   const colorScheme = useColorScheme()
   const isDark = colorScheme === 'dark'
@@ -43,9 +43,9 @@ export function DuaCard({
         <View className='flex-1'>
           <Text className={`font-semibold text-lg ${textColor}`}>{title}</Text>
           <Text className={`text-sm mt-1 ${secondaryText}`}>{count} Duas</Text>
-          {verseReference && (
+          {reference && (
             <Text className={`text-xs mt-2 ${secondaryText}`}>
-              {verseReference}
+              {reference}
             </Text>
           )}
         </View>

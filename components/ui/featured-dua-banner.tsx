@@ -8,10 +8,10 @@ import { BannerGradient } from './bannerGradient'
 interface FeaturedDuaBannerProps {
   title: string
   arabicText: string
-  englishTranslation: string
+  translation: string
   onPress?: () => void
   onMoreInfo?: () => void
-  verseReference?: string
+  reference?: string
 }
 
 // Artwork canvas is 315 x 150; the card is 150 tall and as wide as its container.
@@ -21,10 +21,10 @@ const RADIUS = 22
 const FeaturedDuaBanner = ({
   title,
   arabicText,
-  englishTranslation,
+  translation,
   onPress,
   onMoreInfo,
-  verseReference,
+  reference,
 }: FeaturedDuaBannerProps) => {
   // The mosque artwork follows the card's HEIGHT (not its width), so it keeps the
   // same size and stays pinned bottom-right on phones and tablets alike.
@@ -88,11 +88,11 @@ const FeaturedDuaBanner = ({
               { lineHeight: 14 },
             ]}
           >
-            {englishTranslation}
+            {translation}
           </Text>
-          {verseReference ? (
+          {reference ? (
             <Text style={tw`text-white font-berkshire opacity-90 text-[7px] mt-1`}>
-              {verseReference}
+              {reference}
             </Text>
           ) : null}
 
