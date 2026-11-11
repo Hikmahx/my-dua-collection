@@ -1,4 +1,4 @@
-import { CollectionIcon, type CollectionIconKey } from '@/components/icons/CollectionIcons'
+import { CollectionIcon, type CollectionIconKey } from '@/components/icons/collection-icons'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import tw from '@/lib/tailwind'
 import { Pressable, StyleSheet, Text, View } from 'react-native'

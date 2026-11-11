@@ -1,4 +1,4 @@
-import { themeColors } from '@/constants/themeColors'
+import { themeColors } from '@/constants/theme-colors'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import React from 'react'
 import { ClipPath, Defs, Ellipse, G, Path, Rect, Svg, SvgProps } from 'react-native-svg'

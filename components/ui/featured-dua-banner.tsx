@@ -1,9 +1,9 @@
-import FeaturedBannerHandsIcon from '@/components/icons/FeaturedBannerHandsIcon'
+import FeaturedBannerHandsIcon from '@/components/icons/featured-banner-hands-icon'
 import tw from '@/lib/tailwind'
 import React, { useState } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { BannerBackground } from './banner-background'
-import { BannerGradient } from './bannerGradient'
+import { BannerGradient } from './banner-gradient'
 
 interface FeaturedDuaBannerProps {
   title: string

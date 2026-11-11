@@ -1,4 +1,4 @@
-import { themeColors } from '@/constants/themeColors'
+import { themeColors } from '@/constants/theme-colors'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import tw from '@/lib/tailwind'
 import type { FilterMenuProps } from '@/lib/types'

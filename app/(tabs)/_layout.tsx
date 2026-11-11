@@ -8,10 +8,10 @@ import { useColorScheme } from '@/hooks/use-color-scheme'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import tw from '@/lib/tailwind'
 
-import ExploreIcon from '@/components/icons/ExploreIcon'
-import FavoriteIcon from '@/components/icons/FavoriteIcon'
-import SettingsIcon from '@/components/icons/SettingsIcon'
-import TasbihIcon from '@/components/icons/TasbihIcon'
+import ExploreIcon from '@/components/icons/explore-icon'
+import FavoriteIcon from '@/components/icons/favorite-icon'
+import SettingsIcon from '@/components/icons/settings-icon'
+import TasbihIcon from '@/components/icons/tasbih-icon'
 
 export default function TabLayout() {
   const colorScheme = useColorScheme()

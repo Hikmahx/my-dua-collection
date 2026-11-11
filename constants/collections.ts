@@ -1,4 +1,4 @@
-import type { CollectionIconKey } from '@/components/icons/CollectionIcons'
+import type { CollectionIconKey } from '@/components/icons/collection-icons'
 
 export interface CollectionDef {
   id: string

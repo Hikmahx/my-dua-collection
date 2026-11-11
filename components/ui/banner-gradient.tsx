@@ -1,4 +1,4 @@
-import { darkBanner, themeColors } from '@/constants/themeColors'
+import { darkBanner, themeColors } from '@/constants/theme-colors'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import React from 'react'
 import { Defs, LinearGradient, Rect, Stop, Svg, SvgProps } from 'react-native-svg'

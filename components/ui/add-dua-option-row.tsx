@@ -2,7 +2,7 @@ import {
   CameraIcon,
   FormIcon,
   SparkleIcon,
-} from '@/components/icons/AddDuaOptionIcons'
+} from '@/components/icons/add-dua-option-icons'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import tw from '@/lib/tailwind'
 import { Pressable, Text, View } from 'react-native'
