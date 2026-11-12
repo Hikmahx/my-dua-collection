@@ -386,7 +386,7 @@ export interface Dua {
 - **Origin:** where the dua came from: `builtin` (ships with the app), `manual` (typed by the user), `ai`, `image` (scanned), or `shared` (from another user). This replaces `isUserCreated`; edit and delete actions apply to anything other than `builtin`.
 - **Favorites:** tracked only through `isFavorite` on each dua. There is no separate favorites array.
 - **Settings:** `settingsSlice` holds `language` (default `'en'`) and `showTransliteration`.
-- **Data source:** for now, duas load from a cached `data.json` file containing 10 to 20 duas.
+- **Data source:** for now, duas load from `data/data.json` (15 duas) and are cached locally. Bump the key in `lib/duas-storage.ts` whenever the Dua shape or `data.json` changes.
 
 ### Collection Properties
 

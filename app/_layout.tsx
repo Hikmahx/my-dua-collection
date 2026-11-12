@@ -66,7 +66,7 @@ function AppShell() {
     loadThemePreference().then((saved) => {
       if (!active) return
       const initial = saved ?? 'dark'
-      Appearance.setColorScheme(initial)
+      Appearance.setColorScheme?.(initial) // not available on web
       dispatch(setTheme(initial))
       setThemeReady(true)
     })
@@ -78,7 +78,7 @@ function AppShell() {
   // 2) Apply + save every later change (from the filter menu on Home)
   useEffect(() => {
     if (!themeReady) return
-    Appearance.setColorScheme(theme)
+    Appearance.setColorScheme?.(theme)
     saveThemePreference(theme)
   }, [theme, themeReady])
 
