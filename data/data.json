@@ -15,7 +15,7 @@
     "info": "<p>The dua of Prophet Yunus (peace be upon him) when he called out from the darkness.</p>",
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/duas/book.svg"
+    "iconPath": "@/assets/icons/collection/book.svg"
   },
   {
     "id": "2",
@@ -29,7 +29,7 @@
     ],
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/duas/sun.svg"
+    "iconPath": "@/assets/icons/collection/sun.svg"
   },
   {
     "id": "3",
@@ -43,7 +43,7 @@
     ],
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/duas/lamp.svg"
+    "iconPath": "@/assets/icons/collection/lamp.svg"
   },
   {
     "id": "4",
@@ -57,7 +57,7 @@
     ],
     "origin": "manual",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/duas/journal.svg"
+    "iconPath": "@/assets/icons/collection/journal.svg"
   },
   {
     "id": "5",
@@ -71,7 +71,7 @@
     ],
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/duas/hands.svg"
+    "iconPath": "@/assets/icons/collection/hands.svg"
   },
   {
     "id": "6",
@@ -85,7 +85,7 @@
     ],
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/duas/moon.svg"
+    "iconPath": "@/assets/icons/collection/moon.svg"
   },
   {
     "id": "7",
@@ -101,7 +101,7 @@
     "reference": "2:201",
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/duas/book.svg"
+    "iconPath": "@/assets/icons/collection/book.svg"
   },
   {
     "id": "8",
@@ -117,7 +117,7 @@
     "reference": "20:25-26",
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/duas/book.svg"
+    "iconPath": "@/assets/icons/collection/book.svg"
   },
   {
     "id": "9",
@@ -133,7 +133,7 @@
     "reference": "20:114",
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/duas/book.svg"
+    "iconPath": "@/assets/icons/collection/book.svg"
   },
   {
     "id": "10",
@@ -149,7 +149,7 @@
     "reference": "3:8",
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/duas/book.svg"
+    "iconPath": "@/assets/icons/collection/book.svg"
   },
   {
     "id": "11",
@@ -165,7 +165,7 @@
     "reference": "17:24",
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/duas/journal.svg"
+    "iconPath": "@/assets/icons/collection/journal.svg"
   },
   {
     "id": "12",
@@ -181,7 +181,7 @@
     "reference": "Bukhari 6324",
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/duas/lamp.svg"
+    "iconPath": "@/assets/icons/collection/lamp.svg"
   },
   {
     "id": "13",
@@ -197,7 +197,7 @@
     "reference": "Bukhari 6312",
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/duas/sun.svg"
+    "iconPath": "@/assets/icons/collection/sun.svg"
   },
   {
     "id": "14",
@@ -214,7 +214,7 @@
     "reference": "Bukhari 6306",
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/duas/sun.svg"
+    "iconPath": "@/assets/icons/collection/sun.svg"
   },
   {
     "id": "15",
@@ -230,6 +230,6 @@
     "reference": "Tirmidhi 3513",
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/duas/journal.svg"
+    "iconPath": "@/assets/icons/collection/journal.svg"
   }
 ]
