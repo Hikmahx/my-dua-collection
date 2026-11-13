@@ -16,7 +16,6 @@ import {
   ScrollView,
   Text,
   TextInput,
-  useWindowDimensions,
   View,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -25,11 +24,12 @@ import { useDispatch, useSelector } from 'react-redux'
 const COLUMNS = 3
 const HEADER_SIDE_MARGIN = 30
 const SEARCH_SIDE_MARGIN = 16
+const ROWS = 3 // the grid is always at least 3 rows so it fills the screen
+const MIN_ROW_HEIGHT = 130 // rows never get shorter than this (the screen scrolls instead)
 
 export default function ExploreScreen() {
   const isDark = useColorScheme() === 'dark'
   const c = exploreTheme[isDark ? 'dark' : 'light']
-  const { width } = useWindowDimensions()
 
   const dispatch = useDispatch()
   const theme = useSelector((state: RootState) => state.settings.theme)
@@ -77,12 +77,10 @@ export default function ExploreScreen() {
     return q ? EXPLORE_TOPICS.filter((t) => t.label.toLowerCase().includes(q)) : EXPLORE_TOPICS
   }, [query])
 
-  // Pad to full rows so the grid lines and background still look complete
-  const rows = Math.max(1, Math.ceil(topics.length / COLUMNS))
+  // Always show at least 3 rows (padded with empty cells) so the grid lines and the
+  // background still fill the screen while searching.
+  const rows = Math.max(ROWS, Math.ceil(topics.length / COLUMNS))
   const slots = Array.from({ length: rows * COLUMNS }, (_, i) => topics[i] ?? null)
-
-  // Design: 125 x 145 cells on a 375pt phone. Scale with width, clamped for tablets.
-  const cellHeight = Math.min(Math.max(Math.round((width / COLUMNS) * 1.16), 140), 200)
 
   return (
     <SafeAreaView
@@ -92,12 +90,12 @@ export default function ExploreScreen() {
       <ScrollView
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps='handled'
-        contentContainerStyle={{ paddingBottom: 24 }}
+        contentContainerStyle={{ flexGrow: 1 }}
       >
         {/* Header */}
         <View
           style={[
-            tw`flex-row items-center justify-between min-h-[30px] mb-[24px]`,
+            tw`flex-row items-center justify-between min-h-[30px] mb-[16px]`,
             { paddingHorizontal: HEADER_SIDE_MARGIN },
           ]}
         >
@@ -114,41 +112,45 @@ export default function ExploreScreen() {
           </Pressable>
         </View>
 
-        {/* Search */}
-        <View
-          style={[
-            tw`flex-row items-center h-[46px] rounded-[12px] px-[16px] mb-[20px]`,
-            {
-              marginHorizontal: SEARCH_SIDE_MARGIN,
-              backgroundColor: c.searchBg,
-              borderWidth: 1,
-              borderColor: c.searchBorder,
-            },
-          ]}
-        >
-          <ExploreIcon color={c.searchIcon} size={16} />
-          <TextInput
-            value={query}
-            onChangeText={setQuery}
-            placeholder='Search topics'
-            placeholderTextColor={c.searchPlaceholder}
-            returnKeyType='search'
-            autoCorrect={false}
+        {/* Search (sits on a full-width band in light mode) */}
+        <View style={{ backgroundColor: c.searchBand, paddingTop: 18, paddingBottom: 20 }}>
+          <View
             style={[
-              tw`flex-1 font-nunito text-[14px] ml-[12px] p-0`,
-              { color: c.searchText },
+              tw`flex-row items-center h-[46px] rounded-[12px] px-[16px]`,
+              {
+                marginHorizontal: SEARCH_SIDE_MARGIN,
+                backgroundColor: c.searchBg,
+                borderWidth: 1,
+                borderColor: c.searchBorder,
+              },
             ]}
-          />
-          {query.length > 0 && (
-            <Pressable hitSlop={10} onPress={() => setQuery('')}>
-              <Feather name='x' size={16} color={c.searchPlaceholder} />
-            </Pressable>
-          )}
+          >
+            <ExploreIcon color={c.searchIcon} size={16} />
+            <TextInput
+              value={query}
+              onChangeText={setQuery}
+              placeholder='Search topics'
+              placeholderTextColor={c.searchPlaceholder}
+              returnKeyType='search'
+              autoCorrect={false}
+              style={[
+                tw`flex-1 font-nunito text-[14px] ml-[12px] p-0`,
+                { color: c.searchText },
+              ]}
+            />
+            {query.length > 0 && (
+              <Pressable hitSlop={10} onPress={() => setQuery('')}>
+                <Feather name='x' size={16} color={c.searchPlaceholder} />
+              </Pressable>
+            )}
+          </View>
         </View>
 
-        {/* 3x3 grid: low-poly background behind, alternating translucent cells on top */}
+        {/* 3x3 grid: takes all the height between the search bar and the tab bar (flex: 1),
+            each row at least MIN_ROW_HEIGHT. Background behind, translucent cells on top. */}
         <View
           style={{
+            flex: 1,
             borderTopWidth: 1,
             borderColor: c.gridLine,
             overflow: 'hidden',
@@ -161,31 +163,40 @@ export default function ExploreScreen() {
             <ExploreCardsBackground isDark={isDark} />
           </View>
 
-          <View style={tw`flex-row flex-wrap`}>
-            {slots.map((topic, i) => (
-              <ExploreCard
-                key={topic?.id ?? `empty-${i}`}
-                label={topic?.label}
-                iconKey={topic?.iconKey}
-                index={i}
-                columns={COLUMNS}
-                isLastRow={Math.floor(i / COLUMNS) === rows - 1}
-                height={cellHeight}
-                onPress={() => {
-                  // TODO: navigate to the topic screen, e.g. router.push(`/explore/${topic.id}`)
-                }}
-              />
-            ))}
-          </View>
-        </View>
+          {Array.from({ length: rows }, (_, r) => (
+            <View key={r} style={{ flex: 1, minHeight: MIN_ROW_HEIGHT, flexDirection: 'row' }}>
+              {slots.slice(r * COLUMNS, r * COLUMNS + COLUMNS).map((topic, col) => {
+                const i = r * COLUMNS + col
+                return (
+                  <ExploreCard
+                    key={topic?.id ?? `empty-${i}`}
+                    label={topic?.label}
+                    iconKey={topic?.iconKey}
+                    index={i}
+                    columns={COLUMNS}
+                    isLastRow={r === rows - 1}
+                    onPress={() => {
+                      // TODO: navigate to the topic screen, e.g. router.push(`/explore/${topic.id}`)
+                    }}
+                  />
+                )
+              })}
+            </View>
+          ))}
 
-        {topics.length === 0 && (
-          <Text
-            style={tw`text-center font-nunito mt-6 ${isDark ? 'text-light-grayish-text-muted' : 'text-dark-grayish-text'}`}
-          >
-            No topics found
-          </Text>
-        )}
+          {topics.length === 0 && (
+            <View
+              style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center', justifyContent: 'center' }}
+              pointerEvents='none'
+            >
+              <Text
+                style={tw`font-nunito ${isDark ? 'text-light-grayish-text-muted' : 'text-dark-grayish-text'}`}
+              >
+                No topics found
+              </Text>
+            </View>
+          )}
+        </View>
       </ScrollView>
 
       <FilterMenu

@@ -1,4 +1,4 @@
-import { ExploreTopicIcon, type ExploreIconKey } from '@/components/icons/explore-topic-icons'
+import { CollectionIcon, lineIconNativeSize, type LineIconKey } from '@/components/icons/collection-icons'
 import { exploreTheme } from '@/constants/explore-theme'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import tw from '@/lib/tailwind'
@@ -6,23 +6,24 @@ import { Pressable, Text, View } from 'react-native'
 
 export interface ExploreCardProps {
   label?: string
-  iconKey?: ExploreIconKey
-  /** Position in the grid (0-based). Even = lighter-transparent shade, odd = the other. */
+  iconKey?: LineIconKey
+  /** Position in the grid (0-based). Even / odd cells get the two alternating shades. */
   index: number
   columns: number
   isLastRow: boolean
-  height: number
   onPress?: () => void
 }
 
-/** One cell of the Explore grid. With no label/icon it renders an empty (but styled) cell. */
+/**
+ * One cell of the Explore grid. It fills its row (flex: 1), so the grid stretches to the
+ * available height. With no label/icon it renders an empty (but styled) cell.
+ */
 export function ExploreCard({
   label,
   iconKey,
   index,
   columns,
   isLastRow,
-  height,
   onPress,
 }: ExploreCardProps) {
   const isDark = useColorScheme() === 'dark'
@@ -36,8 +37,7 @@ export function ExploreCard({
       accessibilityLabel={label}
       onPress={onPress}
       style={({ pressed }) => ({
-        width: `${100 / columns}%`,
-        height,
+        flex: 1,
         backgroundColor: index % 2 === 0 ? c.cellA : c.cellB,
         borderRightWidth: isLastCol ? 0 : 1,
         borderBottomWidth: isLastRow ? 0 : 1,
@@ -56,7 +56,8 @@ export function ExploreCard({
               { backgroundColor: c.iconBox },
             ]}
           >
-            <ExploreTopicIcon name={iconKey} color={c.icon} />
+            {/* size = the icon's designed size, so every icon looks like it does in Figma */}
+            <CollectionIcon name={iconKey} color={c.icon} size={lineIconNativeSize(iconKey)} />
           </View>
           {/* fixed 2-line slot so one-line and two-line labels keep the icons aligned */}
           <View style={tw`h-[40px] justify-start`}>
