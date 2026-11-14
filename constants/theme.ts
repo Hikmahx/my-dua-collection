@@ -22,6 +22,9 @@ export const Colors = {
     tabBarBackground: '#F9F9F9',
     tabBarBorder: '#ECECEC',
     screenBackground: '#FFFFFF',
+    // Screens with a header band (Explore, Tasbih, ...): header surface + body
+    headerSurface: '#FFFFFF',
+    screenBody: '#F7F7F7',
   },
   dark: {
     text: '#ECEDEE',
@@ -36,6 +39,8 @@ export const Colors = {
     tabBarBackground: '#00242F',
     tabBarBorder: '#00242F',
     screenBackground: '#002230',
+    headerSurface: '#00242E',
+    screenBody: '#002733',
   },
 };
 
