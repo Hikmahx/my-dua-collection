@@ -1,5 +1,6 @@
 import { DialogButtons } from '@/components/ui/dialog-buttons'
 import { MAX_TARGET } from '@/constants/tasbih-config'
+import { themeColors } from '@/constants/theme-colors'
 import tw from '@/lib/tailwind'
 import { useEffect, useState } from 'react'
 import { KeyboardAvoidingView, Modal, Platform, TextInput, View } from 'react-native'
@@ -51,10 +52,10 @@ export function TasbihCustomTargetModal({
           keyboardType='number-pad'
           maxLength={String(MAX_TARGET).length}
           autoFocus
-          selectionColor='#C4A866'
+          selectionColor={themeColors.brightGold}
           onSubmitEditing={submit}
           accessibilityLabel='Custom target'
-          style={tw`w-[220px] text-center font-nunito text-[48px] text-white py-[8px] mb-[32px] border-b-2 border-[#C4A866]`}
+          style={tw`w-[220px] text-center font-nunito text-[48px] text-white py-[8px] mb-[32px] border-b-2 border-bright-gold`}
         />
         <View style={tw`w-full max-w-[300px]`}>
           <DialogButtons

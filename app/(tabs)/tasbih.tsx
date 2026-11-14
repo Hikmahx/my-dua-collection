@@ -1,6 +1,8 @@
 import { TasbihCounter } from '@/components/tasbih/tasbih-counter'
 import { TasbihCustomTargetModal } from '@/components/tasbih/tasbih-custom-target-modal'
+import { TasbihDuaDetailModal } from '@/components/tasbih/tasbih-dua-detail-modal'
 import { TasbihDuaHeader } from '@/components/tasbih/tasbih-dua-header'
+import { TasbihDuaPreview } from '@/components/tasbih/tasbih-dua-preview'
 import { TasbihDuaPickerModal } from '@/components/tasbih/tasbih-dua-picker-modal'
 import { TasbihFeedbackToggles } from '@/components/tasbih/tasbih-feedback-toggles'
 import { TasbihResetButton } from '@/components/tasbih/tasbih-reset-button'
@@ -19,6 +21,10 @@ import { useCallback, useMemo, useState } from 'react'
 import { View } from 'react-native'
 import { useDispatch, useSelector, useStore } from 'react-redux'
 
+// A Modal can't open while another one is still closing (iOS ignores it), so a modal or
+// confirmation that follows another modal waits for that one to finish closing.
+const AFTER_MODAL_CLOSE_MS = 350
+
 export default function TasbihScreen() {
   const isDark = useColorScheme() === 'dark'
   const dispatch = useDispatch()
@@ -31,10 +37,12 @@ export default function TasbihScreen() {
 
   const item = useMemo(() => findTasbihItem(dhikrId, duas, language), [dhikrId, duas, language])
 
+  const [detailOpen, setDetailOpen] = useState(false)
   const [pickerOpen, setPickerOpen] = useState(false)
   const [customOpen, setCustomOpen] = useState(false)
   const [resetOpen, setResetOpen] = useState(false)
   const [pendingTarget, setPendingTarget] = useState<number | null>(null)
+  const [pendingDhikr, setPendingDhikr] = useState<TasbihItem | null>(null)
 
   const handleTap = useCallback(() => {
     dispatch(increment())
@@ -45,15 +53,24 @@ export default function TasbihScreen() {
   }, [dispatch, store, feedback])
 
   /** Changing the target starts a new round, so ask first when there is progress to lose. */
-  const requestTarget = (next: number) => {
+  const requestTarget = (next: number, delayMs = 0) => {
     if (next === target) return
-    if (count > 0) setPendingTarget(next)
+    if (count > 0) setTimeout(() => setPendingTarget(next), delayMs)
     else dispatch(setTarget(next))
   }
 
+  /** Same for changing the dua: it resets the count, so ask first when there is progress to lose. */
   const handleSelectDhikr = (picked: TasbihItem) => {
-    dispatch(selectDhikr(picked.id)) // resets the count when the dua actually changes
     setPickerOpen(false)
+    if (picked.id === dhikrId) return
+    if (count > 0) setTimeout(() => setPendingDhikr(picked), AFTER_MODAL_CLOSE_MS)
+    else dispatch(selectDhikr(picked.id))
+  }
+
+  /** "Change dua" in the full-dua modal: close it, then open the picker. */
+  const handleChangeDua = () => {
+    setDetailOpen(false)
+    setTimeout(() => setPickerOpen(true), AFTER_MODAL_CLOSE_MS)
   }
 
   const isCustomTarget = !(PRESET_TARGETS as readonly number[]).includes(target)
@@ -64,7 +81,7 @@ export default function TasbihScreen() {
 
       <View style={tw`flex-1 w-full max-w-[480px] self-center px-[30px]`}>
         <View style={tw`mt-[17px]`}>
-          <TasbihDuaHeader item={item} onPress={() => setPickerOpen(true)} />
+          <TasbihDuaHeader item={item} onPress={() => setDetailOpen(true)} />
         </View>
 
         <View style={tw`flex-1 items-center justify-center`}>
@@ -84,6 +101,13 @@ export default function TasbihScreen() {
         </View>
       </View>
 
+      <TasbihDuaDetailModal
+        visible={detailOpen}
+        item={item}
+        onChangeDua={handleChangeDua}
+        onClose={() => setDetailOpen(false)}
+      />
+
       <TasbihDuaPickerModal
         visible={pickerOpen}
         selectedId={dhikrId}
@@ -97,7 +121,7 @@ export default function TasbihScreen() {
         onCancel={() => setCustomOpen(false)}
         onSubmit={(value) => {
           setCustomOpen(false)
-          requestTarget(value)
+          requestTarget(value, AFTER_MODAL_CLOSE_MS)
         }}
       />
 
@@ -124,6 +148,20 @@ export default function TasbihScreen() {
           setPendingTarget(null)
         }}
       />
+
+      <ConfirmModal
+        visible={pendingDhikr !== null}
+        title='Change dua?'
+        message={`Switching to this dua will reset your current count of ${count}.`}
+        confirmLabel='Change'
+        onCancel={() => setPendingDhikr(null)}
+        onConfirm={() => {
+          if (pendingDhikr) dispatch(selectDhikr(pendingDhikr.id))
+          setPendingDhikr(null)
+        }}
+      >
+        {pendingDhikr && <TasbihDuaPreview item={pendingDhikr} />}
+      </ConfirmModal>
     </View>
   )
 }

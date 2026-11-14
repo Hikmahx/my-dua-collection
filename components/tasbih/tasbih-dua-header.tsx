@@ -1,39 +1,38 @@
+import { ArabicText } from '@/components/ui/arabic-text'
 import { useTasbihColors } from '@/hooks/use-tasbih-colors'
-import type { TasbihItem } from '@/lib/tasbih-utils'
+import { tasbihArabicSize, type TasbihItem } from '@/lib/tasbih-utils'
 import tw from '@/lib/tailwind'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { Pressable, Text, View } from 'react-native'
 
-// Long duas (e.g. Quranic verses) get a smaller Arabic size so the counter always fits
-const arabicSize = (text: string) => (text.length <= 30 ? 30 : text.length <= 80 ? 24 : 19)
+/** Each of the three texts is shown in full, up to this many lines, then "…". */
+const MAX_LINES = 3
 
 interface TasbihDuaHeaderProps {
   item: TasbihItem
   onPress: () => void
 }
 
-/** Arabic text + chevron, transliteration and translation of the dua being counted. Tap to change it. */
+/** Arabic text + chevron, transliteration and translation of the dua being counted. Tap to see it in full. */
 export function TasbihDuaHeader({ item, onPress }: TasbihDuaHeaderProps) {
   const c = useTasbihColors()
-  const fontSize = arabicSize(item.arabic)
 
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole='button'
-      accessibilityLabel={`Counting ${item.transliteration}. Change dua`}
+      accessibilityLabel={`Counting ${item.title}. View dua`}
       style={({ pressed }) => [tw`items-center`, { opacity: pressed ? 0.8 : 1 }]}
     >
       <View style={tw`flex-row items-center`}>
-        <Text
-          numberOfLines={3}
-          style={[
-            tw`font-arabic text-center shrink`,
-            { color: c.arabic, fontSize, lineHeight: fontSize * 1.5 },
-          ]}
+        <ArabicText
+          numberOfLines={MAX_LINES}
+          size={tasbihArabicSize(item.arabic)}
+          color={c.arabic}
+          style={tw`text-center shrink`}
         >
           {item.arabic}
-        </Text>
+        </ArabicText>
         <MaterialCommunityIcons
           name='chevron-down'
           size={18}
@@ -41,14 +40,16 @@ export function TasbihDuaHeader({ item, onPress }: TasbihDuaHeaderProps) {
           style={tw`ml-[8px]`}
         />
       </View>
+      {!!item.transliteration && (
+        <Text
+          numberOfLines={MAX_LINES}
+          style={[tw`font-berkshire text-[15px] text-center mt-[6px]`, { color: c.translit }]}
+        >
+          {item.transliteration}
+        </Text>
+      )}
       <Text
-        numberOfLines={2}
-        style={[tw`font-berkshire text-[15px] text-center mt-[10px]`, { color: c.translit }]}
-      >
-        {item.transliteration}
-      </Text>
-      <Text
-        numberOfLines={2}
+        numberOfLines={MAX_LINES}
         style={[tw`font-nunito text-[11px] text-center mt-[10px]`, { color: c.translation }]}
       >
         {item.translation}
