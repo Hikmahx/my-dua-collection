@@ -47,3 +47,31 @@ export function formatReference(
 }
 
 export const isBuiltin = (dua: Dua) => dua.origin === 'builtin'
+
+/**
+ * For searching: lowercase, and Arabic without its marks, so "سبحان" finds "سُبْحَانَ".
+ * (Strips the diacritics, Quranic signs and tatweel, and treats every alef the same.)
+ */
+export function normalizeForSearch(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/g, '')
+    .replace(/[\u0671\u0622\u0623\u0625]/g, '\u0627')
+    .trim()
+}
+
+/**
+ * Built-in duas always come from data/data.json, so new or edited ones show up without
+ * clearing the cache. The cache only supplies what the user changed: favourites and the
+ * duas they added.
+ */
+export function mergeCachedDuas(cached: Dua[], builtIn: Dua[]): Dua[] {
+  const cachedById = new Map(cached.map((d) => [d.id, d]))
+  const builtInIds = new Set(builtIn.map((d) => d.id))
+  const fresh = builtIn.map((d) => ({
+    ...d,
+    isFavorite: cachedById.get(d.id)?.isFavorite ?? d.isFavorite,
+  }))
+  const added = cached.filter((d) => !builtInIds.has(d.id) && d.origin !== 'builtin')
+  return [...fresh, ...added]
+}

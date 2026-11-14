@@ -3,7 +3,7 @@ import { DEFAULT_DHIKR_ID } from '@/constants/tasbih-presets'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export interface TasbihState {
-  dhikrId: string // 'preset:…' or 'dua:<id>'
+  dhikrId: string // id of a dua in data.json
   count: number
   target: number
   soundEnabled: boolean
