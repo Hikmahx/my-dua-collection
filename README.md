@@ -22,6 +22,10 @@ A comprehensive Islamic dua management application designed to help Muslims orga
   - [Dua Properties](#dua-properties)
   - [Dua Data Model](#dua-data-model)
   - [Collection Properties](#collection-properties)
+- [Design System and Conventions](#design-system-and-conventions)
+  - [Theming](#theming)
+  - [Icon Library](#icon-library)
+  - [Project Structure and Naming](#project-structure-and-naming)
 - [Key Features](#key-features)
   - [Collections System](#collections-system)
   - [AI Assistant](#ai-assistant)
@@ -212,6 +216,17 @@ When tapping a collection, users see:
 - Search by meaning/occasion
 - Search by tags
 - Browse by categories
+
+**Current implementation (built):**
+- Header with the "Explore" title and a filter icon that opens the same Appearance menu as Home (Dark / Light)
+- Search bar with a clear button. It filters the topics by name and shows "No topics found" when nothing matches (it sits on a full-width band in light mode)
+- 3x3 topics grid (defined in `constants/explore-topics.ts`, in reading order): Ask DuaAI, Names of Allah, Sunnah, Tahajjud, Hajj & Umrah, Ramadan & other fasting, Hijamah, Tawakkul & Yaqeen, Habits and Life. Ask DuaAI is a tile for now instead of the top call-to-action
+- The grid takes all the remaining height between the search bar and the bottom tab bar. Each row is at least 130 tall (the screen scrolls on short devices), and the grid always shows at least 3 rows, even while searching, so the grid lines and background still fill the screen
+- Cells alternate between two shades (checkerboard): `#043340` at 50% and `#063743` at 70% in dark mode. In light mode the cells frost the pattern behind them with white at 50%
+- Pattern background behind the cells: `assets/images/cards-bg-dark.svg` and `assets/images/cards-bg-light.svg`, switched with the theme
+- Each cell shows its icon in a 56x56 rounded box (translucent teal in dark mode, solid emerald `#066653` with the gold icon in light mode) and the topic name in the Berkshire font
+- Every Explore colour for both modes lives in `constants/explore-theme.ts`
+- Tapping a topic does not navigate yet (the topic screens are still to build)
 
 ### Tasbih Screen
 
@@ -413,6 +428,31 @@ export interface Dua {
    - Print entire collection
    - Edit collection name/cover (for user-created collections)
    - Delete collection (for user-created collections)
+
+## Design System and Conventions
+
+### Theming
+
+- Dark mode is the default. The user's choice is saved on the device and restored on launch
+- The theme is switched from the Appearance menu (filter icon) on the Home and Explore screens
+- Shared palette: `constants/theme-colors.ts`. Screen-specific colours for both modes: `constants/explore-theme.ts`
+- Components read the current mode with `useColorScheme()`, so each screen only needs its light and dark values defined once
+
+### Icon Library
+
+All collection icons live in one library, because the same icons are reused in several places: collection covers, the Explore topics, and the icon picker users will get when creating a new collection.
+
+- **Source SVGs:** `assets/icons/collection/`. File names describe what the icon shows (lowercase, hyphens, no "icon" suffix): `book`, `sun`, `moon`, `lamp`, `journal`, `hands`, `chat-sparkle`, `star-pillars`, `open-book`, `moon-sparkle`, `kaaba`, `crescent-cup`, `cupping-cup`, `heart-check`, `checklist`
+- **Rendering:** `components/icons/collection-icons/` (TSX). The SVGs are drawn as `react-native-svg` components so the colour and size follow the theme, which a plain `.svg` file cannot do
+- **Rule:** the SVG is the source of truth and the TSX is generated from it. To add an icon, drop the `.svg` into `assets/icons/collection/`, add its name to `scripts/generate-line-icons.js`, then run `node scripts/generate-line-icons.js` (this rebuilds `line-icons.tsx`). The first six icons (`book`, `sun`, `moon`, `lamp`, `journal`, `hands`) are drawn directly in `collection-icons/index.tsx`
+- **Picker:** `COLLECTION_ICON_KEYS` lists every selectable icon, in order, for the "choose an icon" grid
+- Tab bar and other app icons stay in `components/icons/`
+
+### Project Structure and Naming
+
+- File names are lowercase with hyphens (`explore-card.tsx`, `theme-colors.ts`). Redux reducer files stay camelCase (`duasSlice.ts`). Route files in `app/` follow Expo Router
+- `components/ui/` holds reusable UI, `components/icons/` holds icons, `constants/` holds static data and theme values, `lib/` holds helpers and storage, `data/` holds the dua data (`data.json`)
+- Screens stay thin: shared pieces (cards, filter menu, tab selector, backgrounds) are separate components
 
 ## Key Features
 
@@ -616,16 +656,26 @@ export interface Dua {
 
 ### Phase 1 - Core Features (MVP)
 - [ ] Authentication and user management (email required for cloud sync)
-- [ ] Bottom navigation setup (5 screens)
+- [x] Bottom navigation setup (5 screens)
+- [x] Dark/light mode with a saved preference
+- [x] Dua data model (source, reference, translations, categories, info, origin) loaded from `data/data.json`
+- [x] Reusable collection icon library (see [Icon Library](#icon-library))
+- [x] **Explore Screen UI:**
+  - [x] Search bar that filters the topics
+  - [x] 3x3 topics grid that fills the remaining height
+  - [x] Light and dark themed cells and background pattern
 - [ ] **Home Screen:**
-  - [ ] Collections grid/list view
-  - [ ] Filter tabs (My Collections, Pre-made, All)
+  - [x] Collections grid view (2, 3 or 4 columns by screen width)
+  - [ ] Collections list view
+  - [x] Filter tabs (My Collections, Pre-made, All)
   - [ ] Reorganizable collections
-  - [ ] Fixed "+" button for adding duas
+  - [x] Fixed "+" button for adding duas
 - [ ] **Manual Dua Entry:**
-  - [ ] Form with all fields (Arabic, transliteration, translation, source, tags)
-  - [ ] Multi-collection assignment
-  - [ ] Save to local cache and backend
+  - [x] Form with title, Arabic, translation, categories, source and reference
+  - [ ] Transliteration and info (rich text) fields
+  - [x] Multi-collection assignment
+  - [x] Save to local cache
+  - [ ] Save to backend
 - [ ] **Collection Management:**
   - [ ] Create custom collections
   - [ ] View collection details
@@ -648,7 +698,7 @@ export interface Dua {
 - [ ] **Profile Screen:**
   - [ ] Basic settings (appearance, language)
   - [ ] Today's Islamic date
-- [ ] Local caching for offline access
+- [x] Local caching for offline access
 - [ ] Cloud sync for collections
 
 ### Phase 2 - AI & Advanced Input
@@ -741,10 +791,10 @@ export interface Dua {
 
 ## Author
 
-- GitHub - [Your GitHub Profile]
-- Email - [Your Email]
-- LinkedIn - [Your LinkedIn Profile]
-- Twitter/X - [Your Twitter Handle]
+- Github - [Hikmah Yousuph](https://github.com/Hikmahx)
+- Email - [hikmayousuph@gmail.com](hikmayousuph@gmail.com)
+- LinkedIn - [Hikmah Yousuph](linkedin.com/in/hikmah-yousuph)
+- Website - [hikmayousuph.com](hikmayousuph.com)
 
 ---
 
