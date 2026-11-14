@@ -42,6 +42,7 @@ module.exports = {
         'nunito-semibold': ['NunitoSans_600SemiBold'],
         'nunito-bold': ['NunitoSans_700Bold'],
         'nunito-extrabold': ['NunitoSans_800ExtraBold'],
+        arabic: ['Amiri_400Regular'], // Arabic dua text
       },
 
       fontSize: {
