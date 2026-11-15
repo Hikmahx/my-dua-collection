@@ -1,10 +1,12 @@
 import ExploreIcon from '@/components/icons/explore-icon'
 import { DuaListRow } from '@/components/dua-list/dua-list-row'
+import { AppearanceMenuButton } from '@/components/ui/appearance-menu-button'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { SearchField } from '@/components/ui/search-field'
 import { useDuaListColors } from '@/hooks/use-dua-list-colors'
 import { useSearch } from '@/hooks/use-search'
-import { duaSearchFields } from '@/lib/dua-utils'
+import { useSourceFilter } from '@/hooks/use-source-filter'
+import { duaSourceSearchFields } from '@/lib/dua-utils'
 import tw from '@/lib/tailwind'
 import type { Dua } from '@/redux/reducers/duasSlice'
 import { Feather } from '@expo/vector-icons'
@@ -25,8 +27,9 @@ interface DuaListScreenProps {
 const ItemSeparator = () => <View style={tw`h-[6px]`} />
 
 /**
- * A screen listing duas: header (back arrow, title, "N duas", search), optional search box,
- * and the numbered rows. Used for a collection's duas and for Favorites.
+ * A screen listing duas: header (back arrow, title, "N duas", search and the filter menu with
+ * the Surah / Hadith filters), optional search box, and the numbered rows. Search also finds
+ * duas by surah and hadith name. Used for a collection's duas and for Favorites.
  */
 export function DuaListScreen({
   title,
@@ -37,7 +40,8 @@ export function DuaListScreen({
 }: DuaListScreenProps) {
   const c = useDuaListColors()
   const [searchOpen, setSearchOpen] = useState(false)
-  const { query, setQuery, results, isSearching } = useSearch(duas, duaSearchFields)
+  const { filter, filtered, sections } = useSourceFilter(duas)
+  const { query, setQuery, results, isSearching } = useSearch(filtered, duaSourceSearchFields)
 
   const toggleSearch = () => {
     if (searchOpen) setQuery('')
@@ -48,7 +52,7 @@ export function DuaListScreen({
     <View style={{ flex: 1, backgroundColor: c.background }}>
       <ScreenHeader
         title={title}
-        subtitle={`${duas.length} ${duas.length === 1 ? 'dua' : 'duas'}`}
+        subtitle={`${filtered.length} ${filtered.length === 1 ? 'dua' : 'duas'}${filter ? ` · ${filter.name}` : ''}`}
         bottomPadding={7}
         left={
           onBack && (
@@ -58,18 +62,23 @@ export function DuaListScreen({
           )
         }
         right={
-          <Pressable
-            onPress={toggleSearch}
-            hitSlop={12}
-            accessibilityRole='button'
-            accessibilityLabel={searchOpen ? 'Close search' : 'Search'}
-          >
-            {searchOpen ? (
-              <Feather name='x' size={22} color={c.icon} />
-            ) : (
-              <ExploreIcon color={c.icon} size={20} />
-            )}
-          </Pressable>
+          <View style={tw`flex-row items-center`}>
+            <Pressable
+              onPress={toggleSearch}
+              hitSlop={12}
+              accessibilityRole='button'
+              accessibilityLabel={searchOpen ? 'Close search' : 'Search'}
+            >
+              {searchOpen ? (
+                <Feather name='x' size={22} color={c.icon} />
+              ) : (
+                <ExploreIcon color={c.icon} size={20} />
+              )}
+            </Pressable>
+            <View style={tw`ml-[18px]`}>
+              <AppearanceMenuButton extraSections={sections} active={!!filter} />
+            </View>
+          </View>
         }
       />
 
@@ -77,7 +86,7 @@ export function DuaListScreen({
         <SearchField
           value={query}
           onChangeText={setQuery}
-          placeholder='Search duas'
+          placeholder='Search duas, surah or hadith'
           autoFocus
           style={tw`mx-[16px] mt-[12px]`}
         />

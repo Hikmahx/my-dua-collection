@@ -6,12 +6,17 @@
 /**
  * Lowercase, and Arabic without its marks, so "سبحان" finds "سُبْحَانَ".
  * (Strips the diacritics, Quranic signs and tatweel, and treats every alef the same.)
+ * Apostrophes are ignored and hyphens count as spaces, so "ali imran" finds "Ali 'Imran"
+ * and "al baqarah" finds "Al-Baqarah".
  */
 export function normalizeForSearch(text: string): string {
   return text
     .toLowerCase()
     .replace(/[\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/g, '')
     .replace(/[\u0671\u0622\u0623\u0625]/g, '\u0627')
+    .replace(/['\u2018\u2019\u02BB\u02BC\u02BF\u02BE`]/g, '')
+    .replace(/-/g, ' ')
+    .replace(/\s+/g, ' ')
     .trim()
 }
 

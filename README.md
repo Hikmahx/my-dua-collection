@@ -59,6 +59,7 @@ Users should be able to:
   - Create and manage custom collections
   - Reorganize collections with drag and drop (priority collections stay at top-left)
   - Filter collections: My Collections, Pre-made Collections, All Collections
+  - Filter a collection or the favorites by surah or hadith name
   <!-- - Switch between grid and list views -->
   - Sort duas by date added, alphabetical, or custom order
   - Bookmark favorite duas for quick access
@@ -193,8 +194,13 @@ Opened by tapping a collection card on Home (route `app/collection/[id].tsx`, wh
 - **Header:**
   - Back arrow
   - Collection name
-  - Count of duas under the name ("11 duas")
-  - Search icon: opens a search field under the header, and closes and clears it when tapped again (see [Search](#search))
+  - Count of duas under the name ("11 duas"). While a filter is on it adds the filter, e.g. "3 duas · Bukhari"
+  - Search icon: opens a search field under the header, and closes and clears it when tapped again. It also finds duas by surah and hadith name (see [Search](#search))
+  - Filter icon: opens a menu with a **Surah** and a **Hadith** section above Appearance (see below)
+- **Filter by source:**
+  - The Surah section lists the surahs found in the collection, in Quran order. The Hadith section lists the hadith collections (Bukhari, Tirmidhi, ...) from A to Z. A section is left out when the collection has none from it
+  - One filter at a time: pick a surah or a hadith, and tap it again to clear it. A gold dot on the icon shows a filter is on
+  - The hadith name is the text before the number in the reference (`Bukhari 6324` gives `Bukhari`)
 - **List of duas:** one numbered row per dua, with
   - The number in a circle
   - The dua title
@@ -208,7 +214,7 @@ Opened by tapping a collection card on Home (route `app/collection/[id].tsx`, wh
   - Print entire collection button
   - Tapping a row opens the dua (see [Dua Features](#dua-features))
 
-The list is built from shared parts (`DuaListScreen`, `DuaListRow` in `components/dua-list/`, and `ScreenHeader`), which the [Bookmark Screen](#bookmark-screen) uses too.
+The list is built from shared parts (`DuaListScreen`, `DuaListRow` in `components/dua-list/`, `ScreenHeader`, and the `useSourceFilter` hook), which the [Bookmark Screen](#bookmark-screen) uses too.
 
 ### Explore Screen
 
@@ -265,7 +271,7 @@ The list is built from shared parts (`DuaListScreen`, `DuaListRow` in `component
 **Features:**
 - All bookmarked/favorited duas, in the same list design as the [Collection Screen](#collection-screen) (numbered rows with the title and source, and the "N duas" count under the title)
 - Shows which collections each dua belongs to, as small pills under the source: up to 2, then "+N" for the rest
-- Search icon in the header (same search as the Collection screen). There is no back arrow, because it is a tab
+- Search and filter icons in the header, the same as the Collection screen: search also finds duas by surah and hadith name, and the filter menu has the Surah and Hadith filters above Appearance. There is no back arrow, because it is a tab
 - Empty state: "No favorite duas yet"
 - Grid/list view toggle
 - Quick access to dua details
@@ -412,7 +418,7 @@ export interface Dua {
 }
 ```
 
-- **Source and reference:** `source` is a fixed option (Quran, Hadith) and `reference` is the detail within it. Both are optional, so duas without a known source (manual or AI-generated) don't need them. Quran references can be a single verse (`21:87`) or a range (`11:39-42`), validated with `/^\d{1,3}:\d{1,3}(-\d{1,3})?$/` plus a check that the surah number is 114 or less. The reference input placeholder changes with the selected source (`11:38` for Quran, `Qudsi 234` for Hadith). Lists show them as a source line, e.g. `Al-Baqarah · 2:201` (`formatSourceLine` in `lib/dua-utils.ts`).
+- **Source and reference:** `source` is a fixed option (Quran, Hadith) and `reference` is the detail within it. Both are optional, so duas without a known source (manual or AI-generated) don't need them. Quran references can be a single verse (`21:87`) or a range (`11:39-42`), validated with `/^\d{1,3}:\d{1,3}(-\d{1,3})?$/` plus a check that the surah number is 114 or less. The reference input placeholder changes with the selected source (`11:38` for Quran, `Qudsi 234` for Hadith). Lists show them as a source line, e.g. `Al-Baqarah · 2:201` (`formatSourceLine` in `lib/dua-utils.ts`). The surah name and the hadith name used by the filter and search come from the reference too (`getSurahName`, `getHadithName`)
 - **Translations:** stored per language code. The user picks a language in Settings and the app shows `translations[language]`, falling back to `translations.en` if that language is missing.
 - **Transliteration:** optional per dua, and shown or hidden with a `showTransliteration` toggle in Settings.
 - **Categories:** an array, since a dua can belong to several categories. A category id is also a collection id (see `constants/collections.ts`).
@@ -453,11 +459,11 @@ export interface Dua {
 ### Theming
 
 - Dark mode is the default. The user's choice is saved on the device and restored on launch
-- The theme is switched from the Appearance menu (filter icon) on the Home, Explore and Tasbih screens
+- The theme is switched from the Appearance menu (the filter icon in the header) on the Home, Explore, Tasbih, Collection and Bookmark screens
 - Shared palette: `tailwind.config.js` (for class names), mirrored in `constants/theme-colors.ts` (for SVG props, icons and `rgba()` values; `withAlpha(hex, opacity)` adds transparency to a palette color). Keep the two in sync
 - Screen-specific colors for both modes, next to the palette: `constants/explore-theme.ts`, `constants/tasbih-theme.ts` and `constants/dua-list-theme.ts`. They reuse the shared palette and only spell out values sampled from that screen's design
 - Components read the current mode with `useColorScheme()` (or a small hook such as `useTasbihColors()` and `useDuaListColors()`), so each screen only needs its light and dark values defined once
-- Screens with a header band (Explore, Tasbih, Collection, Bookmark) use `ScreenHeader`: a title, an optional subtitle, an optional left slot (e.g. a back arrow) and a right slot (the Appearance menu by default)
+- Screens with a header band (Explore, Tasbih, Collection, Bookmark) use `ScreenHeader`: a title, an optional subtitle, an optional left slot (e.g. a back arrow) and a right slot (the Appearance menu by default). The menu is `AppearanceMenuButton`; it can show extra sections above Appearance (`extraSections`, used for the Surah and Hadith filters) and a gold dot when a filter is on (`active`). Long menus scroll
 
 ### Icon Library
 
@@ -473,11 +479,12 @@ All collection icons live in one library, because the same icons are reused in s
 
 Every search box in the app uses the same code, so they all behave the same way.
 
-- **Matching** (`lib/search.ts`): `normalizeForSearch` lowercases the text and, for Arabic, removes the diacritics, Quranic signs and tatweel and treats every alef the same, so "سبحان" finds "سُبْحَانَ". `matchesSearch(query, fields)` is true when any field contains the query, and an empty query matches everything
+- **Matching** (`lib/search.ts`): `normalizeForSearch` lowercases the text and, for Arabic, removes the diacritics, Quranic signs and tatweel and treats every alef the same, so "سبحان" finds "سُبْحَانَ". It also ignores apostrophes and treats hyphens as spaces, so "ali imran" finds "Ali 'Imran" and "al baqarah" finds "Al-Baqarah". `matchesSearch(query, fields)` is true when any field contains the query, and an empty query matches everything
 - **Hook** (`hooks/use-search.ts`): `useSearch(items, getFields)` keeps the query and returns `{ query, setQuery, results, isSearching }`. `getFields` says which text of an item is searchable. Define it outside the component so the results aren't recomputed on every render
-- **Dua fields:** `duaSearchFields` in `lib/dua-utils.ts` gives the title, transliteration, Arabic and every translation of a dua
+- **Dua fields:** `duaSearchFields` in `lib/dua-utils.ts` gives the title, transliteration, Arabic and every translation of a dua. `duaSourceSearchFields` adds the surah name and the hadith name on top of that
 - **Input:** `SearchField` (`components/ui/search-field.tsx`) is the rounded search bar with the clear button
-- **Used by:** the Tasbih "Choose a dua" picker (it shows the 10 preset duas while the box is empty), the Collection screen, the Bookmark screen, and the Explore topics (`[topic.label]`)
+- **Used by:** the Tasbih "Choose a dua" picker (it shows the 10 preset duas while the box is empty, and uses `duaSearchFields`, so it does not search surah or hadith names), the Collection and Bookmark screens (`duaSourceSearchFields`), and the Explore topics (`[topic.label]`)
+- **Filter by surah or hadith** (Collection and Bookmark screens): `useSourceFilter(duas)` in `hooks/use-source-filter.ts` returns the filtered duas and the Surah / Hadith menu sections. The helpers behind it are in `lib/dua-utils.ts`: `getSurahName`, `getHadithName`, `listSourceNames` and `matchesSourceFilter`. The filter runs first, then the search runs on what is left
 - **To add search to a new list:** call `useSearch(items, getFields)`, render a `SearchField` bound to `query` and `setQuery`, and show `results`
 
 ### Project Structure and Naming
@@ -714,7 +721,8 @@ Every search box in the app uses the same code, so they all behave the same way.
   - [x] Save to local cache -->
   - [ ] Save to backend
 - [ ] **Collection Management:**
-  <!-- - [x] Collection screen: name, dua count, numbered list with source line, search -->
+  <!-- - [x] Collection screen: name, dua count, numbered list with source line, search
+  - [x] Filter by surah or hadith name (menu above Appearance), and search by those names -->
   - [ ] Create custom collections
   - [ ] Collection description
   - [ ] Sort duas within collections
@@ -732,7 +740,7 @@ Every search box in the app uses the same code, so they all behave the same way.
   - [ ] Customizable counters per dua
   - [ ] Preset counters for morning/evening adhkar
 - [ ] **Bookmark System:**
-  <!-- - [x] Bookmark screen with all saved duas, the collections each one is in, and search -->
+  <!-- - [x] Bookmark screen with all saved duas, the collections each one is in, search, and the surah / hadith filter -->
   - [ ] Save/unsave duas
   - [ ] Remove a bookmark from the list
 - [ ] **Profile Screen:**
@@ -760,7 +768,8 @@ Every search box in the app uses the same code, so they all behave the same way.
   - [ ] Fixed position at top-left
   - [ ] AI icon indicator
 - [ ] **Search Functionality:**
-  <!-- - [x] Search all duas by title, transliteration, Arabic and translation (Tasbih dua picker, Collection screen, Bookmark screen) -->
+  <!-- - [x] Search all duas by title, transliteration, Arabic and translation (Tasbih dua picker, Collection screen, Bookmark screen)
+  - [x] Search by surah and hadith name (Collection and Bookmark screens) -->
   - [ ] Universal search on Explore screen
   - [ ] Search by Arabic text, meaning, tags
   - [ ] Filter and browse options

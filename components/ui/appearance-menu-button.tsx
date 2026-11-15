@@ -1,6 +1,7 @@
 import { FilterMenu } from '@/components/ui/filter-menu'
 import { themeColors } from '@/constants/theme-colors'
 import { useColorScheme } from '@/hooks/use-color-scheme'
+import tw from '@/lib/tailwind'
 import type { FilterMenuAnchor, FilterMenuSection } from '@/lib/types'
 import { setTheme } from '@/redux/reducers/settingsSlice'
 import type { RootState } from '@/redux/store'
@@ -9,11 +10,21 @@ import { useCallback, useRef, useState } from 'react'
 import { Pressable, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 
+interface AppearanceMenuButtonProps {
+  /** Extra sections shown above Appearance (e.g. the Surah / Hadith filters). */
+  extraSections?: FilterMenuSection[]
+  /** Shows a small gold dot on the icon (a filter in the menu is on). */
+  active?: boolean
+}
+
 /**
- * The header "tune" icon with its Appearance (Dark / Light) dropdown.
- * Used in every screen header, so the menu logic lives here once.
+ * The header "tune" icon with its Appearance (Dark / Light) dropdown, and optionally more
+ * sections above it. Used in every screen header, so the menu logic lives here once.
  */
-export function AppearanceMenuButton() {
+export function AppearanceMenuButton({
+  extraSections = [],
+  active = false,
+}: AppearanceMenuButtonProps) {
   const isDark = useColorScheme() === 'dark'
   const dispatch = useDispatch()
   const theme = useSelector((state: RootState) => state.settings.theme)
@@ -29,8 +40,8 @@ export function AppearanceMenuButton() {
     })
   }, [])
 
-  // Add new sections here as more options arrive
   const sections: FilterMenuSection[] = [
+    ...extraSections,
     {
       id: 'appearance',
       title: 'Appearance',
@@ -59,15 +70,25 @@ export function AppearanceMenuButton() {
         ref={buttonRef}
         hitSlop={12}
         accessibilityRole='button'
-        accessibilityLabel='Appearance'
+        accessibilityLabel={extraSections.length > 0 ? 'Filters and appearance' : 'Appearance'}
         style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
         onPress={openMenu}
       >
-        <MaterialCommunityIcons
-          name='tune-variant'
-          size={26}
-          color={isDark ? themeColors.lightGrayishText : themeColors.darkText}
-        />
+        <View>
+          <MaterialCommunityIcons
+            name='tune-variant'
+            size={26}
+            color={isDark ? themeColors.lightGrayishText : themeColors.darkText}
+          />
+          {active && (
+            <View
+              style={[
+                tw`absolute rounded-full`,
+                { top: -1, right: -1, width: 9, height: 9, backgroundColor: themeColors.brightGold },
+              ]}
+            />
+          )}
+        </View>
       </Pressable>
       <FilterMenu
         visible={open}

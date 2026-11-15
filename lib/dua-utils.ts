@@ -1,4 +1,5 @@
 import { SURAH_NAMES } from '@/constants/surah-names'
+import { normalizeForSearch } from '@/lib/search'
 import type { Dua, DuaSource } from '@/redux/reducers/duasSlice'
 
 export const SOURCE_LABELS: Record<DuaSource, string> = {
@@ -62,12 +63,62 @@ export function formatSourceLine(dua: Pick<Dua, 'source' | 'reference'>): string
   return dua.reference ? `${label} · ${dua.reference}` : label
 }
 
+/** The surah a Quran dua is from, e.g. reference '21:87' -> 'Al-Anbiya'. */
+export function getSurahName(dua: Pick<Dua, 'source' | 'reference'>): string | undefined {
+  if (dua.source !== 'quran' || !dua.reference) return undefined
+  return SURAH_NAMES[parseInt(dua.reference, 10) - 1]
+}
+
+/**
+ * The hadith collection of a hadith dua: the text before the number in its reference,
+ * e.g. 'Bukhari 6324' -> 'Bukhari', 'Qudsi 234' -> 'Qudsi'.
+ */
+export function getHadithName(dua: Pick<Dua, 'source' | 'reference'>): string | undefined {
+  if (dua.source !== 'hadith' || !dua.reference) return undefined
+  const reference = dua.reference.trim()
+  const match = /^(.*?)[\s,:#.-]*\d/.exec(reference)
+  return (match ? match[1] : reference).trim() || undefined
+}
+
+export type SourceFilter = { kind: 'surah' | 'hadith'; name: string }
+
+/** True when the dua is from the filtered surah or hadith collection. */
+export function matchesSourceFilter(dua: Dua, filter: SourceFilter): boolean {
+  const name = filter.kind === 'surah' ? getSurahName(dua) : getHadithName(dua)
+  return !!name && normalizeForSearch(name) === normalizeForSearch(filter.name)
+}
+
+/** The surahs (in Quran order) and hadith collections (A-Z) found in a list of duas. */
+export function listSourceNames(duas: Dua[]): { surahs: string[]; hadiths: string[] } {
+  const surahNumbers = new Set<number>()
+  const hadiths = new Map<string, string>() // normalised name -> name as written first
+  for (const dua of duas) {
+    if (getSurahName(dua)) surahNumbers.add(parseInt(dua.reference!, 10))
+    const hadith = getHadithName(dua)
+    if (hadith && !hadiths.has(normalizeForSearch(hadith))) hadiths.set(normalizeForSearch(hadith), hadith)
+  }
+  return {
+    surahs: [...surahNumbers].sort((a, b) => a - b).map((n) => SURAH_NAMES[n - 1]),
+    hadiths: [...hadiths.values()].sort((a, b) => a.localeCompare(b)),
+  }
+}
+
 /** The text of a dua that search looks at (use with useSearch). */
 export const duaSearchFields = (dua: Dua) => [
   dua.title,
   dua.transliteration,
   dua.arabicText,
   ...Object.values(dua.translations),
+]
+
+/**
+ * Search for the collection and Favorites screens: the usual text plus the surah name and
+ * the hadith name. (The Tasbih picker keeps using plain duaSearchFields.)
+ */
+export const duaSourceSearchFields = (dua: Dua) => [
+  ...duaSearchFields(dua),
+  getSurahName(dua),
+  getHadithName(dua),
 ]
 
 export const isBuiltin = (dua: Dua) => dua.origin === 'builtin'
