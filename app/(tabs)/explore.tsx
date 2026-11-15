@@ -3,12 +3,14 @@ import { ExploreCardsBackground } from '@/components/ui/explore-cards-background
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { SearchField } from '@/components/ui/search-field'
 import { exploreTheme } from '@/constants/explore-theme'
-import { EXPLORE_TOPICS } from '@/constants/explore-topics'
+import { EXPLORE_TOPICS, type ExploreTopic } from '@/constants/explore-topics'
 import { Colors } from '@/constants/theme'
 import { useColorScheme } from '@/hooks/use-color-scheme'
+import { useSearch } from '@/hooks/use-search'
 import tw from '@/lib/tailwind'
-import { useMemo, useState } from 'react'
 import { ScrollView, Text, View } from 'react-native'
+
+const topicSearchFields = (topic: ExploreTopic) => [topic.label]
 
 const COLUMNS = 3
 const ROWS = 3 // the grid is always at least 3 rows so it fills the screen
@@ -17,13 +19,7 @@ const MIN_ROW_HEIGHT = 130 // rows never get shorter than this (the screen scrol
 export default function ExploreScreen() {
   const isDark = useColorScheme() === 'dark'
   const c = exploreTheme[isDark ? 'dark' : 'light']
-  const [query, setQuery] = useState('')
-
-  // Search filters the grid; the shade alternation restarts from the first visible cell
-  const topics = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    return q ? EXPLORE_TOPICS.filter((t) => t.label.toLowerCase().includes(q)) : EXPLORE_TOPICS
-  }, [query])
+  const { query, setQuery, results: topics } = useSearch(EXPLORE_TOPICS, topicSearchFields)
 
   // Always show at least 3 rows (padded with empty cells) so the grid lines and the
   // background still fill the screen while searching.

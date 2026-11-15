@@ -1,11 +1,13 @@
 import { TasbihDuaLines } from '@/components/tasbih/tasbih-dua-lines'
 import { SearchField } from '@/components/ui/search-field'
 import { useTasbihColors } from '@/hooks/use-tasbih-colors'
-import { searchTasbihItems, type TasbihItem } from '@/lib/tasbih-utils'
+import { useSearch } from '@/hooks/use-search'
+import { duaSearchFields } from '@/lib/dua-utils'
+import { duaToTasbihItem, getPresetItems, type TasbihItem } from '@/lib/tasbih-utils'
 import tw from '@/lib/tailwind'
 import type { RootState } from '@/redux/store'
 import { Feather } from '@expo/vector-icons'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import {
   FlatList,
   KeyboardAvoidingView,
@@ -61,13 +63,20 @@ export function TasbihDuaPickerModal({
   const c = useTasbihColors()
   const duas = useSelector((s: RootState) => s.duas.items)
   const language = useSelector((s: RootState) => s.settings.language)
-  const [query, setQuery] = useState('')
+  const { query, setQuery, results, isSearching } = useSearch(duas, duaSearchFields)
 
   useEffect(() => {
     if (!visible) setQuery('')
-  }, [visible])
+  }, [visible, setQuery])
 
-  const items = useMemo(() => searchTasbihItems(query, duas, language), [query, duas, language])
+  // Empty search box: the preset duas. Typing: every dua in the app, whatever its collection.
+  const items = useMemo(
+    () =>
+      isSearching
+        ? results.map((dua) => duaToTasbihItem(dua, language))
+        : getPresetItems(duas, language),
+    [isSearching, results, duas, language],
+  )
 
   return (
     <Modal
