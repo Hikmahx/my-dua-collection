@@ -1,4 +1,6 @@
-# My Dua Collection App
+# My Dua Collection App: Comprehensive Documentation
+
+> The detailed reference for this project: features, screen specs, data model, conventions and the full to-do list. For an overview with screenshots, see [README.md](README.md).
 
 A comprehensive Islamic dua management application designed to help Muslims organize, memorize, and practice their daily supplications with AI-powered assistance and smart features for special occasions like Ramadan and the 10 days of Dhul Hijjah.
 
@@ -114,7 +116,7 @@ Users should be able to:
 
 ### Screenshots
 
-_[Screenshots will be added during development]_
+The screen designs are in [README.md](README.md#screens--functionality) (the images are in `public/readme/`).
 
 ### Links
 
