@@ -1,7 +1,10 @@
 /** Quick-pick targets shown as pills. "Custom" covers every other number. */
 export const PRESET_TARGETS = [33, 100] as const
 export const DEFAULT_TARGET = 100
-export const MAX_TARGET = 99999
+
+/** The counter stops here: further taps are ignored (and the number still fits the circle). */
+export const MAX_COUNT = 99999
+export const MAX_TARGET = MAX_COUNT
 
 /**
  * When the count reaches the target the phone gives completion feedback, and again for

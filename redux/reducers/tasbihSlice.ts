@@ -1,4 +1,4 @@
-import { DEFAULT_TARGET } from '@/constants/tasbih-config'
+import { DEFAULT_TARGET, MAX_COUNT } from '@/constants/tasbih-config'
 import { DEFAULT_DHIKR_ID } from '@/constants/tasbih-presets'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
@@ -26,7 +26,7 @@ const tasbihSlice = createSlice({
       return action.payload
     },
     increment(state) {
-      state.count += 1
+      if (state.count < MAX_COUNT) state.count += 1
     },
     resetCount(state) {
       state.count = 0

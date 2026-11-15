@@ -9,7 +9,7 @@ import { TasbihResetButton } from '@/components/tasbih/tasbih-reset-button'
 import { TasbihTargetSelector } from '@/components/tasbih/tasbih-target-selector'
 import { ConfirmModal } from '@/components/ui/confirm-modal'
 import { ScreenHeader } from '@/components/ui/screen-header'
-import { PRESET_TARGETS } from '@/constants/tasbih-config'
+import { MAX_COUNT, PRESET_TARGETS } from '@/constants/tasbih-config'
 import { Colors } from '@/constants/theme'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import { useTasbihFeedback } from '@/hooks/use-tasbih-feedback'
@@ -37,6 +37,7 @@ export default function TasbihScreen() {
 
   const item = useMemo(() => findTasbihItem(dhikrId, duas, language), [dhikrId, duas, language])
 
+  const [shakeSignal, setShakeSignal] = useState(0)
   const [detailOpen, setDetailOpen] = useState(false)
   const [pickerOpen, setPickerOpen] = useState(false)
   const [customOpen, setCustomOpen] = useState(false)
@@ -45,11 +46,16 @@ export default function TasbihScreen() {
   const [pendingDhikr, setPendingDhikr] = useState<TasbihItem | null>(null)
 
   const handleTap = useCallback(() => {
-    dispatch(increment())
     // read back from the store so very fast taps never use a stale count
-    const { count: next, target: goal } = store.getState().tasbih
-    if (isCompletionCount(next, goal)) feedback.targetReached()
-    else feedback.tap()
+    if (store.getState().tasbih.count >= MAX_COUNT) return // at the limit: ignore the tap
+    dispatch(increment())
+    const { count: next, target: goal, vibrationEnabled } = store.getState().tasbih
+    if (isCompletionCount(next, goal)) {
+      feedback.targetReached()
+      if (vibrationEnabled) setShakeSignal((n) => n + 1) // shake along with the vibration
+    } else {
+      feedback.tap()
+    }
   }, [dispatch, store, feedback])
 
   /** Changing the target starts a new round, so ask first when there is progress to lose. */
@@ -85,7 +91,7 @@ export default function TasbihScreen() {
         </View>
 
         <View style={tw`flex-1 items-center justify-center`}>
-          <TasbihCounter count={count} target={target} onTap={handleTap} />
+          <TasbihCounter count={count} target={target} onTap={handleTap} shakeSignal={shakeSignal} />
           <View style={tw`mt-[48px]`}>
             <TasbihResetButton disabled={count === 0} onPress={() => setResetOpen(true)} />
           </View>
