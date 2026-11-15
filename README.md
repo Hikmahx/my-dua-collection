@@ -13,6 +13,7 @@ A comprehensive Islamic dua management application designed to help Muslims orga
   - [Navigation](#navigation)
 - [Detailed Screen Breakdown](#detailed-screen-breakdown)
   - [Home Screen](#home-screen)
+  - [Collection Screen](#collection-screen)
   - [Explore Screen](#explore-screen)
   - [Tasbih Screen](#tasbih-screen)
   - [Bookmark Screen](#bookmark-screen)
@@ -25,6 +26,7 @@ A comprehensive Islamic dua management application designed to help Muslims orga
 - [Design System and Conventions](#design-system-and-conventions)
   - [Theming](#theming)
   - [Icon Library](#icon-library)
+  - [Search](#search)
   - [Project Structure and Naming](#project-structure-and-naming)
 - [Key Features](#key-features)
   - [Collections System](#collections-system)
@@ -36,7 +38,7 @@ A comprehensive Islamic dua management application designed to help Muslims orga
   - [Built with](#built-with)
   - [Planned integrations](#planned-integrations)
 - [Design Inspiration](#design-inspiration)
-- [Development Roadmap](#development-roadmap)
+- [To do](#to-do)
 - [Author](#author)
 
 ## Overview
@@ -48,8 +50,8 @@ Users should be able to:
 - **Dua Management:**
   - Add duas through image upload (OCR), manual entry, or AI assistance
   - Organize duas into multiple collections (like Instagram saves - a dua can belong to several collections)
-  - Access Arabic text, transliteration, and translations with word-by-word analysis down to root words
-  - Listen to audio recitations of duas
+  <!-- - Access Arabic text, transliteration, and translations with word-by-word analysis down to root words -->
+  <!-- - Listen to audio recitations of duas -->
   - Track recitation with customizable tasbih counters (preset and custom)
   - Edit and delete user-created duas
 
@@ -57,7 +59,7 @@ Users should be able to:
   - Create and manage custom collections
   - Reorganize collections with drag and drop (priority collections stay at top-left)
   - Filter collections: My Collections, Pre-made Collections, All Collections
-  - Switch between grid and list views
+  <!-- - Switch between grid and list views -->
   - Sort duas by date added, alphabetical, or custom order
   - Bookmark favorite duas for quick access
 
@@ -77,7 +79,7 @@ Users should be able to:
   - Context-aware dua suggestions
 
 - **Learning Tools:**
-  - Word-by-word translation with root word analysis (tap any word)
+  <!-- - Word-by-word translation with root word analysis (tap any word) -->
   - Historical context and scholarly commentary
   - Hadith and Quranic references
   - Benefits and virtues of each dua
@@ -86,7 +88,7 @@ Users should be able to:
 - **Additional Tools:**
   - Plain tasbih counter
   - 99 Names of Allah
-  - Personal dua list/notepad (bullet points for personal duas)
+  <!-- - Personal dua list/notepad (bullet points for personal duas) -->
   - Habits and life tracker
   - Islamic calendar date display
   - Search functionality
@@ -115,7 +117,7 @@ _[Screenshots will be added during development]_
 
 ### Links
 
-- Repository URL: [GitHub Repository URL]
+- Repository URL: [https://github.com/Hikmahx/my-dua-collection](https://github.com/Hikmahx/my-dua-collection)
 - Live App URL: [App Store/Play Store URL]
 - Documentation: [Documentation URL]
 
@@ -128,8 +130,10 @@ The app consists of **5 main screens** accessible via bottom navigation:
 1. **Home** - Collections hub with grid/list view
 2. **Explore** - Discovery, search, AI chat, and Islamic tools
 3. **Tasbih** - Simple counter for dhikr
-4. **Bookmark** - All saved/favorited duas
-5. **Profile** - Settings, notifications, and personal content
+4. **Bookmark** - All saved/favorited duas (the Favorites tab)
+5. **Settings** - Settings, notifications, and personal content
+
+Opened from these screens (no bottom bar): the **Collection** screen, from a collection card on Home, and the add-dua modal, from the "+" button on Home.
 
 ### Navigation
 
@@ -138,10 +142,7 @@ The app consists of **5 main screens** accessible via bottom navigation:
 - Explore
 - Tasbih
 - Bookmark
-- Profile
-
-**Fixed Action Button (Home Screen Only):**
-- "+" button for adding duas (image upload, manual entry, AI assistant)
+- Settings
 
 ## Detailed Screen Breakdown
 
@@ -153,7 +154,7 @@ The app consists of **5 main screens** accessible via bottom navigation:
 - **Top Bar:**
   - Filter icon (top right) for browsing collections
   - Grid/List view toggle
-  
+
 - **Tabs/Filters:**
   - My Collections
   - Pre-made Collections
@@ -173,6 +174,7 @@ The app consists of **5 main screens** accessible via bottom navigation:
     - Collection name and cover
     - Tiny number badge showing dua count
     - Preview of included duas
+  - Tapping a collection opens the [Collection Screen](#collection-screen)
 
 - **Fixed "+" Button:**
   - Always visible on home screen
@@ -181,15 +183,32 @@ The app consists of **5 main screens** accessible via bottom navigation:
     2. Manual Entry
     3. AI Assistant
 
-**Collection Detail View:**
-When tapping a collection, users see:
-- Collection name and description
-- Count of duas
-- Grid/list view toggle
-- Sort options: Date added, Alphabetical, Custom order
-- Share entire collection button
-- Print entire collection button
-- List of duas with preview cards
+### Collection Screen
+
+**Primary Purpose:** The duas of one collection
+
+Opened by tapping a collection card on Home (route `app/collection/[id].tsx`, where `id` is the collection id, e.g. `Quranic`). It opens over the tabs, so there is no bottom bar.
+
+**Layout Components:**
+- **Header:**
+  - Back arrow
+  - Collection name
+  - Count of duas under the name ("11 duas")
+  - Search icon: opens a search field under the header, and closes and clears it when tapped again (see [Search](#search))
+- **List of duas:** one numbered row per dua, with
+  - The number in a circle
+  - The dua title
+  - The source under the title, e.g. `Al-Baqarah · 2:201` for the Quran (surah name from `constants/surah-names.ts`, verse ranges with an en dash) or `Hadith · Qudsi 234`. Left out when the dua has no source
+- **Empty states:** "No duas in this collection yet", or "No duas found" while searching
+- **Planned:**
+  - Collection description
+  <!-- - Grid/list view toggle -->
+  <!-- - Sort options: Date added, Alphabetical, Custom order -->
+  - Share entire collection button
+  - Print entire collection button
+  - Tapping a row opens the dua (see [Dua Features](#dua-features))
+
+The list is built from shared parts (`DuaListScreen`, `DuaListRow` in `components/dua-list/`, and `ScreenHeader`), which the [Bookmark Screen](#bookmark-screen) uses too.
 
 ### Explore Screen
 
@@ -225,7 +244,7 @@ When tapping a collection, users see:
 - Cells alternate between two shades (checkerboard): `#043340` at 50% and `#063743` at 70% in dark mode. In light mode the cells frost the pattern behind them with white at 50%
 - Pattern background behind the cells: `assets/images/cards-bg-dark.svg` and `assets/images/cards-bg-light.svg`, switched with the theme
 - Each cell shows its icon in a 56x56 rounded box (translucent teal in dark mode, solid emerald `#066653` with the gold icon in light mode) and the topic name in the Berkshire font
-- Every Explore colour for both modes lives in `constants/explore-theme.ts`
+- Every Explore color for both modes lives in `constants/explore-theme.ts`
 - Tapping a topic does not navigate yet (the topic screens are still to build)
 
 ### Tasbih Screen
@@ -233,7 +252,7 @@ When tapping a collection, users see:
 **Primary Purpose:** Simple dhikr counter
 
 **Features:**
-- Large number display
+- Large number display (shakes when the counter reaches its goal)
 - Tap to increment
 - Reset button
 - Clean, distraction-free interface
@@ -244,8 +263,10 @@ When tapping a collection, users see:
 **Primary Purpose:** Quick access to saved duas
 
 **Features:**
-- All bookmarked/favorited duas
-- Shows which collection each dua belongs to
+- All bookmarked/favorited duas, in the same list design as the [Collection Screen](#collection-screen) (numbered rows with the title and source, and the "N duas" count under the title)
+- Shows which collections each dua belongs to, as small pills under the source: up to 2, then "+N" for the rest
+- Search icon in the header (same search as the Collection screen). There is no back arrow, because it is a tab
+- Empty state: "No favorite duas yet"
 - Grid/list view toggle
 - Quick access to dua details
 - Remove bookmark option
@@ -257,8 +278,7 @@ When tapping a collection, users see:
 **Sections:**
 
 1. **Personal Content:**
-   - My Dua List/Notes (bullet points)
-   - Previous AI chats history
+   - Profile details
 
 2. **Islamic Calendar:**
    - Today's date in Islamic calendar
@@ -266,8 +286,7 @@ When tapping a collection, users see:
 
 3. **Notifications:**
    - Notification settings and preferences
-   - Daily reminder configuration
-   <!-- - Ramadan reminders toggle -->
+   - Daily reminder and other months configuration and toggle
 
 4. **Appearance:**
    - Dark/Light mode toggle
@@ -278,11 +297,11 @@ When tapping a collection, users see:
    - Translation language preferences
    - Multiple language support options
 
-6. **Content:**
+<!-- 6. **Content:**
    - Notes/Dua journal
-   - Personal dua list management
+   - Personal dua list management -->
 
-7. **About & Support:**
+6. **About & Support:**
    - App information
    - Help documentation
    - Contact support
@@ -393,15 +412,15 @@ export interface Dua {
 }
 ```
 
-- **Source and reference:** `source` is a fixed option (Quran, Hadith) and `reference` is the detail within it. Both are optional, so duas without a known source (manual or AI-generated) don't need them. Quran references can be a single verse (`21:87`) or a range (`11:39-42`), validated with `/^\d{1,3}:\d{1,3}(-\d{1,3})?$/` plus a check that the surah number is 114 or less. The reference input placeholder changes with the selected source (`11:38` for Quran, `Qudsi 234` for Hadith).
+- **Source and reference:** `source` is a fixed option (Quran, Hadith) and `reference` is the detail within it. Both are optional, so duas without a known source (manual or AI-generated) don't need them. Quran references can be a single verse (`21:87`) or a range (`11:39-42`), validated with `/^\d{1,3}:\d{1,3}(-\d{1,3})?$/` plus a check that the surah number is 114 or less. The reference input placeholder changes with the selected source (`11:38` for Quran, `Qudsi 234` for Hadith). Lists show them as a source line, e.g. `Al-Baqarah · 2:201` (`formatSourceLine` in `lib/dua-utils.ts`).
 - **Translations:** stored per language code. The user picks a language in Settings and the app shows `translations[language]`, falling back to `translations.en` if that language is missing.
 - **Transliteration:** optional per dua, and shown or hidden with a `showTransliteration` toggle in Settings.
-- **Categories:** an array, since a dua can belong to several categories.
+- **Categories:** an array, since a dua can belong to several categories. A category id is also a collection id (see `constants/collections.ts`).
 - **Info:** rich text (bold, bullet points, titles) about the dua, stored as HTML. It must be sanitized before rendering.
 - **Origin:** where the dua came from: `builtin` (ships with the app), `manual` (typed by the user), `ai`, `image` (scanned), or `shared` (from another user). This replaces `isUserCreated`; edit and delete actions apply to anything other than `builtin`.
 - **Favorites:** tracked only through `isFavorite` on each dua. There is no separate favorites array.
 - **Settings:** `settingsSlice` holds `language` (default `'en'`) and `showTransliteration`.
-- **Data source:** for now, duas load from `data/data.json` (15 duas) and are cached locally. Bump the key in `lib/duas-storage.ts` whenever the Dua shape or `data.json` changes.
+- **Data source:** duas load from `data/data.json` (33 duas: 15 general duas and 18 dhikr in the Dhikr collection). The built-in duas are always read from `data.json`, so adding or editing them needs no cache reset. The copy saved on the device only keeps what the user changed: favorites and the duas they added.
 
 ### Collection Properties
 
@@ -434,25 +453,39 @@ export interface Dua {
 ### Theming
 
 - Dark mode is the default. The user's choice is saved on the device and restored on launch
-- The theme is switched from the Appearance menu (filter icon) on the Home and Explore screens
-- Shared palette: `constants/theme-colors.ts`. Screen-specific colours for both modes: `constants/explore-theme.ts`
-- Components read the current mode with `useColorScheme()`, so each screen only needs its light and dark values defined once
+- The theme is switched from the Appearance menu (filter icon) on the Home, Explore and Tasbih screens
+- Shared palette: `tailwind.config.js` (for class names), mirrored in `constants/theme-colors.ts` (for SVG props, icons and `rgba()` values; `withAlpha(hex, opacity)` adds transparency to a palette color). Keep the two in sync
+- Screen-specific colors for both modes, next to the palette: `constants/explore-theme.ts`, `constants/tasbih-theme.ts` and `constants/dua-list-theme.ts`. They reuse the shared palette and only spell out values sampled from that screen's design
+- Components read the current mode with `useColorScheme()` (or a small hook such as `useTasbihColors()` and `useDuaListColors()`), so each screen only needs its light and dark values defined once
+- Screens with a header band (Explore, Tasbih, Collection, Bookmark) use `ScreenHeader`: a title, an optional subtitle, an optional left slot (e.g. a back arrow) and a right slot (the Appearance menu by default)
 
 ### Icon Library
 
 All collection icons live in one library, because the same icons are reused in several places: collection covers, the Explore topics, and the icon picker users will get when creating a new collection.
 
 - **Source SVGs:** `assets/icons/collection/`. File names describe what the icon shows (lowercase, hyphens, no "icon" suffix): `book`, `sun`, `moon`, `lamp`, `journal`, `hands`, `chat-sparkle`, `star-pillars`, `open-book`, `moon-sparkle`, `kaaba`, `crescent-cup`, `cupping-cup`, `heart-check`, `checklist`
-- **Rendering:** `components/icons/collection-icons/` (TSX). The SVGs are drawn as `react-native-svg` components so the colour and size follow the theme, which a plain `.svg` file cannot do
+- **Rendering:** `components/icons/collection-icons/` (TSX). The SVGs are drawn as `react-native-svg` components so the color and size follow the theme, which a plain `.svg` file cannot do
 - **Rule:** the SVG is the source of truth and the TSX is generated from it. To add an icon, drop the `.svg` into `assets/icons/collection/`, add its name to `scripts/generate-line-icons.js`, then run `node scripts/generate-line-icons.js` (this rebuilds `line-icons.tsx`). The first six icons (`book`, `sun`, `moon`, `lamp`, `journal`, `hands`) are drawn directly in `collection-icons/index.tsx`
 - **Picker:** `COLLECTION_ICON_KEYS` lists every selectable icon, in order, for the "choose an icon" grid
 - Tab bar and other app icons stay in `components/icons/`
 
+### Search
+
+Every search box in the app uses the same code, so they all behave the same way.
+
+- **Matching** (`lib/search.ts`): `normalizeForSearch` lowercases the text and, for Arabic, removes the diacritics, Quranic signs and tatweel and treats every alef the same, so "سبحان" finds "سُبْحَانَ". `matchesSearch(query, fields)` is true when any field contains the query, and an empty query matches everything
+- **Hook** (`hooks/use-search.ts`): `useSearch(items, getFields)` keeps the query and returns `{ query, setQuery, results, isSearching }`. `getFields` says which text of an item is searchable. Define it outside the component so the results aren't recomputed on every render
+- **Dua fields:** `duaSearchFields` in `lib/dua-utils.ts` gives the title, transliteration, Arabic and every translation of a dua
+- **Input:** `SearchField` (`components/ui/search-field.tsx`) is the rounded search bar with the clear button
+- **Used by:** the Tasbih "Choose a dua" picker (it shows the 10 preset duas while the box is empty), the Collection screen, the Bookmark screen, and the Explore topics (`[topic.label]`)
+- **To add search to a new list:** call `useSearch(items, getFields)`, render a `SearchField` bound to `query` and `setQuery`, and show `results`
+
 ### Project Structure and Naming
 
 - File names are lowercase with hyphens (`explore-card.tsx`, `theme-colors.ts`). Redux reducer files stay camelCase (`duasSlice.ts`). Route files in `app/` follow Expo Router
-- `components/ui/` holds reusable UI, `components/icons/` holds icons, `constants/` holds static data and theme values, `lib/` holds helpers and storage, `data/` holds the dua data (`data.json`)
-- Screens stay thin: shared pieces (cards, filter menu, tab selector, backgrounds) are separate components
+- `components/ui/` holds reusable UI, `components/icons/` holds icons, `constants/` holds static data and theme values, `lib/` holds helpers and storage, `hooks/` holds hooks, `data/` holds the dua data (`data.json`)
+- Components used by one feature live in a folder named after it: `components/tasbih/`, and `components/dua-list/` (shared by the Collection and Bookmark screens)
+- Screens stay thin: shared pieces (cards, filter menu, tab selector, backgrounds, lists) are separate components
 
 ## Key Features
 
@@ -461,7 +494,7 @@ All collection icons live in one library, because the same icons are reused in s
 **Multi-Collection Assignment:**
 - Like Instagram saves - a dua can belong to multiple collections
 - Select multiple collections when adding a dua
-- View all collections a dua belongs to from dua detail screen
+- View all collections a dua belongs to from dua detail screen (the Bookmark list already shows them as pills)
 
 **Collection Types:**
 1. **Pre-made Collections:**
@@ -632,7 +665,7 @@ All collection icons live in one library, because the same icons are reused in s
 
 **App References:**
 - **Dhikr and Dua** - UI/UX patterns for Islamic content and commentary display
-- **Al Quran (by Greentech Apps Foundation)** - filter/menu icon, Word-by-word translation feature with root word analysis, translation & transliteration toggle, 
+- **Al Quran (by Greentech Apps Foundation)** - filter/menu icon, Word-by-word translation feature with root word analysis, translation & transliteration toggle
 - **Instagram** - Multi-collection save feature (a post can be saved to multiple collections)
 
 **Visual Style:**
@@ -652,14 +685,17 @@ All collection icons live in one library, because the same icons are reused in s
 - Fast, responsive interactions
 - Beautiful share cards for social media
 
-## Development Roadmap
+## To do
 
-### Phase 1 - Core Features (MVP)
+### Core Features (MVP)
 - [ ] Authentication and user management (email required for cloud sync)
-- [x] Bottom navigation setup (5 screens)
+<!-- - [x] Bottom navigation setup (5 screens)
 - [x] Dark/light mode with a saved preference
 - [x] Dua data model (source, reference, translations, categories, info, origin) loaded from `data/data.json`
 - [x] Reusable collection icon library (see [Icon Library](#icon-library))
+- [x] Splash screen
+- [x] Dhikr collection (18 dhikr duas in `data/data.json`)
+- [x] One shared search for every list and search box (see [Search](#search))
 - [x] **Explore Screen UI:**
   - [x] Search bar that filters the topics
   - [x] 3x3 topics grid that fills the remaining height
@@ -668,17 +704,19 @@ All collection icons live in one library, because the same icons are reused in s
   - [x] Collections grid view (2, 3 or 4 columns by screen width)
   - [ ] Collections list view
   - [x] Filter tabs (My Collections, Pre-made, All)
+  - [x] Open a collection by tapping its card
   - [ ] Reorganizable collections
-  - [x] Fixed "+" button for adding duas
+  - [x] Fixed "+" button for adding duas -->
 - [ ] **Manual Dua Entry:**
-  - [x] Form with title, Arabic, translation, categories, source and reference
+  <!-- - [x] Form with title, Arabic, translation, categories, source and reference
   - [ ] Transliteration and info (rich text) fields
   - [x] Multi-collection assignment
-  - [x] Save to local cache
+  - [x] Save to local cache -->
   - [ ] Save to backend
 - [ ] **Collection Management:**
+  <!-- - [x] Collection screen: name, dua count, numbered list with source line, search -->
   - [ ] Create custom collections
-  - [ ] View collection details
+  - [ ] Collection description
   - [ ] Sort duas within collections
   - [ ] Edit/delete collections
 - [ ] **Dua Detail View:**
@@ -688,20 +726,22 @@ All collection icons live in one library, because the same icons are reused in s
   - [ ] Collections indicator
   - [ ] Bookmark icon
   - [ ] Share button
+  - [ ] Open it from the Collection and Bookmark lists
 - [ ] **Tasbih Counter:**
-  - [ ] Simple counter screen
+  <!-- - [x] Simple counter screen -->
   - [ ] Customizable counters per dua
   - [ ] Preset counters for morning/evening adhkar
 - [ ] **Bookmark System:**
+  <!-- - [x] Bookmark screen with all saved duas, the collections each one is in, and search -->
   - [ ] Save/unsave duas
-  - [ ] Bookmark screen with all saved duas
+  - [ ] Remove a bookmark from the list
 - [ ] **Profile Screen:**
   - [ ] Basic settings (appearance, language)
   - [ ] Today's Islamic date
-- [x] Local caching for offline access
+<!-- - [x] Local caching for offline access -->
 - [ ] Cloud sync for collections
 
-### Phase 2 - AI & Advanced Input
+### AI & Advanced Input
 - [ ] **Image OCR:**
   - [ ] Camera integration
   - [ ] Gallery image upload
@@ -720,20 +760,21 @@ All collection icons live in one library, because the same icons are reused in s
   - [ ] Fixed position at top-left
   - [ ] AI icon indicator
 - [ ] **Search Functionality:**
+  <!-- - [x] Search all duas by title, transliteration, Arabic and translation (Tasbih dua picker, Collection screen, Bookmark screen) -->
   - [ ] Universal search on Explore screen
   - [ ] Search by Arabic text, meaning, tags
   - [ ] Filter and browse options
 
-### Phase 3 - Enhanced Features
+### Enhanced Features
 - [ ] **Audio Integration:**
   - [ ] Audio player for duas
   - [ ] Upload custom audio
   - [ ] Audio file hosting
-- [ ] **Word-by-Word Translation:**
+<!-- - [ ] **Word-by-Word Translation:**
   - [ ] Tap-to-reveal word meanings
   - [ ] Root word analysis
   - [ ] Grammatical notes
-  - [ ] Related vocabulary
+  - [ ] Related vocabulary -->
 - [ ] **Context & Commentary:**
   - [ ] "When to recite" information
   - [ ] Historical context
@@ -751,7 +792,7 @@ All collection icons live in one library, because the same icons are reused in s
   - [ ] Customizable content (full commentary vs. basic)
   - [ ] Print-ready formatting
 
-### Phase 4 - Special Features & Optimization
+### Special Features & Optimization
 - [ ] **Month Mode System:**
   - [ ] Ramadan mode detection
   - [ ] Dhul Hijjah mode
@@ -792,13 +833,13 @@ All collection icons live in one library, because the same icons are reused in s
 ## Author
 
 - Github - [Hikmah Yousuph](https://github.com/Hikmahx)
-- Email - [hikmayousuph@gmail.com](hikmayousuph@gmail.com)
-- LinkedIn - [Hikmah Yousuph](linkedin.com/in/hikmah-yousuph)
-- Website - [hikmayousuph.com](hikmayousuph.com)
+- Email - [hikmayousuph@gmail.com](mailto:hikmayousuph@gmail.com)
+- LinkedIn - [Hikmah Yousuph](https://linkedin.com/in/hikmah-yousuph)
+- Website - [hikmayousuph.com](https://hikmayousuph.com)
 
 ---
 
-**Note:** This is a personal Islamic app project aimed at helping Muslims organize and practice their daily supplications with the assistance of modern technology. The app prioritizes authentic sources and provides proper references for all duas. 
+**Note:** This is a personal Islamic app project aimed at helping Muslims organize and practice their daily supplications with the assistance of modern technology. The app prioritizes authentic sources and provides proper references for all duas.
 
 **Core Values:**
 - Authenticity: All duas sourced from authentic Islamic texts
