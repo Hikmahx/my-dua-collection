@@ -171,7 +171,9 @@ export default function HomeScreen() {
                     title={col.name}
                     count={col.count}
                     iconKey={col.iconKey}
-                    onPress={() => {}}
+                    onPress={() =>
+                      router.push({ pathname: '/collection/[id]', params: { id: col.id } })
+                    }
                   />
                 </View>
               ))

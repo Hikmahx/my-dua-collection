@@ -134,6 +134,7 @@ function AppShell() {
         <ThemeProvider value={navTheme}>
           <Stack>
             <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
+            <Stack.Screen name='collection/[id]' options={{ headerShown: false }} />
             <Stack.Screen
               name='modal'
               options={{
