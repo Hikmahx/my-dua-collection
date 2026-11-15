@@ -1,6 +1,6 @@
 import { COMPLETION_FEEDBACK_COUNT } from '@/constants/tasbih-config'
 import { DEFAULT_DHIKR_ID, TASBIH_PRESET_IDS } from '@/constants/tasbih-presets'
-import { getTranslation, normalizeForSearch } from '@/lib/dua-utils'
+import { getTranslation } from '@/lib/dua-utils'
 import type { Dua } from '@/redux/reducers/duasSlice'
 
 /** What the Tasbih screen shows for the dua being counted (a dua from data.json). */
@@ -31,27 +31,12 @@ export function findTasbihItem(id: string, duas: Dua[], language: string): Tasbi
   return dua ? duaToTasbihItem(dua, language) : EMPTY_ITEM
 }
 
-/**
- * Empty query -> the preset list. Otherwise searches every dua in the app, whatever collection
- * it is in: the title, transliteration, Arabic and the translations (Arabic is matched without
- * its diacritics).
- */
-export function searchTasbihItems(query: string, duas: Dua[], language: string): TasbihItem[] {
-  const q = normalizeForSearch(query)
-  if (!q) {
-    return TASBIH_PRESET_IDS.flatMap((id) => {
-      const dua = duas.find((d) => d.id === id)
-      return dua ? [duaToTasbihItem(dua, language)] : []
-    })
-  }
-
-  return duas
-    .filter((dua) =>
-      [dua.title, dua.transliteration ?? '', dua.arabicText, ...Object.values(dua.translations)].some(
-        (field) => normalizeForSearch(field).includes(q),
-      ),
-    )
-    .map((dua) => duaToTasbihItem(dua, language))
+/** The preset duas (TASBIH_PRESET_IDS) shown in the picker before the user searches. */
+export function getPresetItems(duas: Dua[], language: string): TasbihItem[] {
+  return TASBIH_PRESET_IDS.flatMap((id) => {
+    const dua = duas.find((d) => d.id === id)
+    return dua ? [duaToTasbihItem(dua, language)] : []
+  })
 }
 
 /** Longer duas (e.g. Quranic verses) get a smaller Arabic size so more of them fits. */

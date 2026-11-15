@@ -1,3 +1,4 @@
+import { SURAH_NAMES } from '@/constants/surah-names'
 import type { Dua, DuaSource } from '@/redux/reducers/duasSlice'
 
 export const SOURCE_LABELS: Record<DuaSource, string> = {
@@ -46,19 +47,30 @@ export function formatReference(
   return dua.reference ? `${label} ${dua.reference}` : label
 }
 
-export const isBuiltin = (dua: Dua) => dua.origin === 'builtin'
-
 /**
- * For searching: lowercase, and Arabic without its marks, so "سبحان" finds "سُبْحَانَ".
- * (Strips the diacritics, Quranic signs and tatweel, and treats every alef the same.)
+ * Subtitle for a dua in lists: 'Al-Baqarah · 2:201' for the Quran, 'Hadith · Qudsi 234' for hadith.
+ * Undefined when the dua has no source.
  */
-export function normalizeForSearch(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/g, '')
-    .replace(/[\u0671\u0622\u0623\u0625]/g, '\u0627')
-    .trim()
+export function formatSourceLine(dua: Pick<Dua, 'source' | 'reference'>): string | undefined {
+  if (!dua.source) return undefined
+  if (dua.source === 'quran' && dua.reference) {
+    const [surah, verses] = dua.reference.split(':')
+    const name = SURAH_NAMES[Number(surah) - 1]
+    if (name && verses) return `${name} · ${surah}:${verses.replace('-', '–')}`
+  }
+  const label = SOURCE_LABELS[dua.source]
+  return dua.reference ? `${label} · ${dua.reference}` : label
 }
+
+/** The text of a dua that search looks at (use with useSearch). */
+export const duaSearchFields = (dua: Dua) => [
+  dua.title,
+  dua.transliteration,
+  dua.arabicText,
+  ...Object.values(dua.translations),
+]
+
+export const isBuiltin = (dua: Dua) => dua.origin === 'builtin'
 
 /**
  * Built-in duas always come from data/data.json, so new or edited ones show up without
