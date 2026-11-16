@@ -16,18 +16,16 @@ import { Stack } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
 import { useEffect, useState } from 'react'
-import { Appearance } from 'react-native'
 import 'react-native-reanimated'
 import { Provider, useDispatch, useSelector } from 'react-redux'
 
 import { AppSplash } from '@/components/splash/app-splash'
 import { Colors } from '@/constants/theme'
 import { useColorScheme } from '@/hooks/use-color-scheme'
+import { useSettingsPersistence } from '@/hooks/use-settings-persistence'
 import { useTasbihPersistence } from '@/hooks/use-tasbih-persistence'
 import { loadCachedDuas, saveCachedDuas } from '@/lib/duas-storage'
-import { loadThemePreference, saveThemePreference } from '@/lib/settings-storage'
 import { setDuas } from '@/redux/reducers/duasSlice'
-import { setTheme } from '@/redux/reducers/settingsSlice'
 import store, { RootState } from '@/redux/store'
 
 SplashScreen.preventAutoHideAsync()
@@ -46,11 +44,9 @@ export default function RootLayout() {
 
 function AppShell() {
   const dispatch = useDispatch()
-  const theme = useSelector((state: RootState) => state.settings.theme)
   const duas = useSelector((state: RootState) => state.duas.items)
   const colorScheme = useColorScheme()
   const isDark = colorScheme === 'dark'
-  const [themeReady, setThemeReady] = useState(false)
   const [duasReady, setDuasReady] = useState(false)
   const [splashDone, setSplashDone] = useState(false)
 
@@ -64,30 +60,11 @@ function AppShell() {
     NunitoSans_800ExtraBold,
   })
 
-  // 1) Restore the saved theme (dark when nothing was saved) before showing anything,
-  //    so there is no light/dark flash on launch.
-  useEffect(() => {
-    let active = true
-    loadThemePreference().then((saved) => {
-      if (!active) return
-      const initial = saved ?? 'dark'
-      Appearance.setColorScheme?.(initial) // not available on web
-      dispatch(setTheme(initial))
-      setThemeReady(true)
-    })
-    return () => {
-      active = false
-    }
-  }, [dispatch])
+  // 1) Restore the saved settings (theme, font sizes, ...) before showing anything, and save
+  //    every later change. The theme is applied right away, so there is no light/dark flash.
+  const settingsReady = useSettingsPersistence()
 
-  // 2) Apply + save every later change (from the filter menu on Home)
-  useEffect(() => {
-    if (!themeReady) return
-    Appearance.setColorScheme?.(theme)
-    saveThemePreference(theme)
-  }, [theme, themeReady])
-
-  // 3) Restore the cached duas (falls back to data/data.json on first launch),
+  // 2) Restore the cached duas (falls back to data/data.json on first launch),
   //    then save every later change (add, remove, favorite, ...).
   useEffect(() => {
     let active = true
@@ -106,10 +83,10 @@ function AppShell() {
     saveCachedDuas(duas)
   }, [duas, duasReady])
 
-  // 4) Restore / save the Tasbih counter (count, target, selected dua, sound, vibration)
+  // 3) Restore / save the Tasbih counter (count, target, selected dua, sound, vibration)
   const tasbihReady = useTasbihPersistence()
 
-  const ready = fontsLoaded && themeReady && duasReady && tasbihReady
+  const ready = fontsLoaded && settingsReady && duasReady && tasbihReady
 
   // The native splash (just a background colour, see app.json) only has to cover font loading.
   // After that, <AppSplash /> takes over until the app is ready, then fades out.
