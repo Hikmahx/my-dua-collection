@@ -1,4 +1,5 @@
 import { DuaListScreen } from '@/components/dua-list/dua-list-screen'
+import { FAVORITES_LIST_ID } from '@/constants/dua-config'
 import type { RootState } from '@/redux/store'
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
@@ -11,6 +12,7 @@ export default function FavoritesScreen() {
   return (
     <DuaListScreen
       title='Favorites'
+      listId={FAVORITES_LIST_ID}
       duas={favorites}
       showCollections
       emptyMessage='No favorite duas yet'

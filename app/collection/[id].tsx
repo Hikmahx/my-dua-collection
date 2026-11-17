@@ -16,6 +16,7 @@ export default function CollectionScreen() {
   return (
     <DuaListScreen
       title={getCollectionName(id)}
+      listId={id}
       duas={duas}
       onBack={() => router.back()}
       emptyMessage='No duas in this collection yet'

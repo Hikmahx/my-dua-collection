@@ -112,6 +112,7 @@ function AppShell() {
           <Stack>
             <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
             <Stack.Screen name='collection/[id]' options={{ headerShown: false }} />
+            <Stack.Screen name='dua/[id]' options={{ headerShown: false }} />
             <Stack.Screen
               name='modal'
               options={{
