@@ -14,6 +14,8 @@ export interface Dua {
   source?: DuaSource
   reference?: string // '21:87' or '11:39-42'
   info?: string // HTML from the rich editor
+  repeat?: number // how many times the dua is recited; the Dua screen's counter counts down from it
+  // audioUrl?: string // recording played by the Dua screen's audio button
   origin: DuaOrigin
   isFavorite: boolean
   iconPath?: string // Path to the icon SVG

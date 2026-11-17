@@ -1,4 +1,5 @@
 import { SURAH_NAMES } from '@/constants/surah-names'
+import { DEFAULT_DUA_REPEAT, FAVORITES_LIST_ID } from '@/constants/dua-config'
 import { normalizeForSearch } from '@/lib/search'
 import type { Dua, DuaSource } from '@/redux/reducers/duasSlice'
 
@@ -120,6 +121,25 @@ export const duaSourceSearchFields = (dua: Dua) => [
   getSurahName(dua),
   getHadithName(dua),
 ]
+
+/** How many times the dua is recited: `repeat`, or the default (once). */
+export const getDuaRepeat = (dua: Pick<Dua, 'repeat'>) => {
+  const count = dua.repeat
+  return count && count > 0 ? Math.floor(count) : DEFAULT_DUA_REPEAT
+}
+
+/** The duas of a list the Dua screen is opened from: Favorites, or a collection id. */
+export const getListDuas = (duas: Dua[], listId: string | undefined) =>
+  listId === FAVORITES_LIST_ID
+    ? duas.filter((dua) => dua.isFavorite)
+    : duas.filter((dua) => !!listId && dua.categories.includes(listId))
+
+/** The dua as plain text, for sharing: title, Arabic, transliteration, translation and source. */
+export function duaShareText(dua: Dua, language: string): string {
+  return [dua.title, dua.arabicText, dua.transliteration, getTranslation(dua, language), formatSourceLine(dua)]
+    .filter(Boolean)
+    .join('\n\n')
+}
 
 export const isBuiltin = (dua: Dua) => dua.origin === 'builtin'
 

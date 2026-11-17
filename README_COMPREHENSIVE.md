@@ -417,6 +417,8 @@ export interface Dua {
   origin: DuaOrigin
   isFavorite: boolean
   iconPath?: string
+  repeat?: number // how many times the dua is recited; the Dua screen counts down from it
+  // audioUrl?: string // recording played by the Dua screen's audio button
 }
 ```
 
@@ -424,6 +426,7 @@ export interface Dua {
 - **Translations:** stored per language code. The user picks a language in Settings and the app shows `translations[language]`, falling back to `translations.en` if that language is missing.
 - **Transliteration:** optional per dua, and shown or hidden with a `showTransliteration` toggle in Settings.
 - **Categories:** an array, since a dua can belong to several categories. A category id is also a collection id (see `constants/collections.ts`).
+- **Repeat:** `repeat` is how many times the dua is recited (the counter on the Dua screen counts down from it and moves to the next dua at 0), for example 33 for SubhanAllah after prayer. Every dua in `data.json` has one. A dua without it, such as one the user added, counts once (`DEFAULT_DUA_REPEAT` in `constants/dua-config.ts`).
 - **Info:** rich text (bold, bullet points, titles) about the dua, stored as HTML. It must be sanitized before rendering.
 - **Origin:** where the dua came from: `builtin` (ships with the app), `manual` (typed by the user), `ai`, `image` (scanned), or `shared` (from another user). This replaces `isUserCreated`; edit and delete actions apply to anything other than `builtin`.
 - **Favorites:** tracked only through `isFavorite` on each dua. There is no separate favorites array.

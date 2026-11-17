@@ -7,15 +7,14 @@
     "translations": {
       "en": "There is no deity but You. Indeed, I have been of the wrongdoers."
     },
-    "categories": [
-      "Quranic"
-    ],
+    "categories": ["Quranic"],
     "source": "quran",
     "reference": "21:87",
     "info": "<p>The dua of Prophet Yunus (peace be upon him) when he called out from the darkness.</p>",
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/book.svg"
+    "iconPath": "@/assets/icons/collection/book.svg",
+    "repeat": 1
   },
   {
     "id": "2",
@@ -25,12 +24,11 @@
     "translations": {
       "en": "We have reached the morning upon the fitrah of Allah"
     },
-    "categories": [
-      "Morning"
-    ],
+    "categories": ["Morning"],
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/sun.svg"
+    "iconPath": "@/assets/icons/collection/sun.svg",
+    "repeat": 1
   },
   {
     "id": "3",
@@ -40,12 +38,11 @@
     "translations": {
       "en": "All praise be to Allah, a praise that is abundant"
     },
-    "categories": [
-      "Night"
-    ],
+    "categories": ["Night"],
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/lamp.svg"
+    "iconPath": "@/assets/icons/collection/lamp.svg",
+    "repeat": 1
   },
   {
     "id": "4",
@@ -55,12 +52,11 @@
     "translations": {
       "en": "O Answerer of Supplications"
     },
-    "categories": [
-      "General"
-    ],
+    "categories": ["General"],
     "origin": "manual",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/journal.svg"
+    "iconPath": "@/assets/icons/collection/journal.svg",
+    "repeat": 1
   },
   {
     "id": "5",
@@ -70,12 +66,11 @@
     "translations": {
       "en": "O Allah, You are As-Salam (The Source of Peace)"
     },
-    "categories": [
-      "Prayer"
-    ],
+    "categories": ["Prayer"],
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/hands.svg"
+    "iconPath": "@/assets/icons/collection/hands.svg",
+    "repeat": 1
   },
   {
     "id": "6",
@@ -85,12 +80,11 @@
     "translations": {
       "en": "We have reached the evening upon the fitrah of Allah"
     },
-    "categories": [
-      "Evening"
-    ],
+    "categories": ["Evening"],
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/moon.svg"
+    "iconPath": "@/assets/icons/collection/moon.svg",
+    "repeat": 1
   },
   {
     "id": "7",
@@ -100,14 +94,13 @@
     "translations": {
       "en": "Our Lord, give us good in this world and good in the Hereafter, and protect us from the punishment of the Fire."
     },
-    "categories": [
-      "Quranic"
-    ],
+    "categories": ["Quranic"],
     "source": "quran",
     "reference": "2:201",
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/book.svg"
+    "iconPath": "@/assets/icons/collection/book.svg",
+    "repeat": 1
   },
   {
     "id": "8",
@@ -117,14 +110,13 @@
     "translations": {
       "en": "My Lord, expand my chest for me and ease my task for me."
     },
-    "categories": [
-      "Quranic"
-    ],
+    "categories": ["Quranic"],
     "source": "quran",
     "reference": "20:25-26",
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/book.svg"
+    "iconPath": "@/assets/icons/collection/book.svg",
+    "repeat": 1
   },
   {
     "id": "9",
@@ -134,14 +126,13 @@
     "translations": {
       "en": "My Lord, increase me in knowledge."
     },
-    "categories": [
-      "Quranic"
-    ],
+    "categories": ["Quranic"],
     "source": "quran",
     "reference": "20:114",
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/book.svg"
+    "iconPath": "@/assets/icons/collection/book.svg",
+    "repeat": 1
   },
   {
     "id": "10",
@@ -151,14 +142,13 @@
     "translations": {
       "en": "Our Lord, do not let our hearts deviate after You have guided us, and grant us mercy from Yourself. Indeed, You are the Bestower."
     },
-    "categories": [
-      "Quranic"
-    ],
+    "categories": ["Quranic"],
     "source": "quran",
     "reference": "3:8",
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/book.svg"
+    "iconPath": "@/assets/icons/collection/book.svg",
+    "repeat": 1
   },
   {
     "id": "11",
@@ -168,14 +158,13 @@
     "translations": {
       "en": "My Lord, have mercy upon them as they brought me up when I was small."
     },
-    "categories": [
-      "General"
-    ],
+    "categories": ["General"],
     "source": "quran",
     "reference": "17:24",
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/journal.svg"
+    "iconPath": "@/assets/icons/collection/journal.svg",
+    "repeat": 1
   },
   {
     "id": "12",
@@ -185,14 +174,13 @@
     "translations": {
       "en": "In Your name, O Allah, I die and I live."
     },
-    "categories": [
-      "Night"
-    ],
+    "categories": ["Night"],
     "source": "hadith",
     "reference": "Bukhari 6324",
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/lamp.svg"
+    "iconPath": "@/assets/icons/collection/lamp.svg",
+    "repeat": 1
   },
   {
     "id": "13",
@@ -202,14 +190,13 @@
     "translations": {
       "en": "All praise is for Allah who gave us life after having taken it from us, and to Him is the resurrection."
     },
-    "categories": [
-      "Morning"
-    ],
+    "categories": ["Morning"],
     "source": "hadith",
     "reference": "Bukhari 6312",
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/sun.svg"
+    "iconPath": "@/assets/icons/collection/sun.svg",
+    "repeat": 1
   },
   {
     "id": "14",
@@ -219,15 +206,13 @@
     "translations": {
       "en": "O Allah, You are my Lord, there is no deity but You. You created me and I am Your servant, and I keep Your covenant and promise as best I can. I seek refuge in You from the evil of what I have done. I acknowledge Your favor upon me and I acknowledge my sin, so forgive me, for none forgives sins but You."
     },
-    "categories": [
-      "Morning",
-      "Evening"
-    ],
+    "categories": ["Morning", "Evening"],
     "source": "hadith",
     "reference": "Bukhari 6306",
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/sun.svg"
+    "iconPath": "@/assets/icons/collection/sun.svg",
+    "repeat": 1
   },
   {
     "id": "15",
@@ -237,14 +222,13 @@
     "translations": {
       "en": "O Allah, You are Pardoning and love to pardon, so pardon me."
     },
-    "categories": [
-      "General"
-    ],
+    "categories": ["General"],
     "source": "hadith",
     "reference": "Tirmidhi 3513",
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/journal.svg"
+    "iconPath": "@/assets/icons/collection/journal.svg",
+    "repeat": 1
   },
   {
     "id": "dhikr-subhanallah",
@@ -254,12 +238,11 @@
     "translations": {
       "en": "Glory be to Allah"
     },
-    "categories": [
-      "Dhikr"
-    ],
+    "categories": ["Dhikr"],
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/heart-check.svg"
+    "iconPath": "@/assets/icons/collection/heart-check.svg",
+    "repeat": 33
   },
   {
     "id": "dhikr-alhamdulillah",
@@ -269,12 +252,11 @@
     "translations": {
       "en": "All praise is due to Allah"
     },
-    "categories": [
-      "Dhikr"
-    ],
+    "categories": ["Dhikr"],
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/heart-check.svg"
+    "iconPath": "@/assets/icons/collection/heart-check.svg",
+    "repeat": 33
   },
   {
     "id": "dhikr-allahu-akbar",
@@ -284,12 +266,11 @@
     "translations": {
       "en": "Allah is the Greatest"
     },
-    "categories": [
-      "Dhikr"
-    ],
+    "categories": ["Dhikr"],
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/heart-check.svg"
+    "iconPath": "@/assets/icons/collection/heart-check.svg",
+    "repeat": 34
   },
   {
     "id": "dhikr-la-ilaha-illallah",
@@ -299,12 +280,11 @@
     "translations": {
       "en": "There is no god but Allah"
     },
-    "categories": [
-      "Dhikr"
-    ],
+    "categories": ["Dhikr"],
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/heart-check.svg"
+    "iconPath": "@/assets/icons/collection/heart-check.svg",
+    "repeat": 1
   },
   {
     "id": "dhikr-astaghfirullah",
@@ -314,12 +294,11 @@
     "translations": {
       "en": "I seek forgiveness from Allah"
     },
-    "categories": [
-      "Dhikr"
-    ],
+    "categories": ["Dhikr"],
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/heart-check.svg"
+    "iconPath": "@/assets/icons/collection/heart-check.svg",
+    "repeat": 3
   },
   {
     "id": "dhikr-subhanallahi-wa-bihamdihi",
@@ -329,12 +308,11 @@
     "translations": {
       "en": "Glory and praise be to Allah"
     },
-    "categories": [
-      "Dhikr"
-    ],
+    "categories": ["Dhikr"],
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/heart-check.svg"
+    "iconPath": "@/assets/icons/collection/heart-check.svg",
+    "repeat": 100
   },
   {
     "id": "dhikr-subhanallahil-azeem",
@@ -344,12 +322,11 @@
     "translations": {
       "en": "Glory be to Allah, the Almighty"
     },
-    "categories": [
-      "Dhikr"
-    ],
+    "categories": ["Dhikr"],
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/heart-check.svg"
+    "iconPath": "@/assets/icons/collection/heart-check.svg",
+    "repeat": 1
   },
   {
     "id": "dhikr-two-words",
@@ -359,12 +336,11 @@
     "translations": {
       "en": "Glory and praise be to Allah; glory be to Allah, the Almighty"
     },
-    "categories": [
-      "Dhikr"
-    ],
+    "categories": ["Dhikr"],
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/heart-check.svg"
+    "iconPath": "@/assets/icons/collection/heart-check.svg",
+    "repeat": 1
   },
   {
     "id": "dhikr-la-hawla",
@@ -374,12 +350,11 @@
     "translations": {
       "en": "There is no power nor might except with Allah"
     },
-    "categories": [
-      "Dhikr"
-    ],
+    "categories": ["Dhikr"],
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/heart-check.svg"
+    "iconPath": "@/assets/icons/collection/heart-check.svg",
+    "repeat": 1
   },
   {
     "id": "dhikr-salawat",
@@ -389,12 +364,11 @@
     "translations": {
       "en": "O Allah, send blessings upon Muhammad"
     },
-    "categories": [
-      "Dhikr"
-    ],
+    "categories": ["Dhikr"],
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/heart-check.svg"
+    "iconPath": "@/assets/icons/collection/heart-check.svg",
+    "repeat": 1
   },
   {
     "id": "dhikr-hasbunallah",
@@ -404,12 +378,11 @@
     "translations": {
       "en": "Allah is sufficient for us, and He is the best disposer of affairs"
     },
-    "categories": [
-      "Dhikr"
-    ],
+    "categories": ["Dhikr"],
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/heart-check.svg"
+    "iconPath": "@/assets/icons/collection/heart-check.svg",
+    "repeat": 1
   },
   {
     "id": "dhikr-astaghfirullah-azeem",
@@ -419,12 +392,11 @@
     "translations": {
       "en": "I seek forgiveness from Allah the Almighty and repent to Him"
     },
-    "categories": [
-      "Dhikr"
-    ],
+    "categories": ["Dhikr"],
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/heart-check.svg"
+    "iconPath": "@/assets/icons/collection/heart-check.svg",
+    "repeat": 1
   },
   {
     "id": "dhikr-rabbi-ghfir-li",
@@ -434,12 +406,11 @@
     "translations": {
       "en": "My Lord, forgive me"
     },
-    "categories": [
-      "Dhikr"
-    ],
+    "categories": ["Dhikr"],
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/heart-check.svg"
+    "iconPath": "@/assets/icons/collection/heart-check.svg",
+    "repeat": 1
   },
   {
     "id": "dhikr-ya-hayyu",
@@ -449,12 +420,11 @@
     "translations": {
       "en": "O Ever-Living, O Sustainer of all"
     },
-    "categories": [
-      "Dhikr"
-    ],
+    "categories": ["Dhikr"],
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/heart-check.svg"
+    "iconPath": "@/assets/icons/collection/heart-check.svg",
+    "repeat": 1
   },
   {
     "id": "dhikr-four-phrases",
@@ -464,12 +434,11 @@
     "translations": {
       "en": "Glory be to Allah, praise be to Allah, there is no god but Allah, and Allah is the Greatest"
     },
-    "categories": [
-      "Dhikr"
-    ],
+    "categories": ["Dhikr"],
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/heart-check.svg"
+    "iconPath": "@/assets/icons/collection/heart-check.svg",
+    "repeat": 1
   },
   {
     "id": "dhikr-wahdahu",
@@ -479,12 +448,11 @@
     "translations": {
       "en": "There is no god but Allah alone, with no partner"
     },
-    "categories": [
-      "Dhikr"
-    ],
+    "categories": ["Dhikr"],
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/heart-check.svg"
+    "iconPath": "@/assets/icons/collection/heart-check.svg",
+    "repeat": 1
   },
   {
     "id": "dhikr-tawakkaltu",
@@ -494,12 +462,11 @@
     "translations": {
       "en": "I place my trust in Allah"
     },
-    "categories": [
-      "Dhikr"
-    ],
+    "categories": ["Dhikr"],
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/heart-check.svg"
+    "iconPath": "@/assets/icons/collection/heart-check.svg",
+    "repeat": 1
   },
   {
     "id": "dhikr-malikil-quddus",
@@ -509,11 +476,10 @@
     "translations": {
       "en": "Glory be to the Sovereign, the Most Holy"
     },
-    "categories": [
-      "Dhikr"
-    ],
+    "categories": ["Dhikr"],
     "origin": "builtin",
     "isFavorite": false,
-    "iconPath": "@/assets/icons/collection/heart-check.svg"
+    "iconPath": "@/assets/icons/collection/heart-check.svg",
+    "repeat": 3
   }
 ]
