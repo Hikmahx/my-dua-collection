@@ -6,6 +6,8 @@ export interface CollectionDef {
   name: string
   iconKey: CollectionIconKey
   isUserCreated?: boolean
+  /** Id of the user who shared this collection. Missing (or null) when the user made it themselves. */
+  sharedBy?: string | null
 }
 
 /** Collection definitions: category id -> display name and icon. Used for home grid. Read from data/collection.json. */

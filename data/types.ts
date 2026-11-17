@@ -14,9 +14,13 @@ export type AuthProvider = 'google' | 'facebook'
 /** Someone who signed in with Google or Facebook. user.json */
 export interface User {
   id: string
-  email: string
+  /** What other people type to find this user, e.g. 'BG7K3M' (shown as 'BG-7K3M'). See lib/user-code.ts. */
+  userCode: string
+  /** Missing when the provider did not give one (Facebook can leave it out). */
+  email?: string
   firstName: string
-  lastName: string
+  /** Missing when the provider gave a single name. */
+  lastName?: string
   /** The customizable avatar (see constants/avatar-config.ts). */
   avatar: AvatarConfig
   authProvider: AuthProvider
@@ -45,29 +49,32 @@ export type FriendGroup = (typeof FRIEND_GROUPS)[number]
 export interface UserFriend {
   userId: string
   friendId: string
-  /** A friend can be in several groups, e.g. ['family', 'mosque']. */
+  /** A friend can be in several groups, e.g. ['family', 'mosque']. Empty when no group was picked. */
   groups: FriendGroup[]
   createdAt: string
 }
 
 export type ShareTarget = 'dua' | 'collection'
-/** `view` = the receiver leaves it as it is. `edit` = the receiver can change it. */
-export type SharePermission = 'view' | 'edit'
+/** `pending` until the recipient answers. */
+export type ShareStatus = 'pending' | 'accepted' | 'declined'
 
 /**
- * A dua or collection `ownerId` shared with `sharedWithId`. The person does not have to be a friend:
- * the app asks whether to add them as one the first time. Sending to a group makes one Share per
- * person in it. shares.json
+ * A dua or collection `senderId` sent to `recipientId`. Nothing reaches the recipient's library
+ * until they accept: then the app copies it into their library as if they had created it (new
+ * id, `origin: 'shared'`, `sharedBy: senderId`) after checking for duplicates. The recipient does
+ * not have to be a friend. Sending to a group makes one Share per person. shares.json
  */
 export interface Share {
   id: string
   type: ShareTarget
-  /** A dua id or a collection id, depending on `type`. */
+  /** The dua id or collection id that was sent, depending on `type`. */
   targetId: string
-  ownerId: string
-  sharedWithId: string
-  permission: SharePermission
+  senderId: string
+  recipientId: string
+  status: ShareStatus
   createdAt: string
+  /** When the recipient accepted or declined. Missing while `status` is `pending`. */
+  respondedAt?: string
 }
 
 /** What data.json holds: the entry point of the data. */

@@ -9,15 +9,37 @@ export interface RichBlock {
   runs: RichRun[]
 }
 
-const ENTITIES: Record<string, string> = {
-  '&amp;': '&',
-  '&lt;': '<',
-  '&gt;': '>',
-  '&quot;': '"',
-  '&#39;': "'",
-  '&nbsp;': ' ',
+/** The named entities an editor or a paste is likely to produce. Numeric ones (`&#39;`, `&#x27;`, `&#8217;`) are handled by their code. */
+const NAMED_ENTITIES = new Map<string, string>([
+  ['amp', '&'],
+  ['lt', '<'],
+  ['gt', '>'],
+  ['quot', '"'],
+  ['apos', "'"],
+  ['nbsp', ' '],
+  ['lsquo', '\u2018'],
+  ['rsquo', '\u2019'],
+  ['ldquo', '\u201C'],
+  ['rdquo', '\u201D'],
+  ['ndash', '\u2013'],
+  ['mdash', '\u2014'],
+  ['hellip', '\u2026'],
+])
+
+/**
+ * Turns HTML entities back into text, in one pass (so `&amp;lt;` becomes `&lt;`, not `<`).
+ * Handles named, decimal (`&#8217;`) and hex (`&#x27;`) entities. Anything unknown, or a number
+ * that is not a real character, is left as written.
+ */
+export function decodeEntities(text: string): string {
+  return text.replace(/&(?:#(\d{1,7})|#[xX]([0-9a-fA-F]{1,6})|([a-zA-Z][a-zA-Z0-9]{1,9}));/g, (match, dec, hex, name) => {
+    if (name) return NAMED_ENTITIES.get(name) ?? NAMED_ENTITIES.get(name.toLowerCase()) ?? match
+    const code = dec ? parseInt(dec, 10) : parseInt(hex, 16)
+    const isSurrogate = code >= 0xd800 && code <= 0xdfff
+    if (code === 0 || code > 0x10ffff || isSurrogate) return match
+    return String.fromCodePoint(code)
+  })
 }
-const decode = (text: string) => text.replace(/&(amp|lt|gt|quot|#39|nbsp);/g, (match) => ENTITIES[match])
 
 /**
  * Turns the HTML a dua's `info` is stored as (from the rich editor) into plain blocks: paragraphs,
@@ -55,7 +77,7 @@ export function parseRichText(html: string): RichBlock[] {
         current = null
       }
     } else {
-      const text = decode(token).replace(/\s+/g, ' ')
+      const text = decodeEntities(token).replace(/\s+/g, ' ')
       if (!text.trim() && !current) continue
       if (!current) open('paragraph')
       current!.runs.push({ text, bold: bold > 0, italic: italic > 0 })

@@ -1,7 +1,7 @@
 import { SURAH_NAMES } from '@/constants/surah-names'
 import { DEFAULT_DUA_REPEAT, FAVORITES_LIST_ID } from '@/constants/dua-config'
 import { normalizeForSearch } from '@/lib/search'
-import type { Dua, DuaSource } from '@/redux/reducers/duasSlice'
+import type { Dua, DuaContent, DuaSource } from '@/redux/reducers/duasSlice'
 
 export const SOURCE_LABELS: Record<DuaSource, string> = {
   quran: 'Quran',
@@ -144,17 +144,56 @@ export function duaShareText(dua: Dua, language: string): string {
 export const isBuiltin = (dua: Dua) => dua.origin === 'builtin'
 
 /**
- * Built-in duas always come from data/data.json, so new or edited ones show up without
- * clearing the cache. The cache only supplies what the user changed: favourites and the
- * duas they added.
+ * What is saved on the device: only what the user changed. The built-in duas always come from
+ * data/dua.json, so new or edited ones show up without clearing anything.
  */
-export function mergeCachedDuas(cached: Dua[], builtIn: Dua[]): Dua[] {
-  const cachedById = new Map(cached.map((d) => [d.id, d]))
-  const builtInIds = new Set(builtIn.map((d) => d.id))
-  const fresh = builtIn.map((d) => ({
-    ...d,
-    isFavorite: cachedById.get(d.id)?.isFavorite ?? d.isFavorite,
-  }))
-  const added = cached.filter((d) => !builtInIds.has(d.id) && d.origin !== 'builtin')
+export interface StoredDuas {
+  /** Ids of every dua marked as a favorite, built-in or added. */
+  favoriteIds: string[]
+  /** The duas the user added (anything that is not `builtin`), without `isFavorite`. */
+  userDuas: DuaContent[]
+}
+
+/**
+ * The part of the current duas that is worth saving. A dua counts as built-in when its id is one
+ * of `builtIn` (not by its `origin` label), so it is never saved twice.
+ */
+export function toStoredDuas(duas: Dua[], builtIn: Dua[]): StoredDuas {
+  const builtInIds = new Set(builtIn.map((dua) => dua.id))
+  return {
+    favoriteIds: duas.filter((dua) => dua.isFavorite).map((dua) => dua.id),
+    userDuas: duas
+      .filter((dua) => dua.origin !== 'builtin' && !builtInIds.has(dua.id))
+      .map((dua) => {
+        const content: Partial<Dua> = { ...dua }
+        delete content.isFavorite
+        return content as DuaContent
+      }),
+  }
+}
+
+/** True when `value` has the shape `toStoredDuas` produces. */
+export function isStoredDuas(value: unknown): value is StoredDuas {
+  if (!value || typeof value !== 'object') return false
+  const { favoriteIds, userDuas } = value as Partial<StoredDuas>
+  return (
+    Array.isArray(favoriteIds) &&
+    favoriteIds.every((id) => typeof id === 'string') &&
+    Array.isArray(userDuas) &&
+    userDuas.every((dua) => !!dua && typeof dua === 'object' && typeof dua.id === 'string')
+  )
+}
+
+/**
+ * The built-in duas plus what the user saved: their favorites, and the duas they added.
+ * A saved dua whose id is now a built-in one is ignored, so the built-in text wins.
+ */
+export function mergeStoredDuas(stored: StoredDuas, builtIn: Dua[]): Dua[] {
+  const favorites = new Set(stored.favoriteIds)
+  const builtInIds = new Set(builtIn.map((dua) => dua.id))
+  const fresh = builtIn.map((dua) => ({ ...dua, isFavorite: favorites.has(dua.id) }))
+  const added = stored.userDuas
+    .filter((dua) => !builtInIds.has(dua.id) && dua.origin !== 'builtin')
+    .map((dua) => ({ ...dua, isFavorite: favorites.has(dua.id) }))
   return [...fresh, ...added]
 }
