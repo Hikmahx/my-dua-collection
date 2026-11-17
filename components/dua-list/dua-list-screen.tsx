@@ -1,6 +1,7 @@
 import ExploreIcon from '@/components/icons/explore-icon'
 import { DuaListRow } from '@/components/dua-list/dua-list-row'
 import { AppearanceMenuButton } from '@/components/ui/appearance-menu-button'
+import { BackButton } from '@/components/ui/back-button'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { SearchField } from '@/components/ui/search-field'
 import { useDuaListColors } from '@/hooks/use-dua-list-colors'
@@ -10,11 +11,14 @@ import { duaSourceSearchFields } from '@/lib/dua-utils'
 import tw from '@/lib/tailwind'
 import type { Dua } from '@/redux/reducers/duasSlice'
 import { Feather } from '@expo/vector-icons'
+import { useRouter } from 'expo-router'
 import { useState } from 'react'
 import { FlatList, Pressable, Text, View } from 'react-native'
 
 interface DuaListScreenProps {
   title: string
+  /** Which list this is: a collection id, or FAVORITES_LIST_ID. The Dua screen swipes through it. */
+  listId: string
   duas: Dua[]
   /** Shows a back arrow in the header when given (the collection screen). */
   onBack?: () => void
@@ -33,12 +37,14 @@ const ItemSeparator = () => <View style={tw`h-[6px]`} />
  */
 export function DuaListScreen({
   title,
+  listId,
   duas,
   onBack,
   showCollections = false,
   emptyMessage,
 }: DuaListScreenProps) {
   const c = useDuaListColors()
+  const router = useRouter()
   const [searchOpen, setSearchOpen] = useState(false)
   const { filter, filtered, sections } = useSourceFilter(duas)
   const { query, setQuery, results, isSearching } = useSearch(filtered, duaSourceSearchFields)
@@ -54,13 +60,7 @@ export function DuaListScreen({
         title={title}
         subtitle={`${filtered.length} ${filtered.length === 1 ? 'dua' : 'duas'}${filter ? ` · ${filter.name}` : ''}`}
         bottomPadding={7}
-        left={
-          onBack && (
-            <Pressable onPress={onBack} hitSlop={12} accessibilityRole='button' accessibilityLabel='Back'>
-              <Feather name='arrow-left' size={24} color={c.icon} />
-            </Pressable>
-          )
-        }
+        left={onBack && <BackButton onPress={onBack} color={c.icon} />}
         right={
           <View style={tw`flex-row items-center`}>
             <Pressable
@@ -104,9 +104,14 @@ export function DuaListScreen({
             dua={item}
             index={index}
             showCollections={showCollections}
-            onPress={() => {
-              // TODO: open the dua, e.g. router.push(`/dua/${item.id}`)
-            }}
+            onPress={() =>
+              router.push({
+                pathname: '/dua/[id]',
+                // `ids` = the list exactly as shown (after any filter or search), so the Dua screen
+                // swipes through those duas and counts them in its "4/11" pill
+                params: { id: item.id, list: listId, ids: results.map((dua) => dua.id).join(',') },
+              })
+            }
           />
         )}
         ListEmptyComponent={

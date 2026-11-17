@@ -15,9 +15,6 @@ export interface AvatarPart {
   gradient?: boolean
 }
 
-/** The hair color is not changeable. */
-export const HAIR_COLOR = '#00233F'
-
 // Head, neck and shoulders: the same on both avatars
 export const BODY_PARTS: AvatarPart[] = [
   { d: 'M43.7954 37.125H20.0024V50.1999H43.7954V37.125Z', role: 'shirt', factor: 0.58 },

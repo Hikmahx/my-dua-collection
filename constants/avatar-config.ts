@@ -4,6 +4,7 @@ export type AvatarGender = 'male' | 'female'
 export interface AvatarConfig {
   gender: AvatarGender
   skin: string
+  hair: string
   shirt: string
   cap: string // shown on the male avatar
   hijab: string // shown on the female avatar
@@ -12,6 +13,7 @@ export interface AvatarConfig {
 export const DEFAULT_AVATAR: AvatarConfig = {
   gender: 'male',
   skin: '#B7784A',
+  hair: '#00233F',
   shirt: '#08775E',
   cap: '#F6EEDC',
   hijab: '#08775E',

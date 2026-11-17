@@ -1,7 +1,6 @@
 import {
   BODY_PARTS,
   CAP_PARTS,
-  HAIR_COLOR,
   HIJAB_GRADIENT_FACTORS,
   HIJAB_PARTS,
   type AvatarPart,
@@ -26,12 +25,11 @@ interface AvatarProps {
  */
 export function Avatar({ config, size = 66 }: AvatarProps) {
   const gradientId = `hijab-${useId()}`
-  const colors = { skin: config.skin, shirt: config.shirt, cap: config.cap, hijab: config.hijab }
+  const colors = { skin: config.skin, hair: config.hair, shirt: config.shirt, cap: config.cap, hijab: config.hijab }
   const parts = config.gender === 'female' ? [...BODY_PARTS, ...HIJAB_PARTS] : [...BODY_PARTS, ...CAP_PARTS]
 
   const fillOf = (part: AvatarPart) => {
     if (part.gradient) return `url(#${gradientId})`
-    if (part.role === 'hair') return HAIR_COLOR
     return scaleColor(colors[part.role], part.factor ?? 1)
   }
 
