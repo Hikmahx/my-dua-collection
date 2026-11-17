@@ -426,12 +426,19 @@ export interface Dua {
 - **Translations:** stored per language code. The user picks a language in Settings and the app shows `translations[language]`, falling back to `translations.en` if that language is missing.
 - **Transliteration:** optional per dua, and shown or hidden with a `showTransliteration` toggle in Settings.
 - **Categories:** an array, since a dua can belong to several categories. A category id is also a collection id (see `constants/collections.ts`).
-- **Repeat:** `repeat` is how many times the dua is recited (the counter on the Dua screen counts down from it and moves to the next dua at 0), for example 33 for SubhanAllah after prayer. Every dua in `data.json` has one. A dua without it, such as one the user added, counts once (`DEFAULT_DUA_REPEAT` in `constants/dua-config.ts`).
+- **Repeat:** `repeat` is how many times the dua is recited (the counter on the Dua screen counts down from it and moves to the next dua at 0), for example 33 for SubhanAllah after prayer. Every dua in `dua.json` has one. A dua without it, such as one the user added, counts once (`DEFAULT_DUA_REPEAT` in `constants/dua-config.ts`).
 - **Info:** rich text (bold, bullet points, titles) about the dua, stored as HTML. It must be sanitized before rendering.
 - **Origin:** where the dua came from: `builtin` (ships with the app), `manual` (typed by the user), `ai`, `image` (scanned), or `shared` (from another user). This replaces `isUserCreated`; edit and delete actions apply to anything other than `builtin`.
-- **Favorites:** `isFavorite` on each dua in memory, so screens just read `dua.isFavorite`. It is not part of `data.json`: built-in duas load with `isFavorite: false`, and the saved list of favorite ids (`favoriteIds`, see Data source) is applied on top when the app starts.
+- **Favorites:** `isFavorite` on each dua in memory, so screens just read `dua.isFavorite`. It is not part of `dua.json`: built-in duas load with `isFavorite: false`, and the saved list of favorite ids (`favoriteIds`, see Data source) is applied on top when the app starts.
+- **Data folder:** `data/data.json` is the entry point. It lists which file holds each resource and which user is signed in (`currentUserId`, until real login exists). JSON files cannot import each other, so `data/index.ts` does the loading and exports `data` and `currentUserId`; `data/types.ts` has the types. A new resource is added in `data.json` and in `data/index.ts`. Each resource is a table on the future backend, and all of it uses generated values (example.com emails, UUID ids), so replacing `data/index.ts` with API calls should not touch the screens. Field names are camelCase, so the backend should serialize in camelCase.
+  - `dua.json`: the duas (`Dua` without `isFavorite`). `collection.json`: the collections shown on the home grid (`COLLECTION_DEFS` reads from it).
+  - `user.json`: people who signed in with Google or Facebook: `email`, `firstName`, `lastName`, `avatar` (the same `AvatarConfig` the Settings avatar uses), `authProvider`, `providerUserId`.
+  - `user_favorites.json`: `userId`, `duaId`, `createdAt`, one row per favorite.
+  - `friends.json` (user_friends): `userId`, `friendId`, `groups` (any of `family`, `friends`, `mosque`), `createdAt`. It goes one way, and the friend's avatar, email and name come from their user. A friend picker joins the two.
+  - `shares.json`: a dua or collection (`type`, `targetId`) that `ownerId` shared with `sharedWithId`, with `permission` `view` (leave as it is) or `edit` (receiver can change it). The receiver does not have to be a friend. Sending to a group creates one share per person.
+  - Only duas and collections are read by the app today. Users, favorites, friends and shares are ready-made data for the login, favorites, sharing and friend-picker work; favorites still live in `duas:v2` on the device until then.
 - **Settings:** `settingsSlice` holds `language` (default `'en'`) and `showTransliteration`.
-- **Data source:** duas load from `data/data.json` (33 duas: 15 general duas and 18 dhikr in the Dhikr collection). The built-in duas are always read from `data.json`, so adding or editing them needs no cache reset. The copy saved on the device (`duas:v2` in AsyncStorage, `lib/duas-storage.ts`) is `{ favoriteIds, userDuas }`: the ids of every favorite dua, and the duas the user added (without `isFavorite`). A dua is treated as built-in when its id is in `data.json`, whatever its `origin` says, so it is never saved twice. Saved data for a built-in id is ignored, so the built-in text always wins. `duas:v1` (the whole array) is converted once on the first launch after the update and then removed.
+- **Data source:** duas load from `data/dua.json` (33 duas: 15 general duas and 18 dhikr in the Dhikr collection). The built-in duas are always read from `dua.json`, so adding or editing them needs no cache reset. The copy saved on the device (`duas:v2` in AsyncStorage, `lib/duas-storage.ts`) is `{ favoriteIds, userDuas }`: the ids of every favorite dua, and the duas the user added (without `isFavorite`). A dua is treated as built-in when its id is in `dua.json`, whatever its `origin` says, so it is never saved twice. Saved data for a built-in id is ignored, so the built-in text always wins. `duas:v1` (the whole array) is converted once on the first launch after the update and then removed.
 
 ### Collection Properties
 
@@ -495,7 +502,7 @@ Every search box in the app uses the same code, so they all behave the same way.
 ### Project Structure and Naming
 
 - File names are lowercase with hyphens (`explore-card.tsx`, `theme-colors.ts`). Redux reducer files stay camelCase (`duasSlice.ts`). Route files in `app/` follow Expo Router
-- `components/ui/` holds reusable UI, `components/icons/` holds icons, `constants/` holds static data and theme values, `lib/` holds helpers and storage, `hooks/` holds hooks, `data/` holds the dua data (`data.json`)
+- `components/ui/` holds reusable UI, `components/icons/` holds icons, `constants/` holds static data and theme values, `lib/` holds helpers and storage, `hooks/` holds hooks, `data/` holds the app's data (`data.json` is the entry point; see Data folder)
 - Components used by one feature live in a folder named after it: `components/tasbih/`, and `components/dua-list/` (shared by the Collection and Bookmark screens)
 - Screens stay thin: shared pieces (cards, filter menu, tab selector, backgrounds, lists) are separate components
 
@@ -703,10 +710,10 @@ Every search box in the app uses the same code, so they all behave the same way.
 - [ ] Authentication and user management (email required for cloud sync)
 <!-- - [x] Bottom navigation setup (5 screens)
 - [x] Dark/light mode with a saved preference
-- [x] Dua data model (source, reference, translations, categories, info, origin) loaded from `data/data.json`
+- [x] Dua data model (source, reference, translations, categories, info, origin) loaded from `data/dua.json`
 - [x] Reusable collection icon library (see [Icon Library](#icon-library))
 - [x] Splash screen
-- [x] Dhikr collection (18 dhikr duas in `data/data.json`)
+- [x] Dhikr collection (18 dhikr duas in `data/dua.json`)
 - [x] One shared search for every list and search box (see [Search](#search))
 - [x] **Explore Screen UI:**
   - [x] Search bar that filters the topics

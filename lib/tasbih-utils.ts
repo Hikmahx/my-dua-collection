@@ -3,7 +3,7 @@ import { DEFAULT_DHIKR_ID, TASBIH_PRESET_IDS } from '@/constants/tasbih-presets'
 import { getTranslation } from '@/lib/dua-utils'
 import type { Dua } from '@/redux/reducers/duasSlice'
 
-/** What the Tasbih screen shows for the dua being counted (a dua from data.json). */
+/** What the Tasbih screen shows for the dua being counted (a dua from dua.json). */
 export interface TasbihItem {
   id: string // the dua's id
   title: string

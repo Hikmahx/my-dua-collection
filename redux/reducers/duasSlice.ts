@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import duasData from '@/data/data.json'
+import { data } from '@/data'
 
 export type DuaSource = 'quran' | 'hadith'
 export type DuaOrigin = 'builtin' | 'manual' | 'ai' | 'image' | 'shared'
@@ -15,17 +15,17 @@ export interface Dua {
   reference?: string // '21:87' or '11:39-42'
   info?: string // HTML from the rich editor
   repeat?: number // how many times the dua is recited; the Dua screen's counter counts down from it
-  // audioUrl?: string // recording played by the Dua screen's audio button
+  audioUrl?: string // recording played by the Dua screen's audio button
   origin: DuaOrigin
   isFavorite: boolean
   iconPath?: string // Path to the icon SVG
 }
 
-/** A dua without the user's own state. This is what data.json holds and what is saved for added duas. */
+/** A dua without the user's own state. This is what dua.json holds and what is saved for added duas. */
 export type DuaContent = Omit<Dua, 'isFavorite'>
 
-/** The duas that ship with the app, read from data.json. Nothing is a favorite until the user says so. */
-export const BUILT_IN_DUAS: Dua[] = (duasData as DuaContent[]).map((dua) => ({ ...dua, isFavorite: false }))
+/** The duas that ship with the app, read from data/dua.json (through `data`). Nothing is a favorite until the user says so. */
+export const BUILT_IN_DUAS: Dua[] = data.duas.map((dua) => ({ ...dua, isFavorite: false }))
 
 interface DuasState {
   items: Dua[]

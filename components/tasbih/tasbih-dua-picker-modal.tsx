@@ -52,7 +52,7 @@ function DuaRow({ item, selected, onPress }: { item: TasbihItem; selected: boole
 
 /**
  * Bottom sheet to choose what to count. Shows the 10 preset duas (TASBIH_PRESET_IDS); typing searches
- * every dua in data.json, whatever collection it is in.
+ * every dua in dua.json, whatever collection it is in.
  */
 export function TasbihDuaPickerModal({
   visible,

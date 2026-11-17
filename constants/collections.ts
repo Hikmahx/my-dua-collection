@@ -1,4 +1,5 @@
 import type { CollectionIconKey } from '@/components/icons/collection-icons'
+import { data } from '@/data'
 
 export interface CollectionDef {
   id: string
@@ -7,16 +8,8 @@ export interface CollectionDef {
   isUserCreated?: boolean
 }
 
-/** Collection definitions: category id -> display name and icon. Used for home grid. */
-export const COLLECTION_DEFS: CollectionDef[] = [
-  { id: 'Quranic', name: 'Quranic Duas', iconKey: 'book' },
-  { id: 'Morning', name: 'Morning', iconKey: 'sun' },
-  { id: 'Evening', name: 'Evening', iconKey: 'moon' },
-  { id: 'Night', name: 'Tahajjud', iconKey: 'lamp' },
-  { id: 'General', name: 'The Power of...', iconKey: 'journal' },
-  { id: 'Prayer', name: 'After Prayer', iconKey: 'hands' },
-  { id: 'Dhikr', name: 'Dhikr', iconKey: 'heart-check' },
-]
+/** Collection definitions: category id -> display name and icon. Used for home grid. Read from data/collection.json. */
+export const COLLECTION_DEFS: CollectionDef[] = data.collections
 
 /** Display name of a collection (category) id. Unknown ids are shown as they are. */
 export const getCollectionName = (id: string) =>

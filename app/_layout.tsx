@@ -64,7 +64,7 @@ function AppShell() {
   //    every later change. The theme is applied right away, so there is no light/dark flash.
   const settingsReady = useSettingsPersistence()
 
-  // 2) Restore the cached duas (falls back to data/data.json on first launch),
+  // 2) Restore the cached duas (falls back to data/dua.json on first launch),
   //    then save every later change (add, remove, favorite, ...).
   useEffect(() => {
     let active = true

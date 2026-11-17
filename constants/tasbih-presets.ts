@@ -1,5 +1,5 @@
 /**
- * The 10 duas shown in the Tasbih picker before the user searches (ids from data/data.json).
+ * The 10 duas shown in the Tasbih picker before the user searches (ids from data/dua.json).
  * Order here = order in the list. Every other dua is found through the search box.
  */
 export const TASBIH_PRESET_IDS: string[] = [
