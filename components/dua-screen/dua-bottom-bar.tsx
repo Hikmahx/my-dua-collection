@@ -1,6 +1,8 @@
+import FavoriteIcon from '@/components/icons/favorite-icon'
 import { TapCounter } from '@/components/ui/tap-counter'
 import { useDuaScreenColors } from '@/hooks/use-dua-screen-colors'
 import { Feather } from '@expo/vector-icons'
+import type { ReactNode } from 'react'
 import { Pressable, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
@@ -23,18 +25,16 @@ interface DuaBottomBarProps {
 }
 
 function BarIcon({
-  name,
   position,
-  color,
   label,
   onPress,
+  children,
 }: {
-  name: 'play' | 'heart' | 'share-2' | 'info'
   /** Centre of the icon as a % of the bar's width. */
   position: number
-  color: string
   label: string
   onPress: () => void
+  children: ReactNode
 }) {
   return (
     <View
@@ -50,7 +50,7 @@ function BarIcon({
       }}
     >
       <Pressable onPress={onPress} hitSlop={10} accessibilityRole='button' accessibilityLabel={label}>
-        <Feather name={name} size={24} color={color} />
+        {children}
       </Pressable>
     </View>
   )
@@ -90,16 +90,23 @@ export function DuaBottomBar({
         }}
       >
         <View style={{ height: BAR_HEIGHT }}>
-          <BarIcon name='play' position={ICON_POSITIONS.play} color={c.icon} label='Play audio' onPress={onPlay} />
+          <BarIcon position={ICON_POSITIONS.play} label='Play audio' onPress={onPlay}>
+            <Feather name='play' size={24} color={c.icon} />
+          </BarIcon>
           <BarIcon
-            name='heart'
             position={ICON_POSITIONS.heart}
-            color={isFavorite ? c.favorite : c.icon}
             label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
             onPress={onToggleFavorite}
-          />
-          <BarIcon name='share-2' position={ICON_POSITIONS.share} color={c.icon} label='Share' onPress={onShare} />
-          <BarIcon name='info' position={ICON_POSITIONS.info} color={c.icon} label='Dua virtue' onPress={onInfo} />
+          >
+            {/* filled and red when it is a favorite, just an outline when it is not */}
+            <FavoriteIcon size={24} filled={isFavorite} color={isFavorite ? c.favorite : c.icon} />
+          </BarIcon>
+          <BarIcon position={ICON_POSITIONS.share} label='Share' onPress={onShare}>
+            <Feather name='share-2' size={24} color={c.icon} />
+          </BarIcon>
+          <BarIcon position={ICON_POSITIONS.info} label='Dua virtue' onPress={onInfo}>
+            <Feather name='info' size={24} color={c.icon} />
+          </BarIcon>
         </View>
       </View>
 

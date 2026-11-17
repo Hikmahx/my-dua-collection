@@ -21,12 +21,18 @@ export interface Dua {
   iconPath?: string // Path to the icon SVG
 }
 
+/** A dua without the user's own state. This is what data.json holds and what is saved for added duas. */
+export type DuaContent = Omit<Dua, 'isFavorite'>
+
+/** The duas that ship with the app, read from data.json. Nothing is a favorite until the user says so. */
+export const BUILT_IN_DUAS: Dua[] = (duasData as DuaContent[]).map((dua) => ({ ...dua, isFavorite: false }))
+
 interface DuasState {
   items: Dua[]
 }
 
 const initialState: DuasState = {
-  items: duasData as Dua[],
+  items: BUILT_IN_DUAS,
 }
 
 const duasSlice = createSlice({

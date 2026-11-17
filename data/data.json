@@ -12,7 +12,6 @@
     "reference": "21:87",
     "info": "<p>The dua of Prophet Yunus (peace be upon him) when he called out from the darkness.</p>",
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/book.svg",
     "repeat": 1
   },
@@ -26,7 +25,6 @@
     },
     "categories": ["Morning"],
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/sun.svg",
     "repeat": 1
   },
@@ -40,7 +38,6 @@
     },
     "categories": ["Night"],
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/lamp.svg",
     "repeat": 1
   },
@@ -54,7 +51,6 @@
     },
     "categories": ["General"],
     "origin": "manual",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/journal.svg",
     "repeat": 1
   },
@@ -67,8 +63,9 @@
       "en": "O Allah, You are As-Salam (The Source of Peace)"
     },
     "categories": ["Prayer"],
+    "source": "hadith",
+    "reference": "Muslim 591",
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/hands.svg",
     "repeat": 1
   },
@@ -82,7 +79,6 @@
     },
     "categories": ["Evening"],
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/moon.svg",
     "repeat": 1
   },
@@ -98,7 +94,6 @@
     "source": "quran",
     "reference": "2:201",
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/book.svg",
     "repeat": 1
   },
@@ -114,7 +109,6 @@
     "source": "quran",
     "reference": "20:25-26",
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/book.svg",
     "repeat": 1
   },
@@ -130,7 +124,6 @@
     "source": "quran",
     "reference": "20:114",
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/book.svg",
     "repeat": 1
   },
@@ -146,7 +139,6 @@
     "source": "quran",
     "reference": "3:8",
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/book.svg",
     "repeat": 1
   },
@@ -162,7 +154,6 @@
     "source": "quran",
     "reference": "17:24",
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/journal.svg",
     "repeat": 1
   },
@@ -178,7 +169,6 @@
     "source": "hadith",
     "reference": "Bukhari 6324",
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/lamp.svg",
     "repeat": 1
   },
@@ -194,7 +184,6 @@
     "source": "hadith",
     "reference": "Bukhari 6312",
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/sun.svg",
     "repeat": 1
   },
@@ -210,7 +199,6 @@
     "source": "hadith",
     "reference": "Bukhari 6306",
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/sun.svg",
     "repeat": 1
   },
@@ -226,7 +214,6 @@
     "source": "hadith",
     "reference": "Tirmidhi 3513",
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/journal.svg",
     "repeat": 1
   },
@@ -239,8 +226,9 @@
       "en": "Glory be to Allah"
     },
     "categories": ["Dhikr"],
+    "source": "hadith",
+    "reference": "Muslim 596",
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/heart-check.svg",
     "repeat": 33
   },
@@ -253,8 +241,9 @@
       "en": "All praise is due to Allah"
     },
     "categories": ["Dhikr"],
+    "source": "hadith",
+    "reference": "Muslim 596",
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/heart-check.svg",
     "repeat": 33
   },
@@ -267,8 +256,9 @@
       "en": "Allah is the Greatest"
     },
     "categories": ["Dhikr"],
+    "source": "hadith",
+    "reference": "Muslim 596",
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/heart-check.svg",
     "repeat": 34
   },
@@ -282,7 +272,6 @@
     },
     "categories": ["Dhikr"],
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/heart-check.svg",
     "repeat": 1
   },
@@ -295,8 +284,9 @@
       "en": "I seek forgiveness from Allah"
     },
     "categories": ["Dhikr"],
+    "source": "hadith",
+    "reference": "Muslim 591",
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/heart-check.svg",
     "repeat": 3
   },
@@ -309,8 +299,9 @@
       "en": "Glory and praise be to Allah"
     },
     "categories": ["Dhikr"],
+    "source": "hadith",
+    "reference": "Bukhari 6405",
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/heart-check.svg",
     "repeat": 100
   },
@@ -323,8 +314,9 @@
       "en": "Glory be to Allah, the Almighty"
     },
     "categories": ["Dhikr"],
+    "source": "hadith",
+    "reference": "Bukhari 6406",
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/heart-check.svg",
     "repeat": 1
   },
@@ -337,8 +329,9 @@
       "en": "Glory and praise be to Allah; glory be to Allah, the Almighty"
     },
     "categories": ["Dhikr"],
+    "source": "hadith",
+    "reference": "Bukhari 6406",
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/heart-check.svg",
     "repeat": 1
   },
@@ -351,8 +344,9 @@
       "en": "There is no power nor might except with Allah"
     },
     "categories": ["Dhikr"],
+    "source": "hadith",
+    "reference": "Bukhari 4205",
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/heart-check.svg",
     "repeat": 1
   },
@@ -366,7 +360,6 @@
     },
     "categories": ["Dhikr"],
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/heart-check.svg",
     "repeat": 1
   },
@@ -379,8 +372,9 @@
       "en": "Allah is sufficient for us, and He is the best disposer of affairs"
     },
     "categories": ["Dhikr"],
+    "source": "quran",
+    "reference": "3:173",
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/heart-check.svg",
     "repeat": 1
   },
@@ -394,7 +388,6 @@
     },
     "categories": ["Dhikr"],
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/heart-check.svg",
     "repeat": 1
   },
@@ -408,7 +401,6 @@
     },
     "categories": ["Dhikr"],
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/heart-check.svg",
     "repeat": 1
   },
@@ -422,7 +414,6 @@
     },
     "categories": ["Dhikr"],
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/heart-check.svg",
     "repeat": 1
   },
@@ -435,8 +426,9 @@
       "en": "Glory be to Allah, praise be to Allah, there is no god but Allah, and Allah is the Greatest"
     },
     "categories": ["Dhikr"],
+    "source": "hadith",
+    "reference": "Muslim 2137",
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/heart-check.svg",
     "repeat": 1
   },
@@ -450,7 +442,6 @@
     },
     "categories": ["Dhikr"],
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/heart-check.svg",
     "repeat": 1
   },
@@ -464,7 +455,6 @@
     },
     "categories": ["Dhikr"],
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/heart-check.svg",
     "repeat": 1
   },
@@ -477,8 +467,9 @@
       "en": "Glory be to the Sovereign, the Most Holy"
     },
     "categories": ["Dhikr"],
+    "source": "hadith",
+    "reference": "Nasai 1699",
     "origin": "builtin",
-    "isFavorite": false,
     "iconPath": "@/assets/icons/collection/heart-check.svg",
     "repeat": 3
   }

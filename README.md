@@ -164,7 +164,7 @@ Users can currently:
 
 ## Architecture
 
-- **Data** — the duas live in `data/data.json` (33 duas, including 18 dhikr) and always load from there. The copy saved on the device keeps only what the user changed: favorites and the duas they added.
+- **Data** — the duas live in `data/data.json` (33 duas, including 18 dhikr) and always load from there. The copy saved on the device (`duas:v2`) keeps only what the user changed: the ids of the favorite duas and the duas they added. `data.json` holds no user state, so it has no `isFavorite`.
 - **State** — Redux Toolkit slices for duas, settings and the Tasbih, persisted with AsyncStorage (the Tasbih saves are debounced so fast tapping does not hammer storage).
 - **Routing** — Expo Router: the five tabs, plus `collection/[id]` for a collection and `modal` for adding a dua.
 - **Shared parts** — one `ScreenHeader`, one `SearchField`, and one list screen (`DuaListScreen`) that both the Collection and Bookmark screens use.
