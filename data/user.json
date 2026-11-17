@@ -1,0 +1,134 @@
+[
+  {
+    "id": "f8ba1161-063f-497e-a549-14f2dbf2e264",
+    "userCode": "IY6C9A",
+    "email": "ibrahim.yusuf@example.com",
+    "firstName": "Ibrahim",
+    "lastName": "Yusuf",
+    "avatar": {
+      "gender": "male",
+      "skin": "#B7784A",
+      "hair": "#00233F",
+      "shirt": "#08775E",
+      "cap": "#F6EEDC",
+      "hijab": "#08775E"
+    },
+    "authProvider": "google",
+    "providerUserId": "333543570054471867224",
+    "createdAt": "2026-09-02T08:14:00Z",
+    "updatedAt": "2026-09-02T08:14:00Z"
+  },
+  {
+    "id": "95fc0d98-89c1-4d1e-aa18-b4a3a82715c9",
+    "userCode": "MAGEXW",
+    "email": "maryam.ali@example.com",
+    "firstName": "Maryam",
+    "lastName": "Ali",
+    "avatar": {
+      "gender": "female",
+      "skin": "#E0AC69",
+      "hair": "#2C1B0E",
+      "shirt": "#6B4E71",
+      "cap": "#F6EEDC",
+      "hijab": "#2F4858"
+    },
+    "authProvider": "facebook",
+    "providerUserId": "8293829938121911",
+    "createdAt": "2026-09-05T17:40:00Z",
+    "updatedAt": "2026-09-05T17:40:00Z"
+  },
+  {
+    "id": "2cfd64da-81c8-4995-a1ff-65f21e523263",
+    "userCode": "OHEVPB",
+    "email": "omar.hassan@example.com",
+    "firstName": "Omar",
+    "lastName": "Hassan",
+    "avatar": {
+      "gender": "male",
+      "skin": "#8D5524",
+      "hair": "#0B0B0B",
+      "shirt": "#1F6FEB",
+      "cap": "#FFFFFF",
+      "hijab": "#08775E"
+    },
+    "authProvider": "google",
+    "providerUserId": "194824511925524761269",
+    "createdAt": "2026-09-11T06:55:00Z",
+    "updatedAt": "2026-09-11T06:55:00Z"
+  },
+  {
+    "id": "7cecc905-4e6f-4230-b06e-58b8832a0805",
+    "userCode": "ZABEP4",
+    "email": "zainab.ahmed@example.com",
+    "firstName": "Zainab",
+    "lastName": "Ahmed",
+    "avatar": {
+      "gender": "female",
+      "skin": "#C68642",
+      "hair": "#4A312C",
+      "shirt": "#D9534F",
+      "cap": "#F6EEDC",
+      "hijab": "#C97B84"
+    },
+    "authProvider": "google",
+    "providerUserId": "358906536567034429829",
+    "createdAt": "2026-09-19T21:03:00Z",
+    "updatedAt": "2026-09-19T21:03:00Z"
+  },
+  {
+    "id": "c9e1092c-420f-4faa-8208-54631f097662",
+    "userCode": "KMAUJA",
+    "email": "khalid.mohammed@example.com",
+    "firstName": "Khalid",
+    "lastName": "Mohammed",
+    "avatar": {
+      "gender": "male",
+      "skin": "#F1C27D",
+      "hair": "#2C1B0E",
+      "shirt": "#2D3A8C",
+      "cap": "#1B1B1B",
+      "hijab": "#08775E"
+    },
+    "authProvider": "facebook",
+    "providerUserId": "2415035754806529",
+    "createdAt": "2026-10-01T12:30:00Z",
+    "updatedAt": "2026-10-01T12:30:00Z"
+  },
+  {
+    "id": "d9fea58f-7eb9-40aa-b73d-3da3fd556b95",
+    "userCode": "FS3S4B",
+    "email": "fatima.sani@example.com",
+    "firstName": "Fatima",
+    "lastName": "Sani",
+    "avatar": {
+      "gender": "female",
+      "skin": "#8D5524",
+      "hair": "#0B0B0B",
+      "shirt": "#F0A500",
+      "cap": "#F6EEDC",
+      "hijab": "#08775E"
+    },
+    "authProvider": "google",
+    "providerUserId": "971783231757778403563",
+    "createdAt": "2026-10-09T09:22:00Z",
+    "updatedAt": "2026-10-09T09:22:00Z"
+  },
+  {
+    "id": "1ca7d690-bab0-4fc8-94ec-f738f85500a7",
+    "userCode": "UUHR2B",
+    "email": "bilal.ibrahim@example.com",
+    "firstName": "Bilal",
+    "avatar": {
+      "gender": "male",
+      "skin": "#FFDBAC",
+      "hair": "#4A312C",
+      "shirt": "#8A3FFC",
+      "cap": "#F6EEDC",
+      "hijab": "#08775E"
+    },
+    "authProvider": "google",
+    "providerUserId": "200247506636676976038",
+    "createdAt": "2026-10-20T15:48:00Z",
+    "updatedAt": "2026-10-20T15:48:00Z"
+  }
+]

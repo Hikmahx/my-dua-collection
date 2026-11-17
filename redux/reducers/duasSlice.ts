@@ -17,6 +17,8 @@ export interface Dua {
   repeat?: number // how many times the dua is recited; the Dua screen's counter counts down from it
   audioUrl?: string // recording played by the Dua screen's audio button
   origin: DuaOrigin
+  /** Id of the user who shared this dua. Missing (or null) when the user made it themselves. Shared copies also have `origin: 'shared'`. */
+  sharedBy?: string | null
   isFavorite: boolean
   iconPath?: string // Path to the icon SVG
 }

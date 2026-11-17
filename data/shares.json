@@ -1,0 +1,59 @@
+[
+  {
+    "id": "9c620895-e5e7-44a2-bf73-bc112e5b34a7",
+    "type": "collection",
+    "targetId": "Dhikr",
+    "senderId": "95fc0d98-89c1-4d1e-aa18-b4a3a82715c9",
+    "recipientId": "f8ba1161-063f-497e-a549-14f2dbf2e264",
+    "status": "pending",
+    "createdAt": "2026-11-14T07:33:00Z"
+  },
+  {
+    "id": "8143c7fa-173b-433e-81e9-cd30ec420d6f",
+    "type": "dua",
+    "targetId": "13",
+    "senderId": "2cfd64da-81c8-4995-a1ff-65f21e523263",
+    "recipientId": "f8ba1161-063f-497e-a549-14f2dbf2e264",
+    "status": "pending",
+    "createdAt": "2026-11-16T18:05:00Z"
+  },
+  {
+    "id": "e30207b6-fccb-4688-85b7-4da3a145f1fa",
+    "type": "dua",
+    "targetId": "12",
+    "senderId": "f8ba1161-063f-497e-a549-14f2dbf2e264",
+    "recipientId": "95fc0d98-89c1-4d1e-aa18-b4a3a82715c9",
+    "status": "accepted",
+    "createdAt": "2026-09-05T18:01:00Z",
+    "respondedAt": "2026-09-05T20:15:00Z"
+  },
+  {
+    "id": "349d9381-90c4-4431-b6d6-3fc42a2eb602",
+    "type": "collection",
+    "targetId": "Morning",
+    "senderId": "f8ba1161-063f-497e-a549-14f2dbf2e264",
+    "recipientId": "2cfd64da-81c8-4995-a1ff-65f21e523263",
+    "status": "accepted",
+    "createdAt": "2026-09-12T07:19:00Z",
+    "respondedAt": "2026-09-12T09:00:00Z"
+  },
+  {
+    "id": "4e1ab3b2-97ef-499d-8ba6-681a13d54ad4",
+    "type": "dua",
+    "targetId": "14",
+    "senderId": "f8ba1161-063f-497e-a549-14f2dbf2e264",
+    "recipientId": "1ca7d690-bab0-4fc8-94ec-f738f85500a7",
+    "status": "declined",
+    "createdAt": "2026-10-21T16:02:00Z",
+    "respondedAt": "2026-10-22T09:40:00Z"
+  },
+  {
+    "id": "157d921f-4606-4b85-bebb-e9ede9afe3c4",
+    "type": "collection",
+    "targetId": "Morning",
+    "senderId": "f8ba1161-063f-497e-a549-14f2dbf2e264",
+    "recipientId": "d9fea58f-7eb9-40aa-b73d-3da3fd556b95",
+    "status": "pending",
+    "createdAt": "2026-11-15T10:10:00Z"
+  }
+]

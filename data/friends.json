@@ -1,0 +1,60 @@
+[
+  {
+    "userId": "f8ba1161-063f-497e-a549-14f2dbf2e264",
+    "friendId": "95fc0d98-89c1-4d1e-aa18-b4a3a82715c9",
+    "groups": [
+      "family"
+    ],
+    "createdAt": "2026-09-05T18:02:00Z"
+  },
+  {
+    "userId": "f8ba1161-063f-497e-a549-14f2dbf2e264",
+    "friendId": "2cfd64da-81c8-4995-a1ff-65f21e523263",
+    "groups": [
+      "family",
+      "friends"
+    ],
+    "createdAt": "2026-09-12T07:20:00Z"
+  },
+  {
+    "userId": "f8ba1161-063f-497e-a549-14f2dbf2e264",
+    "friendId": "7cecc905-4e6f-4230-b06e-58b8832a0805",
+    "groups": [
+      "friends"
+    ],
+    "createdAt": "2026-09-20T08:41:00Z"
+  },
+  {
+    "userId": "f8ba1161-063f-497e-a549-14f2dbf2e264",
+    "friendId": "c9e1092c-420f-4faa-8208-54631f097662",
+    "groups": [
+      "mosque"
+    ],
+    "createdAt": "2026-10-02T13:05:00Z"
+  },
+  {
+    "userId": "f8ba1161-063f-497e-a549-14f2dbf2e264",
+    "friendId": "d9fea58f-7eb9-40aa-b73d-3da3fd556b95",
+    "groups": [
+      "family",
+      "mosque"
+    ],
+    "createdAt": "2026-10-10T10:17:00Z"
+  },
+  {
+    "userId": "95fc0d98-89c1-4d1e-aa18-b4a3a82715c9",
+    "friendId": "f8ba1161-063f-497e-a549-14f2dbf2e264",
+    "groups": [
+      "family"
+    ],
+    "createdAt": "2026-09-05T18:30:00Z"
+  },
+  {
+    "userId": "95fc0d98-89c1-4d1e-aa18-b4a3a82715c9",
+    "friendId": "7cecc905-4e6f-4230-b06e-58b8832a0805",
+    "groups": [
+      "friends"
+    ],
+    "createdAt": "2026-09-21T11:09:00Z"
+  }
+]
