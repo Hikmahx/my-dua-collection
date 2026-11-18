@@ -2,7 +2,7 @@ import { themeColors } from '@/constants/theme-colors'
 
 /**
  * Splash screen layout. Everything is measured on the 375 x 690 design
- * (assets/images/splash-frame.svg + the logo), and scaled to the real screen by AppSplash.
+ * (assets/images/splash-background.svg + the logo), and scaled to the real screen by AppSplash.
  */
 export const SPLASH = {
   /** Edge colour of the artwork. Also the native splash colour in app.json. */
