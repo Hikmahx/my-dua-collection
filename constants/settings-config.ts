@@ -38,8 +38,3 @@ const LANGUAGE_NAMES: Record<string, string> = {
 }
 
 export const languageName = (code: string) => LANGUAGE_NAMES[code] ?? code.toUpperCase()
-
-/** Placeholder until sign-in exists: the profile block shows this. */
-export const GUEST_PROFILE: { name: string; connectedWith?: string } = {
-  name: 'Guest',
-}

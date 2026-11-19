@@ -23,6 +23,9 @@ export const settingsTheme = {
     sliderFill: p.brightGold,
     previewBg: '#10434B',
     previewArabic: p.brightGold,
+    field: '#0A2E37', // text inputs
+    fieldBorder: '#1D4850',
+    danger: '#E5484D',
   },
   light: {
     body: Colors.light.screenBody,
@@ -41,6 +44,9 @@ export const settingsTheme = {
     sliderFill: p.darkEmerald,
     previewBg: '#E9F2EE',
     previewArabic: p.darkEmerald,
+    field: '#F4F7F5',
+    fieldBorder: '#DDE5E1',
+    danger: '#D92D20',
   },
 } as const
 
