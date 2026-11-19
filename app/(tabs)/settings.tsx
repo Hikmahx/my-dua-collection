@@ -5,15 +5,14 @@ import { LanguageSettings } from '@/components/settings/sections/language-settin
 import { NotificationSettings } from '@/components/settings/sections/notification-settings'
 import { PersonalSettings } from '@/components/settings/sections/personal-settings'
 import { ScreenHeader } from '@/components/ui/screen-header'
-import { APP_NAME, GUEST_PROFILE } from '@/constants/settings-config'
+import { APP_NAME } from '@/constants/settings-config'
+import { useProfile } from '@/hooks/use-profile'
 import { useSettingsColors } from '@/hooks/use-settings-colors'
 import { formatHijri, toHijri } from '@/lib/hijri'
 import tw from '@/lib/tailwind'
-import type { RootState } from '@/redux/store'
 import Constants from 'expo-constants'
 import { useMemo } from 'react'
 import { ScrollView, Text, View } from 'react-native'
-import { useSelector } from 'react-redux'
 
 /**
  * The Settings tab: profile, then one card per section. The sections are separate components
@@ -22,7 +21,7 @@ import { useSelector } from 'react-redux'
  */
 export default function SettingsScreen() {
   const c = useSettingsColors()
-  const avatar = useSelector((state: RootState) => state.settings.avatar)
+  const profile = useProfile()
   const today = useMemo(() => `Today · ${formatHijri(toHijri())}`, [])
 
   return (
@@ -31,10 +30,10 @@ export default function SettingsScreen() {
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={tw`pb-10`}>
         <ProfileHeader
-          name={GUEST_PROFILE.name}
-          avatar={avatar}
+          name={profile.fullName}
+          avatar={profile.avatar}
           dateLine={today}
-          connectedWith={GUEST_PROFILE.connectedWith}
+          connectedWith={profile.providerLabel}
         />
 
         <View style={tw`pt-6`}>

@@ -23,6 +23,7 @@ import { AppSplash } from '@/components/splash/app-splash'
 import { Colors } from '@/constants/theme'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import { useSettingsPersistence } from '@/hooks/use-settings-persistence'
+import { useUserPersistence } from '@/hooks/use-user-persistence'
 import { useTasbihPersistence } from '@/hooks/use-tasbih-persistence'
 import { loadCachedDuas, saveCachedDuas } from '@/lib/duas-storage'
 import { setDuas } from '@/redux/reducers/duasSlice'
@@ -86,7 +87,10 @@ function AppShell() {
   // 3) Restore / save the Tasbih counter (count, target, selected dua, sound, vibration)
   const tasbihReady = useTasbihPersistence()
 
-  const ready = fontsLoaded && settingsReady && duasReady && tasbihReady
+  // 4) Restore / save who is signed in, their name and avatar (or the guest profile)
+  const userReady = useUserPersistence()
+
+  const ready = fontsLoaded && settingsReady && duasReady && tasbihReady && userReady
 
   // The native splash (just a background colour, see app.json) only has to cover font loading.
   // After that, <AppSplash /> takes over until the app is ready, then fades out.
@@ -113,6 +117,7 @@ function AppShell() {
             <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
             <Stack.Screen name='collection/[id]' options={{ headerShown: false }} />
             <Stack.Screen name='dua/[id]' options={{ headerShown: false }} />
+            <Stack.Screen name='profile' options={{ headerShown: false }} />
             <Stack.Screen
               name='modal'
               options={{
