@@ -67,7 +67,7 @@ People who signed in with Google or Facebook. An array of `User` objects.
 | `email` | string | Optional | Missing when the provider did not give one (Facebook can leave it out). Shown in the friend picker. |
 | `firstName` | string | Required | |
 | `lastName` | string | Optional | Missing when the provider gave a single name. |
-| `avatar` | object | Required | The same `AvatarConfig` as the Settings avatar. |
+| `avatar` | object | Required | An `AvatarConfig`. The user changes it in Settings > Profile details. |
 | `avatar.gender` | `"male"` or `"female"` | Required | |
 | `avatar.skin`, `avatar.hair`, `avatar.shirt`, `avatar.cap`, `avatar.hijab` | string (`#RRGGBB`) | Required | `cap` shows on the male avatar and `hijab` on the female one, but both are always stored. |
 | `authProvider` | `"google"` or `"facebook"` | Required | |

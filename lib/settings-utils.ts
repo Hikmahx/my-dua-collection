@@ -1,6 +1,4 @@
-import { DEFAULT_AVATAR } from '@/constants/avatar-config'
 import { DEFAULT_FONT_SIZES, FONT_SIZE_SETTINGS } from '@/constants/settings-config'
-import { isHexColor } from '@/lib/color'
 import type { SettingsState } from '@/redux/reducers/settingsSlice'
 
 /**
@@ -27,18 +25,6 @@ export function sanitizeSettings(value: unknown): Partial<SettingsState> {
       }
     }
     result.fontSizes = sizes
-  }
-
-  if (saved.avatar && typeof saved.avatar === 'object') {
-    const avatar = saved.avatar as Record<string, unknown>
-    result.avatar = {
-      gender: avatar.gender === 'female' ? 'female' : 'male',
-      skin: isHexColor(avatar.skin) ? avatar.skin : DEFAULT_AVATAR.skin,
-      hair: isHexColor(avatar.hair) ? avatar.hair : DEFAULT_AVATAR.hair,
-      shirt: isHexColor(avatar.shirt) ? avatar.shirt : DEFAULT_AVATAR.shirt,
-      cap: isHexColor(avatar.cap) ? avatar.cap : DEFAULT_AVATAR.cap,
-      hijab: isHexColor(avatar.hijab) ? avatar.hijab : DEFAULT_AVATAR.hijab,
-    }
   }
 
   return result

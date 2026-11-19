@@ -1,4 +1,3 @@
-import { DEFAULT_AVATAR, type AvatarConfig } from '@/constants/avatar-config'
 import { DEFAULT_FONT_SIZES, type FontSizeTarget } from '@/constants/settings-config'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
@@ -12,7 +11,6 @@ export interface SettingsState {
   fontSizes: Record<FontSizeTarget, number> // px
   dailyReminder: boolean
   monthlyReminders: boolean
-  avatar: AvatarConfig
 }
 
 // Dark mode is the default
@@ -23,7 +21,6 @@ export const initialSettingsState: SettingsState = {
   fontSizes: DEFAULT_FONT_SIZES,
   dailyReminder: true,
   monthlyReminders: false,
-  avatar: DEFAULT_AVATAR,
 }
 
 const settingsSlice = createSlice({
@@ -48,10 +45,6 @@ const settingsSlice = createSlice({
     setMonthlyReminders(state, action: PayloadAction<boolean>) {
       state.monthlyReminders = action.payload
     },
-    /** Changes part of the avatar (skin tone, shirt, cap or hijab color, male / female). */
-    setAvatar(state, action: PayloadAction<Partial<AvatarConfig>>) {
-      state.avatar = { ...state.avatar, ...action.payload }
-    },
     /** Puts the saved settings back on launch. */
     hydrateSettings(state, action: PayloadAction<Partial<SettingsState>>) {
       Object.assign(state, action.payload)
@@ -66,7 +59,6 @@ export const {
   setFontSize,
   setDailyReminder,
   setMonthlyReminders,
-  setAvatar,
   hydrateSettings,
 } = settingsSlice.actions
 export default settingsSlice.reducer
