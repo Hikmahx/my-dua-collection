@@ -16,18 +16,27 @@ interface SettingsRowProps {
   control?: ReactNode
   /** Show the ">" chevron. Defaults to true when there is no control. */
   chevron?: boolean
+  /** Red icon and title, for actions like Sign out. */
+  destructive?: boolean
 }
 
 /** One line of a Settings card: icon, title, optional subtitle, then a chevron and/or a control. */
-export function SettingsRow({ icon, title, subtitle, onPress, control, chevron }: SettingsRowProps) {
+export function SettingsRow({ icon, title, subtitle, onPress, control, chevron, destructive }: SettingsRowProps) {
   const c = useSettingsColors()
   const showChevron = chevron ?? !control
 
   const content = (
     <View style={tw`flex-row items-center py-[15px]`}>
-      <MaterialCommunityIcons name={icon} size={22} color={c.accent} style={tw`mr-[10px]`} />
+      <MaterialCommunityIcons
+        name={icon}
+        size={22}
+        color={destructive ? c.danger : c.accent}
+        style={tw`mr-[10px]`}
+      />
       <View style={tw`flex-1 pr-2`}>
-        <Text style={[tw`font-nunito-semibold text-[14px]`, { color: c.title }]}>{title}</Text>
+        <Text style={[tw`font-nunito-semibold text-[14px]`, { color: destructive ? c.danger : c.title }]}>
+          {title}
+        </Text>
         {!!subtitle && (
           <Text style={[tw`font-nunito text-[11px] mt-[3px]`, { color: c.muted }]}>{subtitle}</Text>
         )}

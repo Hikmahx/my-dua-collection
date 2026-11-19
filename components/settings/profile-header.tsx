@@ -1,4 +1,4 @@
-import { Avatar } from '@/components/avatar/avatar'
+import { AvatarCircle } from '@/components/avatar/avatar-circle'
 import type { AvatarConfig } from '@/constants/avatar-config'
 import { useSettingsColors } from '@/hooks/use-settings-colors'
 import tw from '@/lib/tailwind'
@@ -21,15 +21,7 @@ export function ProfileHeader({ name, avatar, dateLine, connectedWith }: Profile
 
   return (
     <View style={[tw`items-center pt-4 pb-7`, { backgroundColor: c.header }]}>
-      {/* round picture: the bust sits at the bottom of the circle and is clipped by it */}
-      <View
-        style={[
-          tw`rounded-full overflow-hidden justify-end`,
-          { width: AVATAR_SIZE, height: AVATAR_SIZE, backgroundColor: c.avatarBg },
-        ]}
-      >
-        <Avatar config={avatar} size={AVATAR_SIZE} />
-      </View>
+      <AvatarCircle config={avatar} size={AVATAR_SIZE} />
       <Text style={[tw`font-nunito-extrabold text-[20px] mt-4`, { color: c.title }]}>{name}</Text>
       <Text style={[tw`font-nunito text-[12px] mt-2`, { color: c.accent }]}>{dateLine}</Text>
       <Text style={[tw`font-nunito text-[11px] mt-[6px]`, { color: c.muted }]}>
