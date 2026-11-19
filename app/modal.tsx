@@ -6,6 +6,7 @@ import {
   SOURCE_LABELS,
 } from '@/lib/dua-utils'
 import tw from '@/lib/tailwind'
+import { addDuaToCollection } from '@/redux/reducers/collectionsSlice'
 import { addDua, type Dua, type DuaSource } from '@/redux/reducers/duasSlice'
 import type { RootState } from '@/redux/store'
 import { BerkshireSwash_400Regular } from '@expo-google-fonts/berkshire-swash'
@@ -14,7 +15,7 @@ import {
   NunitoSans_700Bold,
 } from '@expo-google-fonts/nunito-sans'
 import { useFonts } from 'expo-font'
-import { useRouter } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useCallback, useState } from 'react'
 import {
   Alert,
@@ -30,12 +31,18 @@ import { useDispatch, useSelector } from 'react-redux'
 const { height: SCREEN_HEIGHT } = Dimensions.get('window')
 const SHEET_HEIGHT = SCREEN_HEIGHT * 0.5
 
+const categoryOptions = ['General', 'Morning', 'Evening', 'Prayer', 'Quranic', 'Night']
+
 export default function AddDuaModal() {
   const colorScheme = useColorScheme()
   const isDark = colorScheme === 'dark'
   const router = useRouter()
   const dispatch = useDispatch()
   const language = useSelector((state: RootState) => state.settings.language)
+  // Opened from a collection's "Add dua": the new dua goes into that collection
+  const { collection } = useLocalSearchParams<{ collection?: string }>()
+  const userCollections = useSelector((state: RootState) => state.collections.items)
+  const targetUserCollection = userCollections.find((c) => c.id === collection)
 
   const [fontsLoaded] = useFonts({
     BerkshireSwash_400Regular,
@@ -47,22 +54,13 @@ export default function AddDuaModal() {
   const [arabicText, setArabicText] = useState('')
   const [translation, setTranslation] = useState('')
   const [selectedCategories, setSelectedCategories] = useState<string[]>([
-    'General',
+    collection && categoryOptions.includes(collection) ? collection : 'General',
   ])
   const [source, setSource] = useState<DuaSource | null>(null)
   const [reference, setReference] = useState('')
   const [selectedMethod, setSelectedMethod] = useState<
     'upload' | 'ai' | 'manual' | null
   >(null)
-
-  const categoryOptions = [
-    'General',
-    'Morning',
-    'Evening',
-    'Prayer',
-    'Quranic',
-    'Night',
-  ]
 
   // Select or deselect a category (at least one stays selected)
   const toggleCategory = useCallback((cat: string) => {
@@ -105,6 +103,9 @@ export default function AddDuaModal() {
     }
 
     dispatch(addDua(newDua))
+    if (targetUserCollection) {
+      dispatch(addDuaToCollection({ collectionId: targetUserCollection.id, duaId: newDua.id }))
+    }
     Alert.alert('Success', 'Dua added successfully!')
     router.back()
   }, [
@@ -115,6 +116,7 @@ export default function AddDuaModal() {
     source,
     reference,
     language,
+    targetUserCollection,
     dispatch,
     router,
   ])

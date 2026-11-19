@@ -1,6 +1,6 @@
 import { DuaScreen } from '@/components/dua-screen/dua-screen'
 import { FAVORITES_LIST_ID } from '@/constants/dua-config'
-import { getCollectionName } from '@/constants/collections'
+import { useCollections } from '@/hooks/use-collections'
 import { getListDuas } from '@/lib/dua-utils'
 import type { Dua } from '@/redux/reducers/duasSlice'
 import type { RootState } from '@/redux/store'
@@ -16,12 +16,14 @@ import { useSelector } from 'react-redux'
 export default function DuaRoute() {
   const { id, list, ids: idsParam } = useLocalSearchParams<{ id: string; list?: string; ids?: string }>()
   const router = useRouter()
+  const { getName, userCollections } = useCollections()
   const allDuas = useSelector((state: RootState) => state.duas.items)
+  const favoriteOrder = useSelector((state: RootState) => state.duas.favoriteOrder)
 
   // Fix the list and the starting dua when the screen opens, so un-favoriting a dua while
   // looking through Favorites doesn't make it vanish from under the swipe.
   const [{ ids, initialIndex }] = useState(() => {
-    const listIds = idsParam ? idsParam.split(',') : getListDuas(allDuas, list).map((dua) => dua.id)
+    const listIds = idsParam ? idsParam.split(',') : getListDuas(allDuas, list, favoriteOrder, userCollections).map((dua) => dua.id)
     return { ids: listIds, initialIndex: Math.max(0, listIds.indexOf(id)) }
   })
   // the latest version of each dua (its favorite state changes while we are here)
@@ -34,7 +36,7 @@ export default function DuaRoute() {
 
   return (
     <DuaScreen
-      title={list === FAVORITES_LIST_ID ? 'Favorites' : getCollectionName(list ?? '')}
+      title={list === FAVORITES_LIST_ID ? 'Favorites' : getName(list ?? '')}
       duas={duas}
       initialIndex={initialIndex}
       onBack={() => router.back()}

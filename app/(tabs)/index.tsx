@@ -2,7 +2,8 @@ import { CollectionCard } from '@/components/ui/collection-card'
 import { FeaturedDuaBanner } from '@/components/ui/featured-dua-banner'
 import { FilterMenu } from '@/components/ui/filter-menu'
 import { TabSelector } from '@/components/ui/tab-selector'
-import { COLLECTION_DEFS } from '@/constants/collections'
+import { useCollections } from '@/hooks/use-collections'
+import { getDuasInCollection } from '@/lib/collection-utils'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import { formatReference, getTranslation, isBuiltin } from '@/lib/dua-utils'
 import tw from '@/lib/tailwind'
@@ -39,6 +40,7 @@ export default function HomeScreen() {
   const theme = useSelector((state: RootState) => state.settings.theme)
   const language = useSelector((state: RootState) => state.settings.language)
   const featuredDua = duas.find((d) => d.id === FEATURED_DUA_ID)
+  const { collections, userCollections } = useCollections()
 
   // Filter / settings dropdown (opens under the header icon)
   const filterButtonRef = useRef<View>(null)
@@ -84,17 +86,16 @@ export default function HomeScreen() {
 
   // Build collection list with counts; filter by tab
   const collectionsWithCounts = useMemo(() => {
-    return COLLECTION_DEFS.map((col) => ({
-      ...col,
-      count: duas.filter((d) => d.categories.includes(col.id)).length,
-      hasUserCreated: duas.some(
-        (d) => d.categories.includes(col.id) && !isBuiltin(d)
-      ),
-      allPreMade: duas
-        .filter((d) => d.categories.includes(col.id))
-        .every(isBuiltin),
-    }))
-  }, [duas])
+    return collections.map((col) => {
+      const inCollection = getDuasInCollection(col.id, duas, userCollections)
+      return {
+        ...col,
+        count: inCollection.length,
+        hasUserCreated: !!col.isUserCreated || inCollection.some((d) => !isBuiltin(d)),
+        allPreMade: !col.isUserCreated && inCollection.every(isBuiltin),
+      }
+    })
+  }, [collections, userCollections, duas])
 
   const filteredCollections = useCallback(() => {
     if (activeTab === 'all') return collectionsWithCounts

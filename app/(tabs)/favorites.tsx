@@ -1,13 +1,16 @@
 import { DuaListScreen } from '@/components/dua-list/dua-list-screen'
 import { FAVORITES_LIST_ID } from '@/constants/dua-config'
-import type { RootState } from '@/redux/store'
-import { useMemo } from 'react'
-import { useSelector } from 'react-redux'
+import { selectFavoriteDuas } from '@/redux/selectors'
+import { setFavoriteOrder } from '@/redux/reducers/duasSlice'
+import { useDispatch, useSelector } from 'react-redux'
 
-/** Every favorited dua, with the collections each one belongs to. */
+/**
+ * Every favorited dua, in the order the user arranged them (Reorder in the menu), with the
+ * collections each one belongs to. The Dua screen goes through them in this same order.
+ */
 export default function FavoritesScreen() {
-  const allDuas = useSelector((state: RootState) => state.duas.items)
-  const favorites = useMemo(() => allDuas.filter((dua) => dua.isFavorite), [allDuas])
+  const dispatch = useDispatch()
+  const favorites = useSelector(selectFavoriteDuas)
 
   return (
     <DuaListScreen
@@ -16,6 +19,7 @@ export default function FavoritesScreen() {
       duas={favorites}
       showCollections
       emptyMessage='No favorite duas yet'
+      onReorder={(ids) => dispatch(setFavoriteOrder(ids))}
     />
   )
 }
