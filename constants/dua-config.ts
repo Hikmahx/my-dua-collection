@@ -1,6 +1,10 @@
 /** Used when a dua has no `repeat` (e.g. a dua the user added): recite it once. */
 export const DEFAULT_DUA_REPEAT = 1
 
+/** Size of a row in the dua lists and in the reorder lists, and the space between rows. */
+export const DUA_ROW_HEIGHT = 52
+export const DUA_ROW_GAP = 6
+
 /** After the counter reaches 0, the Dua screen waits this long, then moves on to the next dua. */
 export const AUTO_ADVANCE_DELAY_MS = 300
 

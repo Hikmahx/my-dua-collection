@@ -136,7 +136,7 @@ The app consists of **5 main screens** accessible via bottom navigation:
 4. **Bookmark** - All saved/favorited duas (the Favorites tab)
 5. **Settings** - Settings, notifications, and personal content
 
-Opened from these screens (no bottom bar): the **Collection** screen, from a collection card on Home, and the add-dua modal, from the "+" button on Home.
+Opened from these screens (no bottom bar): the **Collection** screen, from a collection card on Home, the **Edit collection** screen, from the Collection screen's menu, and the add-dua modal, from the "+" button on Home or from "Add dua" in the Collection screen's menu.
 
 ### Navigation
 
@@ -198,7 +198,10 @@ Opened by tapping a collection card on Home (route `app/collection/[id].tsx`, wh
   - Collection name
   - Count of duas under the name ("11 duas"). While a filter is on it adds the filter, e.g. "3 duas · Bukhari"
   - Search icon: opens a search field under the header, and closes and clears it when tapped again. It also finds duas by surah and hadith name (see [Search](#search))
-  - Filter icon: opens a menu with a **Surah** and a **Hadith** section above Appearance (see below)
+  - Filter icon: opens a menu with a **Manage** section (**Add dua** and **Edit collection**), then a **Surah** and a **Hadith** section, then Appearance (see below)
+- **Manage section:**
+  - **Add dua** opens the add-dua sheet ("Choose how you'd like to add your dua"). The new dua goes into this collection: a pre-made collection is picked in the category list, and a collection the user made gets the dua added to its list
+  - **Edit collection** opens the [Edit Collection Screen](#edit-collection-screen). It is dimmed (and does nothing) for pre-made collections, because only collections the user made can be edited
 - **Filter by source:**
   - The Surah section lists the surahs found in the collection, in Quran order. The Hadith section lists the hadith collections (Bukhari, Tirmidhi, ...) from A to Z. A section is left out when the collection has none from it
   - One filter at a time: pick a surah or a hadith, and tap it again to clear it. A gold dot on the icon shows a filter is on
@@ -216,7 +219,24 @@ Opened by tapping a collection card on Home (route `app/collection/[id].tsx`, wh
   - Print entire collection button
   - Tapping a row opens the dua (see [Dua Features](#dua-features))
 
-The list is built from shared parts (`DuaListScreen`, `DuaListRow` in `components/dua-list/`, `ScreenHeader`, and the `useSourceFilter` hook), which the [Bookmark Screen](#bookmark-screen) uses too.
+The list is built from shared parts (`DuaListScreen`, `DuaListRow` in `components/dua-list/`, `ScreenHeader`, and the `useSourceFilter` hook), which the [Bookmark Screen](#bookmark-screen) uses too. Dragging rows into a new order is the shared `ReorderableList` (`components/ui/reorderable-list.tsx`), used by the Edit collection screen and by Favorites; the math is in `lib/reorder.ts`. A collection the user made shows its duas in the order they chose (see below).
+
+### Edit Collection Screen
+
+**Primary Purpose:** Rename a collection the user made, put its duas in a new order, take duas out of it, or delete it
+
+Opened from **Edit collection** in the Collection screen's menu (route `app/edit-collection/[id].tsx`, built in `components/collection-edit/`). The colors are in `constants/collection-edit-theme.ts` (light and dark).
+
+**Layout Components:**
+- **Header:** back arrow, "Edit collection", and under it the count and "Your collection" ("11 duas · Your collection"). **Cancel** on the right
+- **Collection name:** a text field (up to 40 characters). **Save changes** is dimmed while it is empty
+- **Duas · 11:** a list of rows with a red dash on the left (removes the dua from this collection only) and six dots on the right (the drag handle). Press and hold the dots, then drag. The list scrolls by itself when a row is dragged near the top or bottom. For screen readers the handle has "Move up" and "Move down" actions
+- **Footer:** "Removing a dua only changes this collection.", **Delete collection** and **Save changes**
+- **Delete dialog:** "Delete My Dhikr?" explains that the collection and its order are deleted and the duas stay in the dua library. **Delete collection** deletes it and returns to Home. **Keep collection** (or tapping outside) closes the dialog
+
+Changes are kept on screen until **Save changes**. **Cancel** and the back arrow drop them.
+
+**How collections are stored:** a collection the user made has its own list of dua ids in order (`duaIds`), unlike a pre-made one, whose duas are the ones that name it in `categories`. Because of that, a dua can be in a collection without changing the dua, and built-in duas can be in one. They live in `collectionsSlice` and are saved on the device as `collections:v1` (`lib/collections-storage.ts`, `useCollectionsPersistence`). A dua deleted from the library leaves every collection. The app has no screen that creates a collection yet (`addCollection` is ready for it), so Edit is dimmed everywhere until one exists.
 
 ### Explore Screen
 
@@ -273,7 +293,10 @@ The list is built from shared parts (`DuaListScreen`, `DuaListRow` in `component
 **Features:**
 - All bookmarked/favorited duas, in the same list design as the [Collection Screen](#collection-screen) (numbered rows with the title and source, and the "N duas" count under the title)
 - Shows which collections each dua belongs to, as small pills under the source: up to 2, then "+N" for the rest
-- Search and filter icons in the header, the same as the Collection screen: search also finds duas by surah and hadith name, and the filter menu has the Surah and Hadith filters above Appearance. There is no back arrow, because it is a tab
+- Search and filter icons in the header, the same as the Collection screen: search also finds duas by surah and hadith name, and the filter menu has a **Reorder** option, then the Surah and Hadith filters, then Appearance. There is no back arrow, because it is a tab
+- **Reorder:** the user decides the order of their favorites. Tapping **Reorder** (dimmed with fewer than two favorites) shows a grip (six dots) on every row. Press and hold it, then drag the row to a new place; the list scrolls by itself near the top and bottom, and screen readers get "Move up" and "Move down" actions. Each drag is saved right away, and **Done** (where the icons were) goes back to the normal list. While reordering, search and the filters are put aside so the whole list can be arranged, and the collection pills are hidden so every row is the same height
+- **The order is used everywhere:** the Favorites list shows the favorites in this order, and the Dua screen goes through the same list, so when one dua is finished the next one is the next favorite in the order the user set. A dua that is newly favorited goes at the end, and an unfavorited one leaves the order
+- **How the order is stored:** `favoriteOrder` in `duasSlice` (ids in order). The saved copy keeps it as `favoriteIds` in `duas:v2` (this was already a list, so no new version: favorites saved before this update start in the order they were in). It will be the `position` of each `user_favorites` row (see `data/README.md`)
 - Empty state: "No favorite duas yet"
 - Grid/list view toggle
 - Quick access to dua details
@@ -419,7 +442,7 @@ export interface Dua {
   isFavorite: boolean
   iconPath?: string
   repeat?: number // how many times the dua is recited; the Dua screen counts down from it
-  // audioUrl?: string // recording played by the Dua screen's audio button
+  audioUrl?: string // recording played by the Dua screen's audio button
 }
 ```
 

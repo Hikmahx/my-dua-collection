@@ -17,6 +17,7 @@ export const duaListTheme = {
     pillText: '#D5BD7D',
     icon: p.lightGrayishText,
     muted: p.lightGrayishTextMuted,
+    accent: '#D9BC76',
   },
   light: {
     background: Colors.light.screenBody,
@@ -29,5 +30,6 @@ export const duaListTheme = {
     pillText: p.darkEmerald,
     icon: p.darkText,
     muted: '#8A8A8A',
+    accent: p.darkEmerald,
   },
 } as const

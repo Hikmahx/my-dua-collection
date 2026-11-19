@@ -34,6 +34,8 @@ export interface User {
 export interface UserFavorite {
   userId: string
   duaId: string
+  /** Where the dua is in the user's favorites (0 is first). The order the user arranged them in. */
+  position: number
   createdAt: string
 }
 

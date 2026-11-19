@@ -1,6 +1,9 @@
 import { SURAH_NAMES } from '@/constants/surah-names'
+import type { UserCollection } from '@/constants/collections'
 import { DEFAULT_DUA_REPEAT, FAVORITES_LIST_ID } from '@/constants/dua-config'
 import { normalizeForSearch } from '@/lib/search'
+import { getDuasInCollection } from '@/lib/collection-utils'
+import { getFavoriteDuas, normalizeFavoriteOrder } from '@/lib/favorites'
 import type { Dua, DuaContent, DuaSource } from '@/redux/reducers/duasSlice'
 
 export const SOURCE_LABELS: Record<DuaSource, string> = {
@@ -129,10 +132,17 @@ export const getDuaRepeat = (dua: Pick<Dua, 'repeat'>) => {
 }
 
 /** The duas of a list the Dua screen is opened from: Favorites, or a collection id. */
-export const getListDuas = (duas: Dua[], listId: string | undefined) =>
+export const getListDuas = (
+  duas: Dua[],
+  listId: string | undefined,
+  favoriteOrder: string[] = [],
+  userCollections: UserCollection[] = [],
+) =>
   listId === FAVORITES_LIST_ID
-    ? duas.filter((dua) => dua.isFavorite)
-    : duas.filter((dua) => !!listId && dua.categories.includes(listId))
+    ? getFavoriteDuas(duas, favoriteOrder)
+    : listId
+      ? getDuasInCollection(listId, duas, userCollections)
+      : []
 
 /** The dua as plain text, for sharing: title, Arabic, transliteration, translation and source. */
 export function duaShareText(dua: Dua, language: string): string {
@@ -148,7 +158,7 @@ export const isBuiltin = (dua: Dua) => dua.origin === 'builtin'
  * data/dua.json, so new or edited ones show up without clearing anything.
  */
 export interface StoredDuas {
-  /** Ids of every dua marked as a favorite, built-in or added. */
+  /** Ids of every dua marked as a favorite, built-in or added, in the order the user arranged them. */
   favoriteIds: string[]
   /** The duas the user added (anything that is not `builtin`), without `isFavorite`. */
   userDuas: DuaContent[]
@@ -158,10 +168,10 @@ export interface StoredDuas {
  * The part of the current duas that is worth saving. A dua counts as built-in when its id is one
  * of `builtIn` (not by its `origin` label), so it is never saved twice.
  */
-export function toStoredDuas(duas: Dua[], builtIn: Dua[]): StoredDuas {
+export function toStoredDuas(duas: Dua[], builtIn: Dua[], favoriteOrder: string[] = []): StoredDuas {
   const builtInIds = new Set(builtIn.map((dua) => dua.id))
   return {
-    favoriteIds: duas.filter((dua) => dua.isFavorite).map((dua) => dua.id),
+    favoriteIds: normalizeFavoriteOrder(duas, favoriteOrder),
     userDuas: duas
       .filter((dua) => dua.origin !== 'builtin' && !builtInIds.has(dua.id))
       .map((dua) => {

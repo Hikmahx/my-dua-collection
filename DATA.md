@@ -54,6 +54,7 @@ The collections on the home grid. An array of `CollectionDef` objects.
 | `name` | string | Required | Shown on the card. For a collection received through a share, this is what the duplicate check compares. |
 | `iconKey` | string | Required | One of `COLLECTION_ICON_KEYS` in `components/icons/collection-icons`. |
 | `isUserCreated` | boolean | Optional | `true` for a collection the user made or received through a share. Missing means pre-made. |
+| `duaIds` | string[] | Optional | Only on a collection the user made: the ids of its duas in the order shown. Pre-made collections have none: their duas are the ones that name them in `categories`. Ids of duas that no longer exist are skipped. |
 | `sharedBy` | string | Optional | The id of the user who shared it. Missing when the user made it themselves. |
 
 ## user.json
@@ -67,7 +68,7 @@ People who signed in with Google or Facebook. An array of `User` objects.
 | `email` | string | Optional | Missing when the provider did not give one (Facebook can leave it out). Shown in the friend picker. |
 | `firstName` | string | Required | |
 | `lastName` | string | Optional | Missing when the provider gave a single name. |
-| `avatar` | object | Required | An `AvatarConfig`. The user changes it in Settings > Profile details. |
+| `avatar` | object | Required | The same `AvatarConfig` as the Settings avatar. |
 | `avatar.gender` | `"male"` or `"female"` | Required | |
 | `avatar.skin`, `avatar.hair`, `avatar.shirt`, `avatar.cap`, `avatar.hijab` | string (`#RRGGBB`) | Required | `cap` shows on the male avatar and `hijab` on the female one, but both are always stored. |
 | `authProvider` | `"google"` or `"facebook"` | Required | |
@@ -83,7 +84,8 @@ One row per favorite dua. An array of `UserFavorite` objects. A row is unique on
 |---|---|---|---|
 | `userId` | string | Required | An `id` in `user.json`. |
 | `duaId` | string | Required | An `id` in `dua.json`. |
-| `createdAt` | date string | Required | When the dua was favorited. |
+| `position` | number | Required | Where the dua is in this user's favorites: a whole number from 0, with no gaps or repeats for the same user. It is the order the user arranged them in (Reorder on the Favorites screen), and the Dua screen goes through the favorites in this order. A newly favorited dua goes last. |
+| `createdAt` | date string | Required | When the dua was favorited. It does not decide the order. |
 
 ## friends.json
 

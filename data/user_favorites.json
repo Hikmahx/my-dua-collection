@@ -2,31 +2,37 @@
   {
     "userId": "f8ba1161-063f-497e-a549-14f2dbf2e264",
     "duaId": "1",
+    "position": 1,
     "createdAt": "2026-09-03T05:10:00Z"
   },
   {
     "userId": "f8ba1161-063f-497e-a549-14f2dbf2e264",
     "duaId": "7",
+    "position": 3,
     "createdAt": "2026-09-03T05:12:00Z"
   },
   {
     "userId": "f8ba1161-063f-497e-a549-14f2dbf2e264",
     "duaId": "dhikr-subhanallah",
+    "position": 0,
     "createdAt": "2026-09-14T19:45:00Z"
   },
   {
     "userId": "f8ba1161-063f-497e-a549-14f2dbf2e264",
     "duaId": "dhikr-la-hawla",
+    "position": 2,
     "createdAt": "2026-10-02T04:58:00Z"
   },
   {
     "userId": "95fc0d98-89c1-4d1e-aa18-b4a3a82715c9",
     "duaId": "13",
+    "position": 0,
     "createdAt": "2026-09-06T06:30:00Z"
   },
   {
     "userId": "95fc0d98-89c1-4d1e-aa18-b4a3a82715c9",
     "duaId": "dhikr-hasbunallah",
+    "position": 1,
     "createdAt": "2026-09-20T22:11:00Z"
   }
 ]
