@@ -106,7 +106,7 @@ Users can currently:
 - Header with a back arrow, the collection name, a count such as "11 duas", a search icon and a filter icon.
 - One numbered row per dua with its title and source line.
 - **Search** opens under the header and finds duas by title, transliteration, Arabic, translation, or surah and hadith name. It ignores Arabic diacritics, apostrophes and hyphens, so "ali imran" finds "Ali 'Imran".
-- **Filter** (the filter icon menu) lists the surahs and hadith collections found in this collection. Pick one, and tap it again to clear it. A gold dot shows a filter is on.
+- **Filter** (the filter icon menu) has one section for what is found in this collection: Filter (with Surah and Hadith groups) when there are both, or just Surah or Hadith when there is only one. Pick one, and tap it again to clear it. The section has a maximum height and scrolls when the list is long. A gold dot shows a filter is on.
 
 ---
 
@@ -114,7 +114,7 @@ Users can currently:
 
 - Lists every favorite dua in the same design as a collection.
 - Small pills show which collections each dua belongs to (two at most, then "+N").
-- The same search and surah or hadith filter as the Collection screen.
+- The same search and scrollable surah and hadith filter as the Collection screen.
 - Saving a dua with a bookmark button comes with the dua detail view, which is next.
 
 ---
@@ -151,6 +151,7 @@ Users can currently:
 
 - The tab is a placeholder for now.
 - Dark and light mode can already be switched from the filter icon on the Home, Explore, Tasbih, Collection and Bookmark screens.
+- Without signing in, the user shows as Guest until they change their name or avatar on the profile screen (saved on the device only).
 
 ---
 
@@ -168,7 +169,7 @@ Users can currently:
 - **State** — Redux Toolkit slices for duas, settings and the Tasbih, persisted with AsyncStorage (the Tasbih saves are debounced so fast tapping does not hammer storage).
 - **Routing** — Expo Router: the five tabs, plus `collection/[id]` for a collection and `modal` for adding a dua.
 - **Shared parts** — one `ScreenHeader`, one `SearchField`, and one list screen (`DuaListScreen`) that both the Collection and Bookmark screens use.
-- **Search and filter** — a single `useSearch` hook for every search box, and `useSourceFilter` for the surah and hadith filter.
+- **Search and filter** — a single `useSearch` hook for every search box, and `useSourceFilter` for the surah and hadith filter (one menu section with a maximum height: Filter, Surah or Hadith).
 - **Theming** — Tailwind classes (twrnc) with a shared color palette mirrored in code, and a theme file per screen for the colors that classes cannot reach (SVG and icon props).
 - **Icons** — SVG files are the source of truth, and the React Native components are generated from them with a script, so the same icons work as collection covers, Explore topics and a future icon picker.
 - **Arabic text** — one `ArabicText` component, because Amiri's diacritics are clipped unless the line height is generous.

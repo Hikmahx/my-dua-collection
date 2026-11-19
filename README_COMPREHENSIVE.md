@@ -198,12 +198,13 @@ Opened by tapping a collection card on Home (route `app/collection/[id].tsx`, wh
   - Collection name
   - Count of duas under the name ("11 duas"). While a filter is on it adds the filter, e.g. "3 duas · Bukhari"
   - Search icon: opens a search field under the header, and closes and clears it when tapped again. It also finds duas by surah and hadith name (see [Search](#search))
-  - Filter icon: opens a menu with a **Manage** section (**Add dua** and **Edit collection**), then a **Surah** and a **Hadith** section, then Appearance (see below)
+  - Filter icon: opens a menu with a **Manage** section (**Add dua** and **Edit collection**), then the source filter section (see below), then Appearance
 - **Manage section:**
   - **Add dua** opens the add-dua sheet ("Choose how you'd like to add your dua"). The new dua goes into this collection: a pre-made collection is picked in the category list, and a collection the user made gets the dua added to its list
   - **Edit collection** opens the [Edit Collection Screen](#edit-collection-screen). It is dimmed (and does nothing) for pre-made collections, because only collections the user made can be edited
 - **Filter by source:**
-  - The Surah section lists the surahs found in the collection, in Quran order. The Hadith section lists the hadith collections (Bukhari, Tirmidhi, ...) from A to Z. A section is left out when the collection has none from it
+  - The section is named after what the collection has. With both surahs and hadith it is **Filter**, holding a **Surah** group (the surahs found, in Quran order) and a **Hadith** group (the hadith collections, such as Bukhari and Tirmidhi, from A to Z), each with a small label. With only surahs, the section is just **Surah**; with only hadith, just **Hadith**, and the options are listed directly with no extra label. With neither, there is no section
+  - The section has a maximum height (about five rows). A long list, such as every surah favorited, scrolls inside the section while Manage and Appearance stay in place
   - One filter at a time: pick a surah or a hadith, and tap it again to clear it. A gold dot on the icon shows a filter is on
   - The hadith name is the text before the number in the reference (`Bukhari 6324` gives `Bukhari`)
 - **List of duas:** one numbered row per dua, with
@@ -293,7 +294,7 @@ Changes are kept on screen until **Save changes**. **Cancel** and the back arrow
 **Features:**
 - All bookmarked/favorited duas, in the same list design as the [Collection Screen](#collection-screen) (numbered rows with the title and source, and the "N duas" count under the title)
 - Shows which collections each dua belongs to, as small pills under the source: up to 2, then "+N" for the rest
-- Search and filter icons in the header, the same as the Collection screen: search also finds duas by surah and hadith name, and the filter menu has a **Reorder** option, then the Surah and Hadith filters, then Appearance. There is no back arrow, because it is a tab
+- Search and filter icons in the header, the same as the Collection screen: search also finds duas by surah and hadith name, and the filter menu has a **Reorder** option, then the source filter (Filter, Surah or Hadith, as above), then Appearance. There is no back arrow, because it is a tab
 - **Reorder:** the user decides the order of their favorites. Tapping **Reorder** (dimmed with fewer than two favorites) shows a grip (six dots) on every row. Press and hold it, then drag the row to a new place; the list scrolls by itself near the top and bottom, and screen readers get "Move up" and "Move down" actions. Each drag is saved right away, and **Done** (where the icons were) goes back to the normal list. While reordering, search and the filters are put aside so the whole list can be arranged, and the collection pills are hidden so every row is the same height
 - **The order is used everywhere:** the Favorites list shows the favorites in this order, and the Dua screen goes through the same list, so when one dua is finished the next one is the next favorite in the order the user set. A dua that is newly favorited goes at the end, and an unfavorited one leaves the order
 - **How the order is stored:** `favoriteOrder` in `duasSlice` (ids in order). The saved copy keeps it as `favoriteIds` in `duas:v2` (this was already a list, so no new version: favorites saved before this update start in the order they were in). It will be the `position` of each `user_favorites` row (see `data/README.md`)
@@ -309,7 +310,7 @@ Changes are kept on screen until **Save changes**. **Cancel** and the back arrow
 **Sections:**
 
 1. **Personal Content:**
-   - Profile details
+   - Profile details (name and avatar). Without signing in, the app starts as **Guest**: the name shows as "Guest" with the default avatar until the user changes it, and any change is saved on this device only. Signing out goes back to the guest profile
 
 2. **Islamic Calendar:**
    - Today's date in Islamic calendar
@@ -454,7 +455,7 @@ export interface Dua {
 - **Info:** rich text (bold, bullet points, titles) about the dua, stored as HTML. It must be sanitized before rendering.
 - **Origin:** where the dua came from: `builtin` (ships with the app), `manual` (typed by the user), `ai`, `image` (scanned), or `shared` (from another user: the copy also has `sharedBy`, the sender's user id, which is missing on duas the user made). This replaces `isUserCreated`; edit and delete actions apply to anything other than `builtin`.
 - **Favorites:** `isFavorite` on each dua in memory, so screens just read `dua.isFavorite`. It is not part of `dua.json`: built-in duas load with `isFavorite: false`, and the saved list of favorite ids (`favoriteIds`, see Data source) is applied on top when the app starts.
-- **Data folder:** `data/data.json` is the entry point. It lists which file holds each resource and which user is signed in (`currentUserId`, until real login exists). JSON files cannot import each other, so `data/index.ts` does the loading and exports `data` and `currentUserId`; `data/types.ts` has the types. Each resource is a table on the future backend, and all of it uses generated values (example.com emails, UUID ids), so replacing `data/index.ts` with API calls should not touch the screens. Every field, whether it is required or optional, and the rules for user codes, sharing and duplicate checks are in [`data/README.md`](data/README.md). In short:
+- **Data folder:** `data/data.json` is the entry point. It lists which file holds each resource and the sample user (`currentUserId`; the app does not sign this user in at launch, it starts as a guest). JSON files cannot import each other, so `data/index.ts` does the loading and exports `data` and `currentUserId`; `data/types.ts` has the types. Each resource is a table on the future backend, and all of it uses generated values (example.com emails, UUID ids), so replacing `data/index.ts` with API calls should not touch the screens. Every field, whether it is required or optional, and the rules for user codes, sharing and duplicate checks are in [`data/README.md`](data/README.md). In short:
   - `dua.json` and `collection.json` are the built-in duas and the home-grid collections (`COLLECTION_DEFS` reads from `collection.json`). A dua or collection that was shared to the user has an optional `sharedBy` (the sender's user id).
   - `user.json` has the people who signed in with Google or Facebook, each with a `userCode` (like `BG-7K3M`) that others type to find them.
   - `user_favorites.json`, `friends.json` and `shares.json` hold favorites, friends (with `family`, `friends` and `mosque` groups) and shares. A share stays `pending` until the recipient accepts, and then the item is copied into their library.
@@ -497,7 +498,7 @@ export interface Dua {
 - Shared palette: `tailwind.config.js` (for class names), mirrored in `constants/theme-colors.ts` (for SVG props, icons and `rgba()` values; `withAlpha(hex, opacity)` adds transparency to a palette color). Keep the two in sync
 - Screen-specific colors for both modes, next to the palette: `constants/explore-theme.ts`, `constants/tasbih-theme.ts` and `constants/dua-list-theme.ts`. They reuse the shared palette and only spell out values sampled from that screen's design
 - Components read the current mode with `useColorScheme()` (or a small hook such as `useTasbihColors()` and `useDuaListColors()`), so each screen only needs its light and dark values defined once
-- Screens with a header band (Explore, Tasbih, Collection, Bookmark) use `ScreenHeader`: a title, an optional subtitle, an optional left slot (e.g. a back arrow) and a right slot (the Appearance menu by default). The menu is `AppearanceMenuButton`; it can show extra sections above Appearance (`extraSections`, used for the Surah and Hadith filters) and a gold dot when a filter is on (`active`). Long menus scroll
+- Screens with a header band (Explore, Tasbih, Collection, Bookmark) use `ScreenHeader`: a title, an optional subtitle, an optional left slot (e.g. a back arrow) and a right slot (the Appearance menu by default). The menu is `AppearanceMenuButton`; it can show extra sections above Appearance (`extraSections`, used for the Surah and Hadith filters) and a gold dot when a filter is on (`active`). A menu section can have labelled `groups` and a `maxHeight`; past it, that section scrolls on its own (`FilterMenuSection` in `lib/types.d.ts`, drawn by `components/ui/filter-menu.tsx`). Menus too tall for the screen scroll as a whole
 
 ### Icon Library
 
@@ -518,7 +519,7 @@ Every search box in the app uses the same code, so they all behave the same way.
 - **Dua fields:** `duaSearchFields` in `lib/dua-utils.ts` gives the title, transliteration, Arabic and every translation of a dua. `duaSourceSearchFields` adds the surah name and the hadith name on top of that
 - **Input:** `SearchField` (`components/ui/search-field.tsx`) is the rounded search bar with the clear button
 - **Used by:** the Tasbih "Choose a dua" picker (it shows the 10 preset duas while the box is empty, and uses `duaSearchFields`, so it does not search surah or hadith names), the Collection and Bookmark screens (`duaSourceSearchFields`), and the Explore topics (`[topic.label]`)
-- **Filter by surah or hadith** (Collection and Bookmark screens): `useSourceFilter(duas)` in `hooks/use-source-filter.ts` returns the filtered duas and the Surah / Hadith menu sections. The helpers behind it are in `lib/dua-utils.ts`: `getSurahName`, `getHadithName`, `listSourceNames` and `matchesSourceFilter`. The filter runs first, then the search runs on what is left
+- **Filter by surah or hadith** (Collection and Bookmark screens): `useSourceFilter(duas)` in `hooks/use-source-filter.ts` returns the filtered duas and one menu section: "Filter" with Surah and Hadith groups when there are both, or just "Surah" or "Hadith" when there is only one (none when there is neither). It is capped by `FILTER_MAX_HEIGHT`, so it scrolls on its own. The helpers behind it are in `lib/dua-utils.ts`: `getSurahName`, `getHadithName`, `listSourceNames` and `matchesSourceFilter`. The filter runs first, then the search runs on what is left
 - **To add search to a new list:** call `useSearch(items, getFields)`, render a `SearchField` bound to `query` and `setQuery`, and show `results`
 
 ### Project Structure and Naming

@@ -1,7 +1,7 @@
 import { themeColors } from '@/constants/theme-colors'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import tw from '@/lib/tailwind'
-import type { FilterMenuProps } from '@/lib/types'
+import type { FilterMenuOption, FilterMenuProps } from '@/lib/types'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import {
   Modal,
@@ -33,6 +33,58 @@ export function FilterMenu({
   const right = Math.max(16, screenWidth - (anchor.x + anchor.width))
   // keep the panel on screen: the sections scroll when they don't fit
   const maxContentHeight = screenHeight - top - 24 - 16
+
+  const renderOption = (option: FilterMenuOption) => (
+    <Pressable
+      key={option.id}
+      accessibilityRole='button'
+      accessibilityState={{ selected: !!option.selected }}
+      onPress={() => {
+        option.onSelect()
+        if (closeOnSelect) onClose()
+      }}
+      style={tw`flex-row items-center px-4 py-2.5 mx-1 rounded-xl ${
+        option.selected ? (isDark ? 'bg-white/10' : 'bg-pill-bg') : ''
+      }`}
+    >
+      {option.icon && (
+        <MaterialCommunityIcons
+          name={option.icon}
+          size={18}
+          color={option.selected ? themeColors.brightGold : isDark ? '#FFFFFF' : '#1A1A1A'}
+          style={tw`mr-3`}
+        />
+      )}
+      <Text
+        style={tw`flex-1 text-[14px] ${
+          option.selected ? 'font-nunito-bold' : 'font-nunito'
+        } ${isDark ? 'text-white' : 'text-dark-text'}`}
+      >
+        {option.label}
+      </Text>
+      {option.selected && (
+        <MaterialCommunityIcons name='check' size={18} color={themeColors.brightGold} />
+      )}
+    </Pressable>
+  )
+
+  const renderSectionBody = (section: FilterMenuProps['sections'][number]) => (
+    <>
+      {section.options?.map(renderOption)}
+      {section.groups?.map((group) => (
+        <View key={group.id} style={tw`pt-1`}>
+          <Text
+            style={tw`px-4 pt-1 pb-1 text-[11px] font-nunito-semibold ${
+              isDark ? 'text-light-grayish-text-muted' : 'text-dark-grayish-text'
+            }`}
+          >
+            {group.title}
+          </Text>
+          {group.options.map(renderOption)}
+        </View>
+      ))}
+    </>
+  )
 
   return (
     <Modal
@@ -91,51 +143,17 @@ export function FilterMenu({
                   {section.title}
                 </Text>
 
-                {section.options.map((option) => (
-                  <Pressable
-                    key={option.id}
-                    // disabled={option.disabled}
-                    accessibilityRole='button'
-                    accessibilityState={{ selected: !!option.selected }}
-                    onPress={() => {
-                      option.onSelect()
-                      if (closeOnSelect) onClose()
-                    }}
-                    style={({ pressed }) => [
-                      tw`flex-row items-center px-4 py-2.5 mx-1 rounded-xl ${
-                        option.selected
-                          ? isDark
-                            ? 'bg-white/10'
-                            : 'bg-pill-bg'
-                          : ''
-                      }`,
-                      // option.disabled && { opacity: 0.4 },
-                    ]}
+                {section.maxHeight ? (
+                  <ScrollView
+                    nestedScrollEnabled
+                    style={{ maxHeight: section.maxHeight }}
+                    indicatorStyle={isDark ? 'white' : 'black'}
                   >
-                    {option.icon && (
-                      <MaterialCommunityIcons
-                        name={option.icon}
-                        size={18}
-                        color={option.selected ? themeColors.brightGold : isDark ? '#FFFFFF' : '#1A1A1A'}
-                        style={tw`mr-3`}
-                      />
-                    )}
-                    <Text
-                      style={tw`flex-1 text-[14px] ${
-                        option.selected ? 'font-nunito-bold' : 'font-nunito'
-                      } ${isDark ? 'text-white' : 'text-dark-text'}`}
-                    >
-                      {option.label}
-                    </Text>
-                    {option.selected && (
-                      <MaterialCommunityIcons
-                        name='check'
-                        size={18}
-                        color={themeColors.brightGold}
-                      />
-                    )}
-                  </Pressable>
-                ))}
+                    {renderSectionBody(section)}
+                  </ScrollView>
+                ) : (
+                  renderSectionBody(section)
+                )}
               </View>
             ))}
           </ScrollView>

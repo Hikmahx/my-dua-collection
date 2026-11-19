@@ -1,5 +1,8 @@
 import { DEFAULT_AVATAR, type AvatarConfig } from '@/constants/avatar-config'
-import { currentUserId, data, type User } from '@/data'
+import {
+  // currentUserId, data,
+   type User,
+ } from '@/data'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 /** What a person who is not signed in can still customize on this device. */
@@ -26,8 +29,10 @@ export interface ProfileChanges {
 }
 
 export const initialUserState: UserState = {
-  // Until real login exists, the user named in data.json is signed in
-  currentUser: data.users.find((user) => user.id === currentUserId) ?? null,
+  // Nobody is signed in until the user chooses to. The guest profile shows as "Guest" until
+  // they change it on the profile screen.
+  // currentUser: data.users.find((user) => user.id === currentUserId) ?? null,
+  currentUser: null,
   guest: { firstName: 'Guest', avatar: DEFAULT_AVATAR },
 }
 

@@ -14,7 +14,7 @@ The entry point.
 | Field | Type | Required | Notes |
 |---|---|---|---|
 | `version` | number | Required | Format version of the data. Raise it when a file changes in a way that breaks older code. |
-| `currentUserId` | string | Required | The signed-in user's id, until real login exists. Must be an `id` in `user.json`. |
+| `currentUserId` | string | Required | The sample user's id. The app does not sign this user in at launch (it starts as a guest). Must be an `id` in `user.json`. |
 | `resources` | object | Required | Resource name to file name: `duas`, `collections`, `users`, `userFavorites`, `friends`, `shares`. |
 
 JSON files cannot import each other, so a new resource is added in `data.json` and in `index.ts`.

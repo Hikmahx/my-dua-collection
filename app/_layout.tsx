@@ -16,17 +16,19 @@ import { Stack } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
 import { useEffect, useState } from 'react'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import 'react-native-reanimated'
 import { Provider, useDispatch, useSelector } from 'react-redux'
 
 import { AppSplash } from '@/components/splash/app-splash'
 import { Colors } from '@/constants/theme'
 import { useColorScheme } from '@/hooks/use-color-scheme'
+import { useCollectionsPersistence } from '@/hooks/use-collections-persistence'
 import { useSettingsPersistence } from '@/hooks/use-settings-persistence'
 import { useUserPersistence } from '@/hooks/use-user-persistence'
 import { useTasbihPersistence } from '@/hooks/use-tasbih-persistence'
 import { loadCachedDuas, saveCachedDuas } from '@/lib/duas-storage'
-import { setDuas } from '@/redux/reducers/duasSlice'
+import { setDuas, setFavoriteOrder } from '@/redux/reducers/duasSlice'
 import store, { RootState } from '@/redux/store'
 
 SplashScreen.preventAutoHideAsync()
@@ -38,7 +40,10 @@ export const unstable_settings = {
 export default function RootLayout() {
   return (
     <Provider store={store}>
-      <AppShell />
+      {/* needed for the drag-to-reorder list on the Edit collection screen */}
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <AppShell />
+      </GestureHandlerRootView>
     </Provider>
   )
 }
@@ -46,6 +51,7 @@ export default function RootLayout() {
 function AppShell() {
   const dispatch = useDispatch()
   const duas = useSelector((state: RootState) => state.duas.items)
+  const favoriteOrder = useSelector((state: RootState) => state.duas.favoriteOrder)
   const colorScheme = useColorScheme()
   const isDark = colorScheme === 'dark'
   const [duasReady, setDuasReady] = useState(false)
@@ -71,7 +77,10 @@ function AppShell() {
     let active = true
     loadCachedDuas().then((cached) => {
       if (!active) return
-      if (cached) dispatch(setDuas(cached))
+      if (cached) {
+        dispatch(setDuas(cached.duas))
+        dispatch(setFavoriteOrder(cached.favoriteOrder))
+      }
       setDuasReady(true)
     })
     return () => {
@@ -81,16 +90,16 @@ function AppShell() {
 
   useEffect(() => {
     if (!duasReady) return
-    saveCachedDuas(duas)
-  }, [duas, duasReady])
+    saveCachedDuas(duas, favoriteOrder)
+  }, [duas, favoriteOrder, duasReady])
 
   // 3) Restore / save the Tasbih counter (count, target, selected dua, sound, vibration)
   const tasbihReady = useTasbihPersistence()
 
-  // 4) Restore / save who is signed in, their name and avatar (or the guest profile)
-  const userReady = useUserPersistence()
+  // 4) Restore / save the collections the user made (their names and duas)
+  const collectionsReady = useCollectionsPersistence()
 
-  const ready = fontsLoaded && settingsReady && duasReady && tasbihReady && userReady
+  const ready = fontsLoaded && settingsReady && duasReady && tasbihReady && collectionsReady
 
   // The native splash (just a background colour, see app.json) only has to cover font loading.
   // After that, <AppSplash /> takes over until the app is ready, then fades out.
@@ -116,6 +125,7 @@ function AppShell() {
           <Stack>
             <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
             <Stack.Screen name='collection/[id]' options={{ headerShown: false }} />
+            <Stack.Screen name='edit-collection/[id]' options={{ headerShown: false }} />
             <Stack.Screen name='dua/[id]' options={{ headerShown: false }} />
             <Stack.Screen name='profile' options={{ headerShown: false }} />
             <Stack.Screen
