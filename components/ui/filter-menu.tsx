@@ -94,19 +94,23 @@ export function FilterMenu({
                 {section.options.map((option) => (
                   <Pressable
                     key={option.id}
+                    // disabled={option.disabled}
+                    accessibilityRole='button'
+                    accessibilityState={{ selected: !!option.selected }}
                     onPress={() => {
                       option.onSelect()
                       if (closeOnSelect) onClose()
                     }}
-                    style={({ pressed }) =>
+                    style={({ pressed }) => [
                       tw`flex-row items-center px-4 py-2.5 mx-1 rounded-xl ${
-                        option.selected || pressed
+                        option.selected
                           ? isDark
                             ? 'bg-white/10'
                             : 'bg-pill-bg'
                           : ''
-                      }`
-                    }
+                      }`,
+                      // option.disabled && { opacity: 0.4 },
+                    ]}
                   >
                     {option.icon && (
                       <MaterialCommunityIcons
