@@ -200,7 +200,7 @@ Opened by tapping a collection card on Home (route `app/collection/[id].tsx`, wh
   - Search icon: opens a search field under the header, and closes and clears it when tapped again. It also finds duas by surah and hadith name (see [Search](#search))
   - Filter icon: opens a menu with a **Manage** section (**Add dua** and **Edit collection**), then the source filter section (see below), then Appearance
 - **Manage section:**
-  - **Add dua** opens the add-dua sheet ("Choose how you'd like to add your dua"). The new dua goes into this collection, which is already ticked in the form's category list (see [Adding Duas](#adding-duas))
+  - **Add dua** opens the add-dua sheet ("Choose how you'd like to add your dua"). The new dua goes into this collection, which is already ticked in the form's collection list (see [Adding Duas](#adding-duas))
   - **Edit collection** opens the [Edit Collection Screen](#edit-collection-screen). It is dimmed (and does nothing) for pre-made collections, because only collections the user made can be edited
 - **Filter by source:**
   - The section is named after what the collection has. With both surahs and hadith it is **Filter**, holding a **Surah** group (the surahs found, in Quran order) and a **Hadith** group (the hadith collections, such as Bukhari and Tirmidhi, from A to Z), each with a small label. With only surahs, the section is just **Surah**; with only hadith, just **Hadith**, and the options are listed directly with no extra label. With neither, there is no section
@@ -237,7 +237,7 @@ Opened from **Edit collection** in the Collection screen's menu (route `app/edit
 
 Changes are kept on screen until **Save changes**. **Cancel** and the back arrow drop them.
 
-**How collections are stored:** a collection the user made has its own list of dua ids in order (`duaIds`), unlike a pre-made one, whose duas are the ones that name it in `categories`. Because of that, a dua can be in a collection without changing the dua, and built-in duas can be in one. They live in `collectionsSlice` and are saved on the device as `collections:v1` (`lib/collections-storage.ts`, `useCollectionsPersistence`). A dua deleted from the library leaves every collection, and a collection that had only that dua is deleted with it. **A collection cannot exist without a dua**: collections are created only together with their first dua, from the add-dua form (the "+" pill) or from the Dua screen's **Save to collection** sheet (**New collection**). Both go through one all-or-nothing step: the `createDuaInCollections` / `saveDuaCollections` thunks (`redux/thunks.ts`) check the rule and dispatch a single action (`addDuaWithCollections`, or `setDuaCollections` in `collectionsSlice`), so a cancelled or failed add can never leave a collection without a dua or a dua without a collection. Pre-made collections are read only, so a dua can only be added to collections the user made. The rule is also enforced when data is read and edited: saved collections with no duas are dropped on launch (`sanitizeCollections`), and saving the Edit collection screen with no duas left offers to delete the collection instead. Collections are saved to the device immediately (not after a delay), together with the duas.
+**How collections are stored:** a collection the user made has its own list of dua ids in order (`duaIds`), unlike a pre-made one, whose duas are the ones that name it in `collection`. Because of that, a dua can be in a collection without changing the dua, and built-in duas can be in one. They live in `collectionsSlice` and are saved on the device as `collections:v1` (`lib/collections-storage.ts`, `useCollectionsPersistence`). A dua deleted from the library leaves every collection, and a collection that had only that dua is deleted with it. **A collection cannot exist without a dua**: collections are created only together with their first dua, from the add-dua form (the "+" pill) or from the Dua screen's **Save to collection** sheet (**New collection**). Both go through one all-or-nothing step: the `createDuaInCollections` / `saveDuaCollections` thunks (`redux/thunks.ts`) check the rule and dispatch a single action (`addDuaWithCollections`, or `setDuaCollections` in `collectionsSlice`), so a cancelled or failed add can never leave a collection without a dua or a dua without a collection. Pre-made collections are read only, so a dua can only be added to collections the user made. The rule is also enforced when data is read and edited: saved collections with no duas are dropped on launch (`sanitizeCollections`), and saving the Edit collection screen with no duas left offers to delete the collection instead. Collections are saved to the device immediately (not after a delay), together with the duas.
 
 #### Save to collection sheet
 
@@ -272,7 +272,7 @@ Opened by the **+** in the Dua screen's bottom bar (`components/dua-screen/save-
 - Search by Arabic text
 - Search by meaning/occasion
 - Search by tags
-- Browse by categories
+- Browse by collection
 
 **Current implementation (built):**
 - Header with the "Explore" title and a filter icon that opens the same Appearance menu as Home (Dark / Light)
@@ -373,7 +373,7 @@ The "+" button on the home screen opens a modal with **three methods**:
 - **Translation** (multiple language options via dropdown)
 - **Source** (select Quran or Hadith) and **Reference** (text input; the placeholder changes with the selected source, e.g. `11:38` for Quran, `Qudsi 234` for Hadith)
 - **Tags** (comma-separated or tag selector)
-- **Categories** (required, multi-select): shows only the collections the user made. The pre-made collections are read only and are not listed, and there is no default "General". A **"+" pill** at the end turns into a name field; confirming it adds and ticks a new collection. That collection is only *pending* until **Add Dua** succeeds: Cancel, closing the sheet, a validation error or a failed save creates nothing. Saving needs at least one ticked category
+- **Collection** (required, multi-select): shows only the collections the user made. The pre-made collections are read only and are not listed, and there is no default "General". A **"+" pill** at the end turns into a name field; confirming it adds and ticks a new collection. That collection is only *pending* until **Add Dua** succeeds: Cancel, closing the sheet, a validation error or a failed save creates nothing. Saving needs at least one ticked collection
 - Save button
 
 #### 3. AI Assistant (Advanced Feature)
@@ -442,7 +442,7 @@ export interface Dua {
   arabicText: string
   transliteration?: string
   translations: Record<string, string> // keyed by language code
-  categories: string[]
+  collection: string[]
   source?: DuaSource
   reference?: string // '21:87' or '11:39-42'
   info?: string // HTML from the rich editor
@@ -458,7 +458,7 @@ export interface Dua {
 - **Source and reference:** `source` is a fixed option (Quran, Hadith) and `reference` is the detail within it. Both are optional, so duas without a known source (manual or AI-generated) don't need them. Quran references can be a single verse (`21:87`) or a range (`11:39-42`), validated with `/^\d{1,3}:\d{1,3}(-\d{1,3})?$/` plus a check that the surah number is 114 or less. The reference input placeholder changes with the selected source (`11:38` for Quran, `Qudsi 234` for Hadith). Lists show them as a source line, e.g. `Al-Baqarah · 2:201` (`formatSourceLine` in `lib/dua-utils.ts`). The surah name and the hadith name used by the filter and search come from the reference too (`getSurahName`, `getHadithName`). Built-in references were checked against sunnah.com (hadith) and the Quran text; a built-in dua with no `source` is one whose reference has not been verified yet, not one that has none
 - **Translations:** stored per language code. The user picks a language in Settings and the app shows `translations[language]`, falling back to `translations.en` if that language is missing.
 - **Transliteration:** optional per dua, and shown or hidden with a `showTransliteration` toggle in Settings.
-- **Categories:** an array, since a dua can belong to several categories. A category id is also a collection id (see `constants/collections.ts`). It names the *pre-made* collections a built-in dua is in. A dua the user adds keeps `categories` empty: the collections it is in are the user's collections that list it in their `duaIds` (`getCollectionIdsOfDua` in `lib/collection-utils.ts` gives both kinds together).
+- **Collection:** an array, since a dua can belong to several collections. Each id is a collection id (see `constants/collections.ts`). It names the *pre-made* collections a built-in dua is in. A dua the user adds keeps `collection` empty: the collections it is in are the user's collections that list it in their `duaIds` (`getCollectionIdsOfDua` in `lib/collection-utils.ts` gives both kinds together).
 - **Repeat:** `repeat` is how many times the dua is recited (the counter on the Dua screen counts down from it and moves to the next dua at 0), for example 33 for SubhanAllah after prayer. Every dua in `dua.json` has one. A dua without it, such as one the user added, counts once (`DEFAULT_DUA_REPEAT` in `constants/dua-config.ts`).
 - **Info:** rich text (bold, bullet points, titles) about the dua, stored as HTML. It must be sanitized before rendering.
 - **Origin:** where the dua came from: `builtin` (ships with the app), `manual` (typed by the user), `ai`, `image` (scanned), or `shared` (from another user: the copy also has `sharedBy`, the sender's user id, which is missing on duas the user made). This replaces `isUserCreated`; edit and delete actions apply to anything other than `builtin`.
@@ -469,7 +469,7 @@ export interface Dua {
   - `user_favorites.json`, `friends.json` and `shares.json` hold favorites, friends (with `family`, `friends` and `mosque` groups) and shares. A share stays `pending` until the recipient accepts, and then the item is copied into their library.
   - Only duas and collections are read by the app today. The rest is ready-made data for the login, favorites, sharing and friend-picker work; favorites still live in `duas:v2` on the device until then.
 - **Settings:** `settingsSlice` holds `translationLanguage` (default `'en'`, called `language` in older saves, which are converted), `appLanguage` (default `'en'`), `arabicFont` and `showTransliteration`.
-- **App language:** all app text goes through `t('key')` (`hooks/use-t.ts`, texts in `locales/en.ts`; `{name}` placeholders, or a function for plurals). A text a language does not have falls back to English. To add a language: create `locales/<code>.ts` with the same keys, register it in `locales/index.ts`, and add its code to `APP_LANGUAGE_CODES` in `constants/languages.ts` (it then appears in the App language sheet). Right-to-left layout is not set up yet. Built-in collection names, categories and Quran/Hadith source names are content, not app text, and are still English.
+- **App language:** all app text goes through `t('key')` (`hooks/use-t.ts`, texts in `locales/en.ts`; `{name}` placeholders, or a function for plurals). A text a language does not have falls back to English. To add a language: create `locales/<code>.ts` with the same keys, register it in `locales/index.ts`, and add its code to `APP_LANGUAGE_CODES` in `constants/languages.ts` (it then appears in the App language sheet). Right-to-left layout is not set up yet. Built-in collection names and Quran/Hadith source names are content, not app text, and are still English.
 - **Shared building blocks:** the "new collection name" field of the add-dua form and of the Save to collection sheet is one hook, `useNewCollectionInput` (open/close, typed name, empty and duplicate checks). The pickers for App language, Translation language and Arabic text style all use `components/settings/option-sheet.tsx` (on `components/ui/bottom-sheet.tsx`). The Delete, Save and Keep buttons of the collection screens are `components/ui/pill-button.tsx`.
 - **Data source:** duas load from `data/dua.json` (33 duas: 15 general duas and 18 dhikr in the Dhikr collection). The built-in duas are always read from `dua.json`, so adding or editing them needs no cache reset. The copy saved on the device (`duas:v2` in AsyncStorage, `lib/duas-storage.ts`) is `{ favoriteIds, userDuas }`: the ids of every favorite dua, and the duas the user added (without `isFavorite`). A dua is treated as built-in when its id is in `dua.json`, whatever its `origin` says, so it is never saved twice. Saved data for a built-in id is ignored, so the built-in text always wins. `duas:v1` (the whole array) is converted once on the first launch after the update and then removed.
 
@@ -743,7 +743,7 @@ Every search box in the app uses the same code, so they all behave the same way.
 - [ ] Authentication and user management (email required for cloud sync)
 <!-- - [x] Bottom navigation setup (5 screens)
 - [x] Dark/light mode with a saved preference
-- [x] Dua data model (source, reference, translations, categories, info, origin) loaded from `data/dua.json`
+- [x] Dua data model (source, reference, translations, collection, info, origin) loaded from `data/dua.json`
 - [x] Reusable collection icon library (see [Icon Library](#icon-library))
 - [x] Splash screen
 - [x] Dhikr collection (18 dhikr duas in `data/dua.json`)
@@ -760,7 +760,7 @@ Every search box in the app uses the same code, so they all behave the same way.
   - [ ] Reorganizable collections
   - [x] Fixed "+" button for adding duas -->
 - [ ] **Manual Dua Entry:**
-  <!-- - [x] Form with title, Arabic, translation, categories, source and reference
+  <!-- - [x] Form with title, Arabic, translation, collection, source and reference
   - [x] Transliteration (optional)
   - [ ] Info (rich text) field
   - [x] Multi-collection assignment (the user's own collections only)

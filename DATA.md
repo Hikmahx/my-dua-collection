@@ -30,7 +30,7 @@ The built-in duas. An array of `Dua` objects without `isFavorite`.
 | `arabicText` | string | Required | |
 | `transliteration` | string | Optional | An empty string counts as missing, and the Dua screen hides the block. 14 built-in duas (the Arabic-only dhikr) have `""`. |
 | `translations` | object | Required | Language code to text, with at least one language. Every built-in dua has `en`. |
-| `categories` | string[] | Required | Ids of the pre-made collections the dua belongs to (one or more for built-in duas). Each should match a collection `id`. A dua the user adds has `[]`: the user's collections list it in their own `duaIds` instead. |
+| `collection` | string[] | Required | Ids of the pre-made collections the dua belongs to (one or more for built-in duas). Each should match a collection `id`. A dua the user adds has `[]`: the user's collections list it in their own `duaIds` instead. |
 | `source` | `"quran"` or `"hadith"` | Optional | Use it together with `reference`. |
 | `reference` | string | Optional | Quran: `"21:87"` or `"11:39-42"`. Hadith: `"Muslim 596"`. Use it together with `source`. |
 | `info` | string (HTML) | Optional | Written in the rich editor. Only shown as formatted text. |
@@ -50,11 +50,11 @@ The collections on the home grid. An array of `CollectionDef` objects.
 
 | Field | Type | Required | Notes |
 |---|---|---|---|
-| `id` | string | Required | Unique. The same text that duas list in `categories`. Pre-made collections have readable ids (`"Morning"`). A collection made or received later gets a new id. |
+| `id` | string | Required | Unique. The same text that duas list in `collection`. Pre-made collections have readable ids (`"Morning"`). A collection made or received later gets a new id. |
 | `name` | string | Required | Shown on the card. For a collection received through a share, this is what the duplicate check compares. |
 | `iconKey` | string | Required | One of `COLLECTION_ICON_KEYS` in `components/icons/collection-icons`. |
 | `isUserCreated` | boolean | Optional | `true` for a collection the user made or received through a share. Missing means pre-made. |
-| `duaIds` | string[] | Optional | Only on a collection the user made (never empty: a collection is created together with its first dua, and is deleted when its last dua is deleted from the library): the ids of its duas in the order shown. Pre-made collections have none: their duas are the ones that name them in `categories`. Ids of duas that no longer exist are skipped. |
+| `duaIds` | string[] | Optional | Only on a collection the user made (never empty: a collection is created together with its first dua, and is deleted when its last dua is deleted from the library): the ids of its duas in the order shown. Pre-made collections have none: their duas are the ones that name them in `collection`. Ids of duas that no longer exist are skipped. |
 | `sharedBy` | string | Optional | The id of the user who shared it. Missing when the user made it themselves. |
 
 ## user.json
@@ -154,7 +154,7 @@ Example of a copy (not in `dua.json`):
   "arabicText": "لَّا إِلَٰهَ إِلَّا أَنتَ سُبْحَٰنَكَ إِنِّي كُنتُ مِنَ ٱلظَّٰلِمِينَ",
   "transliteration": "La ilaha illa anta subhanaka inni kuntu minaz-zalimin",
   "translations": { "en": "There is no deity but You. Indeed, I have been of the wrongdoers." },
-  "categories": ["Quranic"],
+  "collection": ["Quranic"],
   "source": "quran",
   "reference": "21:87",
   "origin": "shared",
@@ -166,4 +166,4 @@ Example of a copy (not in `dua.json`):
 
 - What happens on a duplicate: for a collection (merge into the existing one, skip, or keep both) and for a dua (skip it, or pick another collection). The checks above only find duplicates.
 - Duas without `source` and `reference` cannot be matched by the dua check. A fallback would be to compare the Arabic text.
-- A pre-made collection lists its duas through the duas' `categories`, but a collection the user made lists its own `duaIds`, so it can hold built-in duas too. When a shared collection is copied, its `duaIds` must point at duas the recipient has: a built-in dua is the same on every device, but an added dua has to be copied with the collection.
+- A pre-made collection lists its duas through the duas' `collection`, but a collection the user made lists its own `duaIds`, so it can hold built-in duas too. When a shared collection is copied, its `duaIds` must point at duas the recipient has: a built-in dua is the same on every device, but an added dua has to be copied with the collection.

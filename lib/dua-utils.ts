@@ -208,6 +208,16 @@ export function mergeStoredDuas(stored: StoredDuas, builtIn: Dua[]): Dua[] {
   const fresh = builtIn.map((dua) => ({ ...dua, isFavorite: favorites.has(dua.id) }))
   const added = stored.userDuas
     .filter((dua) => !builtInIds.has(dua.id) && dua.origin !== 'builtin')
-    .map((dua) => ({ ...dua, isFavorite: favorites.has(dua.id) }))
+    .map((dua) => ({ ...withCollection(dua), isFavorite: favorites.has(dua.id) }))
   return [...fresh, ...added]
+}
+
+/**
+ * Duas saved before `categories` was renamed to `collection` still have the old key. Move it over so
+ * `dua.collection` is always an array (a missing or broken value becomes []).
+ */
+function withCollection(dua: DuaContent): DuaContent {
+  const { categories, ...rest } = dua as DuaContent & { categories?: unknown }
+  const list = Array.isArray(rest.collection) ? rest.collection : categories
+  return { ...rest, collection: Array.isArray(list) ? list.filter((id): id is string => typeof id === 'string') : [] }
 }

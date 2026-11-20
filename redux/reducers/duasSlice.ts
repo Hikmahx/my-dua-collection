@@ -11,7 +11,7 @@ export interface Dua {
   arabicText: string
   transliteration?: string
   translations: Record<string, string> // keyed by language code
-  categories: string[]
+  collection: string[] // ids of the pre-made collections the dua is in
   source?: DuaSource
   reference?: string // '21:87' or '11:39-42'
   info?: string // HTML from the rich editor

@@ -146,8 +146,8 @@ export default function AddDuaModal() {
       arabicText: arabicText.trim(),
       ...(transliteration.trim() && { transliteration: transliteration.trim() }),
       translations: { [language]: translation.trim() },
-      // The user's collections list their duas themselves (`duaIds`); `categories` is for pre-made ones
-      categories: [],
+      // The user's collections list their duas themselves (`duaIds`); `collection` is for pre-made ones
+      collection: [],
       origin: 'manual',
       isFavorite: false,
       ...(source && { source }),
@@ -357,10 +357,10 @@ export default function AddDuaModal() {
               />
             </View>
 
-            {/* Categories = the user's own collections (a dua can belong to several). "+" makes a new one. */}
+            {/* Collection = the user's own collections (a dua can belong to several). "+" makes a new one. */}
             <View style={tw`mb-5`}>
               <Text style={tw`text-sm font-semibold ${textColor} mb-2`}>
-                {t('addDua.categories')}
+                {t('addDua.collection')}
               </Text>
               {userCollections.length === 0 && pendingCollections.length === 0 && !newCollection.creating && (
                 <Text

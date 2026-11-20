@@ -8,21 +8,21 @@ export interface CollectionDef {
   isUserCreated?: boolean
   /**
    * The duas of a collection the user made, in the order they are shown. Pre-made collections have
-   * no list: their duas are the ones that name the collection in their `categories`.
+   * no list: their duas are the ones that name the collection in their `collection`.
    */
   duaIds?: string[]
   /** Id of the user who shared this collection. Missing (or null) when the user made it themselves. */
   sharedBy?: string | null
 }
 
-/** Collection definitions: category id -> display name and icon. Used for home grid. Read from data/collection.json. */
+/** Collection definitions: collection id -> display name and icon. Used for home grid. Read from data/collection.json. */
 export const COLLECTION_DEFS: CollectionDef[] = data.collections
 
 /** A collection the user made (or received). The only kind that can be edited or deleted. */
 export type UserCollection = CollectionDef & { isUserCreated: true; duaIds: string[] }
 
 /**
- * Display name of a collection (category) id. Pass the user's own collections to find theirs too.
+ * Display name of a collection id. Pass the user's own collections to find theirs too.
  * Unknown ids are shown as they are.
  */
 export const getCollectionName = (id: string, userCollections: CollectionDef[] = []) =>

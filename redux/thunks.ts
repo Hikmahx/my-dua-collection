@@ -10,8 +10,8 @@ import type { AppDispatch, RootState } from '@/redux/store'
 type AppThunk<Result> = (dispatch: AppDispatch, getState: () => RootState) => Result
 
 /** True when the dua is in one of the pre-made collections, so it needs none of the user's. */
-export const isInPremadeCollection = (dua: Pick<Dua, 'categories'>) =>
-  dua.categories.some((id) => COLLECTION_DEFS.some((collection) => collection.id === id))
+export const isInPremadeCollection = (dua: Pick<Dua, 'collection'>) =>
+  dua.collection.some((id) => COLLECTION_DEFS.some((collection) => collection.id === id))
 
 /** The chosen ids that are collections the user really has. Anything else (a pre-made id) is dropped. */
 const ownCollectionIds = (state: RootState, ids: string[]) =>
