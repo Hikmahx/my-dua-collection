@@ -153,6 +153,10 @@ export function duaShareText(dua: Dua, language: string): string {
 
 export const isBuiltin = (dua: Dua) => dua.origin === 'builtin'
 
+/** A new id for a dua the user adds. The random part keeps two duas made in the same millisecond apart. */
+export const createDuaId = () =>
+  `dua-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
+
 /**
  * What is saved on the device: only what the user changed. The built-in duas always come from
  * data/dua.json, so new or edited ones show up without clearing anything.

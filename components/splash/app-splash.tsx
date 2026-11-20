@@ -1,10 +1,8 @@
 import SplashBackground from '@/assets/images/splash-background.svg'
-import { PrayerBeadsLogo } from '@/components/icons/prayer-beads-logo'
 import { SPLASH } from '@/constants/splash-config'
-import tw from '@/lib/tailwind'
 import { StatusBar } from 'expo-status-bar'
 import { useEffect, useRef, useState } from 'react'
-import { Animated, StyleSheet, Text, useWindowDimensions, View } from 'react-native'
+import { Animated, StyleSheet } from 'react-native'
 
 interface AppSplashProps {
   /** True once everything the app needs (fonts, saved settings, ...) has loaded. */
@@ -22,13 +20,12 @@ interface AppSplashProps {
  * so there is no flash when this takes over.
  */
 export function AppSplash({ ready, onFinish }: AppSplashProps) {
-  const { width, height } = useWindowDimensions()
-  const { designWidth, designHeight, logo, title } = SPLASH
+  const { designWidth, designHeight } = SPLASH
 
-  // design px -> screen px, same maths as resizeMode="cover" (centred)
-  const scale = Math.max(width / designWidth, height / designHeight)
-  const toX = (x: number) => (x - designWidth / 2) * scale + width / 2
-  const toY = (y: number) => (y - designHeight / 2) * scale + height / 2
+    // design px -> screen px, same maths as resizeMode="cover" (centred)
+  // const scale = Math.max(width / designWidth, height / designHeight)
+  // const toX = (x: number) => (x - designWidth / 2) * scale + width / 2
+  // const toY = (y: number) => (y - designHeight / 2) * scale + height / 2
 
   const contentOpacity = useRef(new Animated.Value(0)).current // artwork, logo, name
   const overlayOpacity = useRef(new Animated.Value(1)).current // the whole splash

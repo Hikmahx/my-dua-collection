@@ -31,7 +31,13 @@ interface DuaScreenProps {
  * "Save to collection" sheet, the kebab icon opens a sidebar with the Appearance and Language
  * settings, and share and info open dialogs.
  */
-export function DuaScreen({ title, duas, initialIndex, onBack }: DuaScreenProps) {
+export function DuaScreen(props: DuaScreenProps) {
+  // The pager needs a dua to show, so an empty list renders nothing
+  if (props.duas.length === 0) return null
+  return <DuaScreenContent {...props} />
+}
+
+function DuaScreenContent({ title, duas, initialIndex, onBack }: DuaScreenProps) {
   const c = useDuaScreenColors()
   const dispatch = useDispatch()
   const t = useT()

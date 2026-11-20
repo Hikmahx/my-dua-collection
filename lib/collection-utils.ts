@@ -28,14 +28,17 @@ export function getDuasInCollection(id: string, duas: Dua[], userCollections: Us
 export const createCollectionId = () =>
   `user-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`
 
-/** True when one of the user's collections (or one of `pendingNames`) already has this name, ignoring case. */
+/**
+ * True when a pre-made collection, one of the user's collections, or one of `pendingNames` already
+ * has this name, ignoring case.
+ */
 export function isCollectionNameTaken(
   name: string,
   userCollections: UserCollection[],
   pendingNames: string[] = [],
 ): boolean {
   const wanted = name.trim().toLowerCase()
-  return [...userCollections.map((collection) => collection.name), ...pendingNames].some(
+  return [...COLLECTION_DEFS.map((collection) => collection.name), ...userCollections.map((collection) => collection.name), ...pendingNames].some(
     (existing) => existing.trim().toLowerCase() === wanted,
   )
 }

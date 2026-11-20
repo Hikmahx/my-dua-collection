@@ -6,6 +6,7 @@ import { useNewCollectionInput } from '@/hooks/use-new-collection-input'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import { createCollectionId } from '@/lib/collection-utils'
 import {
+  createDuaId,
   isValidReference,
   REFERENCE_PLACEHOLDERS,
   SOURCE_LABELS,
@@ -140,7 +141,7 @@ export default function AddDuaModal() {
     const newCollections = drafts.filter((c) => chosenIds.includes(c.id))
 
     const newDua: Dua = {
-      id: Date.now().toString(),
+      id: createDuaId(),
       title: title.trim(),
       arabicText: arabicText.trim(),
       ...(transliteration.trim() && { transliteration: transliteration.trim() }),
@@ -197,7 +198,6 @@ export default function AddDuaModal() {
     )
   }
 
-  const bgColor = isDark ? 'bg-very-dark-bg' : 'bg-light-bg'
   const textColor = isDark ? 'text-light-grayish-text' : 'text-dark-text'
   const inputBgColor = isDark
     ? 'bg-very-dark-nav-bg'

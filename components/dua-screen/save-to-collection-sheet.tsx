@@ -10,7 +10,7 @@ import { createCollectionId } from '@/lib/collection-utils'
 import tw from '@/lib/tailwind'
 import type { Dua, NewCollectionDraft } from '@/redux/reducers/duasSlice'
 import type { AppDispatch } from '@/redux/store'
-import { saveDuaCollections } from '@/redux/thunks'
+import { isInPremadeCollection, saveDuaCollections } from '@/redux/thunks'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { useCallback, useEffect, useState } from 'react'
 import { Alert, Pressable, ScrollView, Text, TextInput, View } from 'react-native'
@@ -82,6 +82,13 @@ export function SaveToCollectionSheet({ dua, visible, onClose }: SaveToCollectio
 
     const newCollections = created.filter((draft) => chosen.includes(draft.id))
     const existingIds = chosen.filter((id) => !newCollections.some((draft) => draft.id === id))
+
+    // A dua the user added has to stay in at least one collection: say so now, before asking to
+    // delete a collection that this would leave empty
+    if (existingIds.length + newCollections.length === 0 && !isInPremadeCollection(dua)) {
+      Alert.alert(t('saveToCollection.needOneTitle'), t('saveToCollection.needOneBody'))
+      return
+    }
 
     // Collections that hold only this dua and were unticked would be left empty, so they go
     const emptied = userCollections.filter(

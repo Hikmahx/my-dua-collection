@@ -5,6 +5,7 @@
  * To add a new icon: drop the .svg into assets/icons/collection/, add its file name (no
  * extension) to LINE_ICONS below, then run:  node scripts/generate-line-icons.js
  */
+/* global __dirname */
 const fs = require('fs')
 const path = require('path')
 

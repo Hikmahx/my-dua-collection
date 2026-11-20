@@ -2,8 +2,7 @@ import { useT } from '@/hooks/use-t'
 import { CollectionIcon, type CollectionIconKey } from '@/components/icons/collection-icons'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import tw from '@/lib/tailwind'
-import { Pressable, StyleSheet, Text, View } from 'react-native'
-import Svg, { Path } from 'react-native-svg'
+import { Pressable, Text, View } from 'react-native'
 
 export interface CollectionCardProps {
   title: string
@@ -21,7 +20,6 @@ export function CollectionCard({
 }: CollectionCardProps) {
   const isDark = useColorScheme() === 'dark'
   const t = useT()
-  const waveFill = isDark ? '#FFFFFF' : '#C2A462'
 
   return (
     // Outer view: background + shadow. Inner Pressable clips the wave pattern.
