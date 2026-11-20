@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { useTasbihColors } from '@/hooks/use-tasbih-colors'
 import { toggleSound, toggleVibration } from '@/redux/reducers/tasbihSlice'
 import type { RootState } from '@/redux/store'
@@ -38,6 +39,7 @@ function ToggleIconButton({ enabled, onIcon, offIcon, label, onPress }: TogglePr
 export function TasbihFeedbackToggles() {
   const dispatch = useDispatch()
   const { soundEnabled, vibrationEnabled } = useSelector((s: RootState) => s.tasbih)
+  const t = useT()
 
   return (
     <View style={tw`flex-row items-center`}>
@@ -45,14 +47,14 @@ export function TasbihFeedbackToggles() {
         enabled={soundEnabled}
         onIcon='volume-high'
         offIcon='volume-off'
-        label='Sound'
+        label={t('tasbih.sound')}
         onPress={() => dispatch(toggleSound())}
       />
       <ToggleIconButton
         enabled={vibrationEnabled}
         onIcon='vibrate'
         offIcon='vibrate-off'
-        label='Vibration'
+        label={t('tasbih.vibration')}
         onPress={() => dispatch(toggleVibration())}
       />
     </View>

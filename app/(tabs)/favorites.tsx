@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { DuaListScreen } from '@/components/dua-list/dua-list-screen'
 import { FAVORITES_LIST_ID } from '@/constants/dua-config'
 import { selectFavoriteDuas } from '@/redux/selectors'
@@ -11,14 +12,15 @@ import { useDispatch, useSelector } from 'react-redux'
 export default function FavoritesScreen() {
   const dispatch = useDispatch()
   const favorites = useSelector(selectFavoriteDuas)
+  const t = useT()
 
   return (
     <DuaListScreen
-      title='Favorites'
+      title={t('tabs.favorites')}
       listId={FAVORITES_LIST_ID}
       duas={favorites}
       showCollections
-      emptyMessage='No favorite duas yet'
+      emptyMessage={t('favorites.empty')}
       onReorder={(ids) => dispatch(setFavoriteOrder(ids))}
     />
   )

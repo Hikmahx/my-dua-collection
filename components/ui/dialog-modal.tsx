@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import tw from '@/lib/tailwind'
 import { Feather } from '@expo/vector-icons'
@@ -25,13 +26,14 @@ interface DialogModalProps {
 /** A centered dialog with a title and a close button. Tap outside, the X or back to close. */
 export function DialogModal({ visible, title, onClose, children, footer }: DialogModalProps) {
   const isDark = useColorScheme() === 'dark'
+  const t = useT()
   const { width, height } = useWindowDimensions()
 
   return (
     <Modal visible={visible} transparent animationType='fade' statusBarTranslucent onRequestClose={onClose}>
       <View style={[tw`flex-1 items-center justify-center`, { backgroundColor: 'rgba(0,0,0,0.6)' }]}>
         {/* a sibling of the card, so scrolling inside the card still works */}
-        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel='Close' />
+        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel={t('common.close')} />
 
         <View
           style={[
@@ -49,7 +51,7 @@ export function DialogModal({ visible, title, onClose, children, footer }: Dialo
             >
               {title}
             </Text>
-            <Pressable onPress={onClose} hitSlop={12} accessibilityLabel='Close'>
+            <Pressable onPress={onClose} hitSlop={12} accessibilityLabel={t('common.close')}>
               <Feather name='x' size={22} color={isDark ? '#FFFFFF' : '#1A1A1A'} />
             </Pressable>
           </View>

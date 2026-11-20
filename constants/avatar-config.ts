@@ -31,10 +31,10 @@ export const AVATAR_PALETTES: Record<AvatarColorKey, readonly string[]> = {
 }
 
 /** The color rows of the avatar editor, in order. `gender` limits a row to one avatar (the male has a cap and visible hair, the female a hijab). */
-export const AVATAR_COLOR_FIELDS: { key: AvatarColorKey; label: string; gender?: AvatarGender }[] = [
-  { key: 'skin', label: 'Skin tone' },
-  { key: 'hair', label: 'Hair', gender: 'male' },
-  { key: 'shirt', label: 'Shirt' },
-  { key: 'cap', label: 'Cap', gender: 'male' },
-  { key: 'hijab', label: 'Hijab', gender: 'female' },
+export const AVATAR_COLOR_FIELDS: { key: AvatarColorKey; gender?: AvatarGender }[] = [
+  { key: 'skin' },
+  { key: 'hair', gender: 'male' },
+  { key: 'shirt' },
+  { key: 'cap', gender: 'male' },
+  { key: 'hijab', gender: 'female' },
 ]

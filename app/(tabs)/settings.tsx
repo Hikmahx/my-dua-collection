@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { ProfileHeader } from '@/components/settings/profile-header'
 import { AboutSettings } from '@/components/settings/sections/about-settings'
 import { AppearanceSettings } from '@/components/settings/sections/appearance-settings'
@@ -22,11 +23,12 @@ import { ScrollView, Text, View } from 'react-native'
 export default function SettingsScreen() {
   const c = useSettingsColors()
   const profile = useProfile()
-  const today = useMemo(() => `Today · ${formatHijri(toHijri())}`, [])
+  const t = useT()
+  const today = useMemo(() => t('settings.today', { date: formatHijri(toHijri()) }), [t])
 
   return (
     <View style={{ flex: 1, backgroundColor: c.body }}>
-      <ScreenHeader title='Settings' right={null} bottomPadding={0} />
+      <ScreenHeader title={t('tabs.settings')} right={null} bottomPadding={0} />
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={tw`pb-10`}>
         <ProfileHeader
@@ -44,7 +46,7 @@ export default function SettingsScreen() {
           <AboutSettings />
 
           <Text style={[tw`font-nunito text-[11px] text-center`, { color: c.muted }]}>
-            {APP_NAME} · Version {Constants.expoConfig?.version ?? '1.0.0'}
+            {t('settings.version', { app: APP_NAME, version: Constants.expoConfig?.version ?? '1.0.0' })}
           </Text>
         </View>
       </ScrollView>

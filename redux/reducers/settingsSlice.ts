@@ -1,3 +1,8 @@
+import {
+  DEFAULT_APP_LANGUAGE,
+  DEFAULT_TRANSLATION_LANGUAGE,
+  type AppLanguageCode,
+} from '@/constants/languages'
 import { DEFAULT_ARABIC_FONT, type ArabicFontId } from '@/constants/arabic-fonts'
 import { DEFAULT_FONT_SIZES, type FontSizeTarget } from '@/constants/settings-config'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
@@ -7,7 +12,8 @@ export type ThemePreference = 'dark' | 'light'
 
 export interface SettingsState {
   theme: ThemePreference
-  language: string // language code used for dua translations
+  appLanguage: AppLanguageCode // language of the app's own text (buttons, titles, messages)
+  translationLanguage: string // language code of the dua translation that is shown
   showTransliteration: boolean
   fontSizes: Record<FontSizeTarget, number> // px
   arabicFont: ArabicFontId
@@ -18,7 +24,8 @@ export interface SettingsState {
 // Dark mode is the default
 export const initialSettingsState: SettingsState = {
   theme: 'dark',
-  language: 'en',
+  appLanguage: DEFAULT_APP_LANGUAGE,
+  translationLanguage: DEFAULT_TRANSLATION_LANGUAGE,
   showTransliteration: true,
   fontSizes: DEFAULT_FONT_SIZES,
   arabicFont: DEFAULT_ARABIC_FONT,
@@ -33,8 +40,11 @@ const settingsSlice = createSlice({
     setTheme(state, action: PayloadAction<ThemePreference>) {
       state.theme = action.payload
     },
-    setLanguage(state, action: PayloadAction<string>) {
-      state.language = action.payload
+    setAppLanguage(state, action: PayloadAction<AppLanguageCode>) {
+      state.appLanguage = action.payload
+    },
+    setTranslationLanguage(state, action: PayloadAction<string>) {
+      state.translationLanguage = action.payload
     },
     setShowTransliteration(state, action: PayloadAction<boolean>) {
       state.showTransliteration = action.payload
@@ -60,7 +70,8 @@ const settingsSlice = createSlice({
 
 export const {
   setTheme,
-  setLanguage,
+  setAppLanguage,
+  setTranslationLanguage,
   setShowTransliteration,
   setFontSize,
   setArabicFont,

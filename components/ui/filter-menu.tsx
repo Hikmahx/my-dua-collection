@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { themeColors } from '@/constants/theme-colors'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import tw from '@/lib/tailwind'
@@ -25,6 +26,7 @@ export function FilterMenu({
   closeOnSelect = true,
 }: FilterMenuProps) {
   const isDark = useColorScheme() === 'dark'
+  const t = useT()
   const { width: screenWidth, height: screenHeight } = useWindowDimensions()
 
   if (!anchor) return null
@@ -99,7 +101,7 @@ export function FilterMenu({
         <Pressable
           style={StyleSheet.absoluteFill}
           onPress={onClose}
-          accessibilityLabel='Close menu'
+          accessibilityLabel={t('common.closeMenu')}
         />
 
         <View

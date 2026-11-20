@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { ArabicFontSheet } from '@/components/settings/arabic-font-sheet'
 import { FontSizeSettings } from '@/components/settings/font-size-settings'
 import { SettingsGroup, type SettingsVariant } from '@/components/settings/settings-group'
@@ -15,29 +16,30 @@ import { useDispatch, useSelector } from 'react-redux'
  */
 export function AppearanceSettings({ variant }: { variant?: SettingsVariant }) {
   const dispatch = useDispatch()
+  const t = useT()
   const isDark = useSelector((state: RootState) => state.settings.theme === 'dark')
   const arabicFont = useSelector((state: RootState) => state.settings.arabicFont)
   const [fontSheetOpen, setFontSheetOpen] = useState(false)
 
   return (
     <>
-      <SettingsGroup title='Appearance' variant={variant}>
+      <SettingsGroup title={t('appearance.title')} variant={variant}>
         <SettingsRow
           icon='moon-waning-crescent'
-          title='Dark mode'
-          subtitle={isDark ? 'On · Deep teal' : 'Off · Light appearance'}
+          title={t('appearance.darkMode')}
+          subtitle={isDark ? t('appearance.darkOn') : t('appearance.darkOff')}
           control={
             <ToggleSwitch
               value={isDark}
               onValueChange={(on) => dispatch(setTheme(on ? 'dark' : 'light'))}
-              accessibilityLabel='Dark mode'
+              accessibilityLabel={t('appearance.darkMode')}
             />
           }
         />
         <FontSizeSettings />
         <SettingsRow
           icon='format-letter-case'
-          title='Arabic text style'
+          title={t('arabicStyle.title')}
           subtitle={getArabicFont(arabicFont).label}
           onPress={() => setFontSheetOpen(true)}
         />

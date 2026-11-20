@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { AvatarEditor } from '@/components/profile/avatar-editor'
 import { AccountCard } from '@/components/profile/account-card'
 import { ProfileField } from '@/components/profile/profile-field'
@@ -47,13 +48,14 @@ function ProfileEditor({ profile }: { profile: Profile }) {
   const navigation = useNavigation()
   const insets = useSafeAreaInsets()
   const actions = useUserActions()
+  const t = useT()
 
   const saved = useMemo(() => draftFromProfile(profile), [profile])
   const [draft, setDraft] = useState<ProfileDraft>(saved)
   const [confirm, setConfirm] = useState<Confirm>(null)
 
   const emailEditable = isEmailEditable(profile)
-  const errors = validateDraft(draft, emailEditable)
+  const errors = validateDraft(draft, emailEditable, t)
   const changed = isDraftChanged(draft, saved)
   const change = (patch: Partial<ProfileDraft>) => setDraft((current) => ({ ...current, ...patch }))
 
@@ -96,28 +98,28 @@ function ProfileEditor({ profile }: { profile: Profile }) {
       style={{ flex: 1, backgroundColor: c.body }}
     >
       <ScreenHeader
-        title='Profile details'
+        title={t('profile.title')}
         bottomPadding={14}
         left={<BackButton onPress={() => router.back()} color={c.title} />}
         right={null}
       />
 
       <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={tw`pt-4 pb-6`}>
-        <SettingsGroup title='Avatar'>
+        <SettingsGroup title={t('profile.avatar')}>
           <AvatarEditor value={draft.avatar} onChange={(avatar) => change({ avatar })} />
         </SettingsGroup>
 
-        <SettingsGroup title='Details'>
+        <SettingsGroup title={t('profile.details')}>
           <View style={tw`pb-4`}>
             <ProfileField
-              label='First name'
+              label={t('profile.firstName')}
               value={draft.firstName}
               onChangeText={(firstName) => change({ firstName })}
               error={errors.firstName}
               autoComplete='given-name'
             />
             <ProfileField
-              label='Last name (optional)'
+              label={t('profile.lastName')}
               value={draft.lastName}
               onChangeText={(lastName) => change({ lastName })}
               error={errors.lastName}
@@ -125,15 +127,15 @@ function ProfileEditor({ profile }: { profile: Profile }) {
             />
             {profile.isSignedIn && (
               <ProfileField
-                label='Email'
+                label={t('profile.email')}
                 value={draft.email}
                 onChangeText={(email) => change({ email })}
                 editable={emailEditable}
                 error={errors.email}
                 helper={
                   emailEditable
-                    ? `${profile.providerLabel} did not share an email. Adding one is optional.`
-                    : `From your ${profile.providerLabel} account`
+                    ? t('profile.emailNotShared', { provider: profile.providerLabel ?? '' })
+                    : t('profile.emailFrom', { provider: profile.providerLabel ?? '' })
                 }
                 placeholder='name@example.com'
                 keyboardType='email-address'
@@ -144,7 +146,7 @@ function ProfileEditor({ profile }: { profile: Profile }) {
           </View>
         </SettingsGroup>
 
-        <SettingsGroup title='Account'>
+        <SettingsGroup title={t('profile.account')}>
           {profile.isSignedIn && profile.provider ? (
             [
               <AccountCard key='account' provider={profile.provider} email={profile.email} />,
@@ -152,7 +154,7 @@ function ProfileEditor({ profile }: { profile: Profile }) {
               <SettingsRow
                 key='signout'
                 icon='logout'
-                title='Sign out'
+                title={t('profile.signOut')}
                 destructive
                 chevron={false}
                 onPress={() => setConfirm('signOut')}
@@ -160,10 +162,9 @@ function ProfileEditor({ profile }: { profile: Profile }) {
             ]
           ) : (
             <View style={tw`py-4`}>
-              <Text style={[tw`font-nunito-semibold text-[14px]`, { color: c.title }]}>You are not signed in</Text>
+              <Text style={[tw`font-nunito-semibold text-[14px]`, { color: c.title }]}>{t('profile.notSignedInTitle')}</Text>
               <Text style={[tw`font-nunito text-[12px] leading-[18px] mt-1 mb-4`, { color: c.muted }]}>
-                Sign in to save your collections online and share duas with friends. Until then, your name and
-                avatar are saved on this device only.
+                {t('profile.notSignedInBody')}
               </Text>
               <SignInOptions onSignIn={actions.signIn} />
             </View>
@@ -172,23 +173,23 @@ function ProfileEditor({ profile }: { profile: Profile }) {
       </ScrollView>
 
       <View style={[tw`px-6 pt-3`, { backgroundColor: c.header, paddingBottom: insets.bottom + 12 }]}>
-        <GoldButton label='Save changes' onPress={save} disabled={!changed || hasErrors(errors)} />
+        <GoldButton label={t('profile.save')} onPress={save} disabled={!changed || hasErrors(errors)} />
       </View>
 
       <ConfirmModal
         visible={confirm === 'discard'}
-        title='Discard changes?'
-        message='You have changes that are not saved.'
-        confirmLabel='Discard'
-        cancelLabel='Keep editing'
+        title={t('profile.discardTitle')}
+        message={t('profile.discardMessage')}
+        confirmLabel={t('profile.discard')}
+        cancelLabel={t('profile.keepEditing')}
         onConfirm={discard}
         onCancel={() => setConfirm(null)}
       />
       <ConfirmModal
         visible={confirm === 'signOut'}
-        title='Sign out?'
-        message='You can sign in again at any time.'
-        confirmLabel='Sign out'
+        title={t('profile.signOutTitle')}
+        message={t('profile.signOutMessage')}
+        confirmLabel={t('profile.signOut')}
         onConfirm={() => {
           setConfirm(null)
           actions.signOut()
@@ -197,9 +198,9 @@ function ProfileEditor({ profile }: { profile: Profile }) {
       />
       <ConfirmModal
         visible={confirm === 'resetCode'}
-        title='Reset your user code?'
-        message='Your current code stops working right away. Your friends and shares are not affected.'
-        confirmLabel='Reset code'
+        title={t('profile.resetCodeTitle')}
+        message={t('profile.resetCodeMessage')}
+        confirmLabel={t('profile.resetCode')}
         onConfirm={() => {
           setConfirm(null)
           actions.resetUserCode()

@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Animated, Modal, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -16,6 +17,7 @@ const SLIDE_OUT_MS = 200
 export function SideSheet({ visible, onClose, backgroundColor, children }: SideSheetProps) {
   const { width } = useWindowDimensions()
   const insets = useSafeAreaInsets()
+  const t = useT()
   const panelWidth = Math.min(width * 0.85, 380)
 
   // keep the Modal mounted while the panel slides out
@@ -43,7 +45,7 @@ export function SideSheet({ visible, onClose, backgroundColor, children }: SideS
         <Animated.View
           style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.55)', opacity: progress }]}
         >
-          <Pressable style={{ flex: 1 }} onPress={onClose} accessibilityLabel='Close' />
+          <Pressable style={{ flex: 1 }} onPress={onClose} accessibilityLabel={t('common.close')} />
         </Animated.View>
 
         <Animated.View

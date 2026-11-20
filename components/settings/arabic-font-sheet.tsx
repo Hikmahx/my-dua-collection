@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { BottomSheet } from '@/components/ui/bottom-sheet'
 import { ArabicText } from '@/components/ui/arabic-text'
 import { ARABIC_FONT_OPTIONS } from '@/constants/arabic-fonts'
@@ -20,12 +21,13 @@ export function ArabicFontSheet({ visible, onClose }: ArabicFontSheetProps) {
   const c = useSettingsColors()
   const dispatch = useDispatch()
   const selected = useSelector((state: RootState) => state.settings.arabicFont)
+  const t = useT()
 
   return (
     <BottomSheet visible={visible} onClose={onClose} backgroundColor={c.body} handleColor={c.muted}>
-      <Text style={[tw`font-nunito-extrabold text-[16px] px-6 pt-2`, { color: c.title }]}>Arabic text style</Text>
+      <Text style={[tw`font-nunito-extrabold text-[16px] px-6 pt-2`, { color: c.title }]}>{t('arabicStyle.title')}</Text>
       <Text style={[tw`font-nunito text-[12px] px-6 mt-[3px] mb-3`, { color: c.muted }]}>
-        Applies to all Arabic text in the app
+        {t('arabicStyle.subtitle')}
       </Text>
 
       <View style={tw`px-4`}>

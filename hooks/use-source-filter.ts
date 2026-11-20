@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import {
   listSourceNames,
   matchesSourceFilter,
@@ -17,6 +18,7 @@ const FILTER_MAX_HEIGHT = 240
  */
 export function useSourceFilter(duas: Dua[]) {
   const [selected, setSelected] = useState<SourceFilter | null>(null)
+  const t = useT()
   const { surahs, hadiths } = useMemo(() => listSourceNames(duas), [duas])
 
   // Forget a filter whose duas are gone (e.g. the last one was un-favorited)
@@ -46,8 +48,8 @@ export function useSourceFilter(duas: Dua[]) {
     })
 
     const groups: FilterMenuGroup[] = []
-    if (surahs.length > 0) groups.push(group('surah', 'Surah', surahs))
-    if (hadiths.length > 0) groups.push(group('hadith', 'Hadith', hadiths))
+    if (surahs.length > 0) groups.push(group('surah', t('filter.surah'), surahs))
+    if (hadiths.length > 0) groups.push(group('hadith', t('filter.hadith'), hadiths))
     if (groups.length === 0) return []
 
     // Only one kind: the section is named after it ("Surah" or "Hadith"), with no group label.
@@ -57,9 +59,9 @@ export function useSourceFilter(duas: Dua[]) {
     const section: FilterMenuSection =
       groups.length === 1
         ? { id: only.id, title: only.title, options: only.options, maxHeight: FILTER_MAX_HEIGHT }
-        : { id: 'filter', title: 'Filter', groups, maxHeight: FILTER_MAX_HEIGHT }
+        : { id: 'filter', title: t('filter.title'), groups, maxHeight: FILTER_MAX_HEIGHT }
     return [section]
-  }, [surahs, hadiths, filter])
+  }, [surahs, hadiths, filter, t])
 
   return { filter, filtered, sections }
 }

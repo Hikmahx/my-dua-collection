@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { SettingsGroup, type SettingsVariant } from '@/components/settings/settings-group'
 import { SettingsRow } from '@/components/settings/settings-row'
 import { ToggleSwitch } from '@/components/settings/toggle-switch'
@@ -8,37 +9,38 @@ import { useDispatch, useSelector } from 'react-redux'
 
 export function NotificationSettings({ variant }: { variant?: SettingsVariant }) {
   const dispatch = useDispatch()
+  const t = useT()
   const { dailyReminder, monthlyReminders } = useSelector((state: RootState) => state.settings)
 
   return (
-    <SettingsGroup title='Notifications' variant={variant}>
+    <SettingsGroup title={t('notifications.title')} variant={variant}>
       <SettingsRow
         icon='bell-outline'
-        title='Notification preferences'
-        subtitle='Sound, vibration & alerts'
+        title={t('notifications.preferences')}
+        subtitle={t('notifications.preferencesSubtitle')}
       />
       <SettingsRow
         icon='clock-outline'
-        title='Daily reminder'
-        subtitle={`Every day · ${DAILY_REMINDER_TIME}`}
+        title={t('notifications.daily')}
+        subtitle={t('notifications.dailySubtitle', { time: DAILY_REMINDER_TIME })}
         control={
           <ToggleSwitch
             value={dailyReminder}
             onValueChange={(on) => dispatch(setDailyReminder(on))}
-            accessibilityLabel='Daily reminder'
+            accessibilityLabel={t('notifications.daily')}
           />
         }
       />
       <SettingsRow
         icon='calendar-month-outline'
-        title='Monthly reminders'
-        subtitle='Ramadan & other months'
+        title={t('notifications.monthly')}
+        subtitle={t('notifications.monthlySubtitle')}
         chevron
         control={
           <ToggleSwitch
             value={monthlyReminders}
             onValueChange={(on) => dispatch(setMonthlyReminders(on))}
-            accessibilityLabel='Monthly reminders'
+            accessibilityLabel={t('notifications.monthly')}
           />
         }
       />

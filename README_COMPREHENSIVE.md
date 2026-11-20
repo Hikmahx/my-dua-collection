@@ -326,8 +326,8 @@ Changes are kept on screen until **Save changes**. **Cancel** and the back arrow
    - Arabic text styling preferences
 
 5. **Language & Translation:**
-   - Translation language preferences
-   - Multiple language support options
+   - App language (the app's own text), picked in a bottom sheet. English only for now; the text lives in `locales/en.ts` and is read with `useT()`
+   - Translation language (which translation of a dua is shown), picked in a bottom sheet, with how many duas have a translation in each language
 
 <!-- 6. **Content:**
    - Notes/Dua journal
@@ -460,7 +460,8 @@ export interface Dua {
   - `user.json` has the people who signed in with Google or Facebook, each with a `userCode` (like `BG-7K3M`) that others type to find them.
   - `user_favorites.json`, `friends.json` and `shares.json` hold favorites, friends (with `family`, `friends` and `mosque` groups) and shares. A share stays `pending` until the recipient accepts, and then the item is copied into their library.
   - Only duas and collections are read by the app today. The rest is ready-made data for the login, favorites, sharing and friend-picker work; favorites still live in `duas:v2` on the device until then.
-- **Settings:** `settingsSlice` holds `language` (default `'en'`) and `showTransliteration`.
+- **Settings:** `settingsSlice` holds `translationLanguage` (default `'en'`, called `language` in older saves, which are converted), `appLanguage` (default `'en'`), `arabicFont` and `showTransliteration`.
+- **App language:** all app text goes through `t('key')` (`hooks/use-t.ts`, texts in `locales/en.ts`; `{name}` placeholders, or a function for plurals). A text a language does not have falls back to English. To add a language: create `locales/<code>.ts` with the same keys, register it in `locales/index.ts`, and add its code to `APP_LANGUAGE_CODES` in `constants/languages.ts` (it then appears in the App language sheet). Right-to-left layout is not set up yet. Built-in collection names, categories and Quran/Hadith source names are content, not app text, and are still English.
 - **Data source:** duas load from `data/dua.json` (33 duas: 15 general duas and 18 dhikr in the Dhikr collection). The built-in duas are always read from `dua.json`, so adding or editing them needs no cache reset. The copy saved on the device (`duas:v2` in AsyncStorage, `lib/duas-storage.ts`) is `{ favoriteIds, userDuas }`: the ids of every favorite dua, and the duas the user added (without `isFavorite`). A dua is treated as built-in when its id is in `dua.json`, whatever its `origin` says, so it is never saved twice. Saved data for a built-in id is ignored, so the built-in text always wins. `duas:v1` (the whole array) is converted once on the first launch after the update and then removed.
 
 ### Collection Properties

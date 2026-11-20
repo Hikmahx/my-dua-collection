@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { FilterMenu } from '@/components/ui/filter-menu'
 import { themeColors } from '@/constants/theme-colors'
 import { useColorScheme } from '@/hooks/use-color-scheme'
@@ -27,6 +28,7 @@ export function AppearanceMenuButton({
 }: AppearanceMenuButtonProps) {
   const isDark = useColorScheme() === 'dark'
   const dispatch = useDispatch()
+  const t = useT()
   const theme = useSelector((state: RootState) => state.settings.theme)
 
   const buttonRef = useRef<View>(null)
@@ -44,18 +46,18 @@ export function AppearanceMenuButton({
     ...extraSections,
     {
       id: 'appearance',
-      title: 'Appearance',
+      title: t('appearance.title'),
       options: [
         {
           id: 'dark',
-          label: 'Dark',
+          label: t('appearance.dark'),
           icon: 'weather-night',
           selected: theme === 'dark',
           onSelect: () => dispatch(setTheme('dark')),
         },
         {
           id: 'light',
-          label: 'Light',
+          label: t('appearance.light'),
           icon: 'white-balance-sunny',
           selected: theme === 'light',
           onSelect: () => dispatch(setTheme('light')),
@@ -70,7 +72,7 @@ export function AppearanceMenuButton({
         ref={buttonRef}
         hitSlop={12}
         accessibilityRole='button'
-        accessibilityLabel={extraSections.length > 0 ? 'Filters and appearance' : 'Appearance'}
+        accessibilityLabel={extraSections.length > 0 ? t('menu.filtersAndAppearance') : t('appearance.title')}
         style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
         onPress={openMenu}
       >

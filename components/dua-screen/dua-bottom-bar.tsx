@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import FavoriteIcon from '@/components/icons/favorite-icon'
 import { TapCounter } from '@/components/ui/tap-counter'
 import { useDuaScreenColors } from '@/hooks/use-dua-screen-colors'
@@ -71,6 +72,7 @@ export function DuaBottomBar({
   onShare,
   onInfo,
 }: DuaBottomBarProps) {
+  const t = useT()
   const c = useDuaScreenColors()
   const insets = useSafeAreaInsets()
   const barHeight = BAR_HEIGHT + insets.bottom
@@ -90,21 +92,21 @@ export function DuaBottomBar({
         }}
       >
         <View style={{ height: BAR_HEIGHT }}>
-          <BarIcon position={ICON_POSITIONS.play} label='Play audio' onPress={onPlay}>
+          <BarIcon position={ICON_POSITIONS.play} label={t('bar.playAudio')} onPress={onPlay}>
             <Feather name='play' size={24} color={c.icon} />
           </BarIcon>
           <BarIcon
             position={ICON_POSITIONS.heart}
-            label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            label={isFavorite ? t('bar.removeFavorite') : t('bar.addFavorite')}
             onPress={onToggleFavorite}
           >
             {/* filled and red when it is a favorite, just an outline when it is not */}
             <FavoriteIcon size={24} filled={isFavorite} color={isFavorite ? c.favorite : c.icon} />
           </BarIcon>
-          <BarIcon position={ICON_POSITIONS.share} label='Share' onPress={onShare}>
+          <BarIcon position={ICON_POSITIONS.share} label={t('common.share')} onPress={onShare}>
             <Feather name='share-2' size={24} color={c.icon} />
           </BarIcon>
-          <BarIcon position={ICON_POSITIONS.info} label='Dua virtue' onPress={onInfo}>
+          <BarIcon position={ICON_POSITIONS.info} label={t('bar.virtue')} onPress={onInfo}>
             <Feather name='info' size={24} color={c.icon} />
           </BarIcon>
         </View>
@@ -117,7 +119,7 @@ export function DuaBottomBar({
           onTap={onTap}
           size={COUNTER_SIZE}
           colors={c}
-          accessibilityLabel={`${remaining} left. Tap to count down`}
+          accessibilityLabel={t('bar.remaining', { remaining })}
         />
       </View>
     </View>

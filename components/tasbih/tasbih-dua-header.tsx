@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { ArabicText } from '@/components/ui/arabic-text'
 import { useTasbihColors } from '@/hooks/use-tasbih-colors'
 import { tasbihArabicSize, type TasbihItem } from '@/lib/tasbih-utils'
@@ -15,13 +16,14 @@ interface TasbihDuaHeaderProps {
 
 /** Arabic text + chevron, transliteration and translation of the dua being counted. Tap to see it in full. */
 export function TasbihDuaHeader({ item, onPress }: TasbihDuaHeaderProps) {
+  const t = useT()
   const c = useTasbihColors()
 
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole='button'
-      accessibilityLabel={`Counting ${item.title}. View dua`}
+      accessibilityLabel={t('tasbih.counting', { title: item.title })}
       style={({ pressed }) => [tw`items-center`, { opacity: pressed ? 0.8 : 1 }]}
     >
       <View style={tw`flex-row items-center`}>

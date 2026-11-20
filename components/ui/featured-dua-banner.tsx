@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import FeaturedBannerHandsIcon from '@/components/icons/featured-banner-hands-icon'
 import { ArabicText } from '@/components/ui/arabic-text'
 import tw from '@/lib/tailwind'
@@ -27,6 +28,7 @@ const FeaturedDuaBanner = ({
 }: FeaturedDuaBannerProps) => {
   // The artwork is sized from the measured card, so it always spans the full width.
   const [size, setSize] = useState({ width: 0, height: 150 })
+  const t = useT()
 
   return (
     // Outer view: shadow only (iOS drops shadows on views that clip their children)
@@ -98,7 +100,7 @@ const FeaturedDuaBanner = ({
               onPress={onMoreInfo}
               style={tw`rounded-full px-4 py-2 self-start mt-3 bg-white/20`}
             >
-              <Text style={tw`text-white text-xs font-nunito-semibold`}>More info</Text>
+              <Text style={tw`text-white text-xs font-nunito-semibold`}>{t('banner.moreInfo')}</Text>
             </Pressable>
           )}
         </View>

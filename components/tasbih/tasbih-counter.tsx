@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { TapCounter } from '@/components/ui/tap-counter'
 import { useTasbihColors } from '@/hooks/use-tasbih-colors'
 import { tasbihProgress } from '@/lib/tasbih-utils'
@@ -14,6 +15,7 @@ interface TasbihCounterProps {
 /** The big counter of the Tasbih screen: counts up towards the target. */
 export function TasbihCounter({ count, target, onTap, shakeSignal }: TasbihCounterProps) {
   const colors = useTasbihColors()
+  const t = useT()
   const { width } = useWindowDimensions()
 
   return (
@@ -23,9 +25,9 @@ export function TasbihCounter({ count, target, onTap, shakeSignal }: TasbihCount
       onTap={onTap}
       size={Math.min((200 * width) / 375, 260)}
       colors={colors}
-      caption={{ top: `OF ${target}`, bottom: 'Tap to count' }}
+      caption={{ top: t('tasbih.ofTarget', { target }), bottom: t('tasbih.tapToCount') }}
       shakeSignal={shakeSignal}
-      accessibilityLabel={`Count. ${count} of ${target}. Tap to count`}
+      accessibilityLabel={t('tasbih.countLabel', { count, target })}
     />
   )
 }

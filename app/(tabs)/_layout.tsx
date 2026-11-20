@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { Tabs } from 'expo-router'
 import React from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -17,6 +18,7 @@ export default function TabLayout() {
   const colorScheme = useColorScheme()
   const colors = Colors[colorScheme ?? 'light']
   const insets = useSafeAreaInsets()
+  const t = useT()
 
   return (
     <Tabs
@@ -41,7 +43,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name='index'
         options={{
-          title: 'Home',
+          title: t('tabs.home'),
           tabBarIcon: ({ focused, color, size }) => (
             <MaterialCommunityIcons
               name={focused ? 'home' : 'home-outline'}
@@ -55,7 +57,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name='explore'
         options={{
-          title: 'Explore',
+          title: t('tabs.explore'),
           tabBarIcon: ({ focused, color, size }) => (
             <ExploreIcon color={color} size={size ?? 20} />
           ),
@@ -65,7 +67,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name='tasbih'
         options={{
-          title: 'Tasbih',
+          title: t('tabs.tasbih'),
           tabBarIcon: ({ focused, color, size }) => (
             <TasbihIcon color={color} size={size ?? 20} />
           ),
@@ -75,7 +77,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name='favorites'
         options={{
-          title: 'Favorites',
+          title: t('tabs.favorites'),
           tabBarIcon: ({ focused, color, size }) => (
             <FavoriteIcon color={color} size={size ?? 20} filled={focused} />
           ),
@@ -85,7 +87,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name='settings'
         options={{
-          title: 'Settings',
+          title: t('tabs.settings'),
           tabBarIcon: ({ focused, color, size }) => (
             <SettingsIcon color={color} size={size ?? 20} />
           ),

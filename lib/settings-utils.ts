@@ -1,3 +1,4 @@
+import { isAppLanguageCode, isKnownLanguage } from '@/constants/languages'
 import { isArabicFontId } from '@/constants/arabic-fonts'
 import { DEFAULT_FONT_SIZES, FONT_SIZE_SETTINGS } from '@/constants/settings-config'
 import type { SettingsState } from '@/redux/reducers/settingsSlice'
@@ -12,7 +13,10 @@ export function sanitizeSettings(value: unknown): Partial<SettingsState> {
   const result: Partial<SettingsState> = {}
 
   if (saved.theme === 'dark' || saved.theme === 'light') result.theme = saved.theme
-  if (typeof saved.language === 'string' && saved.language) result.language = saved.language
+  if (isAppLanguageCode(saved.appLanguage)) result.appLanguage = saved.appLanguage
+  // `language` is the old name of translationLanguage (before the app language existed)
+  const translationLanguage = saved.translationLanguage ?? saved.language
+  if (isKnownLanguage(translationLanguage)) result.translationLanguage = translationLanguage
   if (typeof saved.showTransliteration === 'boolean') result.showTransliteration = saved.showTransliteration
   if (isArabicFontId(saved.arabicFont)) result.arabicFont = saved.arabicFont
   if (typeof saved.dailyReminder === 'boolean') result.dailyReminder = saved.dailyReminder

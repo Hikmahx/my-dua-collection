@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { ArabicText } from '@/components/ui/arabic-text'
 import { useDuaScreenColors } from '@/hooks/use-dua-screen-colors'
 import { formatSourceLine, getTranslation } from '@/lib/dua-utils'
@@ -19,7 +20,8 @@ interface DuaPageProps {
 /** One dua, full page: pill, title, source, Arabic, transliteration, translation, "View Dua Virtue". */
 export function DuaPage({ dua, position, total, width, onOpenVirtue }: DuaPageProps) {
   const c = useDuaScreenColors()
-  const { fontSizes, language, showTransliteration } = useSelector((state: RootState) => state.settings)
+  const t = useT()
+  const { fontSizes, translationLanguage: language, showTransliteration } = useSelector((state: RootState) => state.settings)
   const source = formatSourceLine(dua)
 
   return (
@@ -78,7 +80,7 @@ export function DuaPage({ dua, position, total, width, onOpenVirtue }: DuaPagePr
           { backgroundColor: c.button, opacity: pressed ? 0.85 : 1 },
         ]}
       >
-        <Text style={[tw`font-nunito-semibold text-[12px]`, { color: c.buttonText }]}>View Dua Virtue ›</Text>
+        <Text style={[tw`font-nunito-semibold text-[12px]`, { color: c.buttonText }]}>{t('duaPage.viewVirtue')}</Text>
       </Pressable>
     </ScrollView>
   )

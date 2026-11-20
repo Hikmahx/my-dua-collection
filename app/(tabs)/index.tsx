@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { CollectionCard } from '@/components/ui/collection-card'
 import { FeaturedDuaBanner } from '@/components/ui/featured-dua-banner'
 import { FilterMenu } from '@/components/ui/filter-menu'
@@ -25,6 +26,7 @@ export default function HomeScreen() {
   const colorScheme = useColorScheme()
   const isDark = colorScheme === 'dark'
   const router = useRouter()
+  const t = useT()
   const { width } = useWindowDimensions()
 
   // Responsive grid: 2 columns on phones, 3 on large phones/small tablets, 4 on big tablets.
@@ -38,7 +40,7 @@ export default function HomeScreen() {
   const dispatch = useDispatch()
   const duas = useSelector((state: RootState) => state.duas.items)
   const theme = useSelector((state: RootState) => state.settings.theme)
-  const language = useSelector((state: RootState) => state.settings.language)
+  const language = useSelector((state: RootState) => state.settings.translationLanguage)
   const featuredDua = duas.find((d) => d.id === FEATURED_DUA_ID)
   const { collections, userCollections } = useCollections()
 
@@ -58,18 +60,18 @@ export default function HomeScreen() {
   const menuSections: FilterMenuSection[] = [
     {
       id: 'appearance',
-      title: 'Appearance',
+      title: t('appearance.title'),
       options: [
         {
           id: 'dark',
-          label: 'Dark',
+          label: t('appearance.dark'),
           icon: 'weather-night',
           selected: theme === 'dark',
           onSelect: () => dispatch(setTheme('dark')),
         },
         {
           id: 'light',
-          label: 'Light',
+          label: t('appearance.light'),
           icon: 'white-balance-sunny',
           selected: theme === 'light',
           onSelect: () => dispatch(setTheme('light')),
@@ -79,9 +81,9 @@ export default function HomeScreen() {
   ]
 
   const tabs = [
-    { label: 'All', id: 'all' },
-    { label: 'My Collections', id: 'my-collections' },
-    { label: 'Pre-made', id: 'pre-made' },
+    { label: t('home.allTab'), id: 'all' },
+    { label: t('home.myCollectionsTab'), id: 'my-collections' },
+    { label: t('home.preMadeTab'), id: 'pre-made' },
   ]
 
   // Build collection list with counts; filter by tab
@@ -125,7 +127,7 @@ export default function HomeScreen() {
           {/* Header */}
           <View style={tw`flex-row items-center justify-between min-h-[30px] mb-[30px]`}>
             <Text style={tw`font-nunito-extrabold text-[21px] ${textColor}`}>
-              Home
+              {t('tabs.home')}
             </Text>
             <Pressable
               ref={filterButtonRef}
@@ -154,7 +156,7 @@ export default function HomeScreen() {
           {/* Dua Collection section */}
           <View style={tw`flex-row items-center justify-between mt-[34px] mb-[30px]`}>
             <Text style={tw`font-nunito text-[14px] ${textColor}`}>
-              Dua Collection
+              {t('home.duaCollection')}
             </Text>
             <TabSelector
               tabs={tabs}
@@ -183,7 +185,7 @@ export default function HomeScreen() {
                 <Text
                   style={tw`text-center font-nunito ${isDark ? 'text-light-grayish-text-muted' : 'text-dark-grayish-text'}`}
                 >
-                  No collections in this category
+                  {t('home.noCollections')}
                 </Text>
               </View>
             )}

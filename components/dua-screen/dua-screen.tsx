@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { DuaBottomBar } from '@/components/dua-screen/dua-bottom-bar'
 import { DuaModals, type DuaModalKind } from '@/components/dua-screen/dua-modals'
 import { DuaPage } from '@/components/dua-screen/dua-page'
@@ -30,6 +31,7 @@ interface DuaScreenProps {
 export function DuaScreen({ title, duas, initialIndex, onBack }: DuaScreenProps) {
   const c = useDuaScreenColors()
   const dispatch = useDispatch()
+  const t = useT()
   const { listRef, width, index, dua, repeat, remaining, tap, onSwipeEnd } = useDuaPager(duas, initialIndex)
   const [modal, setModal] = useState<DuaModalKind | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -45,7 +47,7 @@ export function DuaScreen({ title, duas, initialIndex, onBack }: DuaScreenProps)
             onPress={() => setSidebarOpen(true)}
             hitSlop={12}
             accessibilityRole='button'
-            accessibilityLabel='Settings'
+            accessibilityLabel={t('tabs.settings')}
           >
             <Feather name='more-vertical' size={22} color={c.icon} />
           </Pressable>

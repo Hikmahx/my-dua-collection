@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { DeleteCollectionDialog } from '@/components/collection-edit/delete-collection-dialog'
 import { ReorderableDuaList, type ReorderableDua } from '@/components/collection-edit/reorderable-dua-list'
 import { BackButton } from '@/components/ui/back-button'
@@ -38,6 +39,7 @@ export function EditCollectionScreen({ collectionId }: { collectionId: string })
   })
   const [confirmingDelete, setConfirmingDelete] = useState(false)
   const leaving = useRef(false)
+  const t = useT()
 
   // Nothing to edit (an unknown id): go back
   useEffect(() => {
@@ -55,7 +57,7 @@ export function EditCollectionScreen({ collectionId }: { collectionId: string })
   if (!collection) return null
 
   const canSave = name.trim().length > 0
-  const countLabel = `${items.length} ${items.length === 1 ? 'dua' : 'duas'}`
+  const countLabel = t('list.duaCount', { count: items.length })
 
   const close = () => {
     leaving.current = true
@@ -79,28 +81,28 @@ export function EditCollectionScreen({ collectionId }: { collectionId: string })
   return (
     <View style={{ flex: 1, backgroundColor: c.body }}>
       <ScreenHeader
-        title='Edit collection'
-        subtitle={`${countLabel} · Your collection`}
+        title={t('editCollection.title')}
+        subtitle={t('editCollection.subtitle', { count: countLabel })}
         bottomPadding={7}
         left={<BackButton onPress={close} color={c.icon} />}
         right={
-          <Pressable onPress={close} hitSlop={12} accessibilityRole='button' accessibilityLabel='Cancel'>
-            <Text style={[tw`font-nunito-semibold text-[13px]`, { color: c.cancel }]}>Cancel</Text>
+          <Pressable onPress={close} hitSlop={12} accessibilityRole='button' accessibilityLabel={t('common.cancel')}>
+            <Text style={[tw`font-nunito-semibold text-[13px]`, { color: c.cancel }]}>{t('common.cancel')}</Text>
           </Pressable>
         }
       />
 
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={tw`flex-1`}>
         <View style={tw`px-[16px] pt-[8px]`}>
-          <Text style={[tw`font-nunito text-[12px] leading-[16px] mb-[6px]`, { color: c.muted }]}>Collection name</Text>
+          <Text style={[tw`font-nunito text-[12px] leading-[16px] mb-[6px]`, { color: c.muted }]}>{t('editCollection.nameLabel')}</Text>
           <TextInput
             value={name}
             onChangeText={setName}
             maxLength={MAX_NAME_LENGTH}
-            placeholder='Collection name'
+            placeholder={t('editCollection.nameLabel')}
             placeholderTextColor={c.muted}
             returnKeyType='done'
-            accessibilityLabel='Collection name'
+            accessibilityLabel={t('editCollection.nameLabel')}
             style={[
               tw`h-[44px] rounded-[12px] border px-[12px] font-nunito text-[14px]`,
               { backgroundColor: c.row, borderColor: c.inputBorder, color: c.text },
@@ -108,10 +110,10 @@ export function EditCollectionScreen({ collectionId }: { collectionId: string })
           />
 
           <Text style={[tw`font-nunito-semibold text-[14px] leading-[20px] mt-[16px]`, { color: c.text }]}>
-            Duas · {items.length}
+            {t('editCollection.duasCount', { count: items.length })}
           </Text>
           <Text style={[tw`font-nunito text-[11px] leading-[14px] mt-[4px]`, { color: c.muted }]}>
-            Drag to reorder · – removes from this collection
+            {t('editCollection.hint')}
           </Text>
         </View>
 
@@ -120,13 +122,13 @@ export function EditCollectionScreen({ collectionId }: { collectionId: string })
             duas={items}
             onReorder={setDuaIds}
             onRemove={(id) => setDuaIds((current) => current.filter((duaId) => duaId !== id))}
-            emptyMessage='No duas in this collection'
+            emptyMessage={t('editCollection.empty')}
           />
         </View>
 
         <View style={[tw`px-[16px] pt-[10px]`, { paddingBottom: Math.max(insets.bottom, 24) }]}>
           <Text style={[tw`font-nunito text-[11px] leading-[14px] mb-[12px]`, { color: c.muted }]}>
-            Removing a dua only changes this collection.
+            {t('editCollection.removeNote')}
           </Text>
           <Pressable
             onPress={() => setConfirmingDelete(true)}
@@ -136,7 +138,7 @@ export function EditCollectionScreen({ collectionId }: { collectionId: string })
               { backgroundColor: c.deleteBg, borderColor: c.deleteBorder, opacity: pressed ? 0.8 : 1 },
             ]}
           >
-            <Text style={[tw`font-nunito-semibold text-[14px]`, { color: c.deleteText }]}>Delete collection</Text>
+            <Text style={[tw`font-nunito-semibold text-[14px]`, { color: c.deleteText }]}>{t('editCollection.delete')}</Text>
           </Pressable>
           <Pressable
             onPress={save}
@@ -148,7 +150,7 @@ export function EditCollectionScreen({ collectionId }: { collectionId: string })
               { backgroundColor: c.saveBg, opacity: !canSave ? 0.4 : pressed ? 0.85 : 1 },
             ]}
           >
-            <Text style={[tw`font-nunito-semibold text-[14px]`, { color: c.saveText }]}>Save changes</Text>
+            <Text style={[tw`font-nunito-semibold text-[14px]`, { color: c.saveText }]}>{t('editCollection.save')}</Text>
           </Pressable>
         </View>
       </KeyboardAvoidingView>

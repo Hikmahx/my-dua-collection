@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { SignInOptions } from '@/components/profile/sign-in-options'
 import { SettingsGroup, type SettingsVariant } from '@/components/settings/settings-group'
 import { SettingsRow } from '@/components/settings/settings-row'
@@ -21,6 +22,7 @@ export function PersonalSettings({ variant }: { variant?: SettingsVariant }) {
   const c = useSettingsColors()
   const isDark = useColorScheme() === 'dark'
   const router = useRouter()
+  const t = useT()
   const profile = useProfile()
   const { signIn } = useUserActions()
   const [signInOpen, setSignInOpen] = useState(false)
@@ -28,36 +30,36 @@ export function PersonalSettings({ variant }: { variant?: SettingsVariant }) {
 
   return (
     <>
-      <SettingsGroup title='Personal' variant={variant}>
+      <SettingsGroup title={t('personal.title')} variant={variant}>
         <SettingsRow
           icon='account-outline'
-          title='Profile details'
-          subtitle={profile.isSignedIn ? 'Name, avatar & connected account' : 'Name and avatar'}
+          title={t('personal.profileDetails')}
+          subtitle={profile.isSignedIn ? t('personal.profileSubtitleSignedIn') : t('personal.profileSubtitleGuest')}
           onPress={() => router.push('/profile')}
         />
         {provider ? (
           <SettingsRow
             icon={provider.icon}
-            title={`Connected with ${provider.label}`}
-            subtitle={profile.email ?? `No email shared by ${provider.label}`}
+            title={t('personal.connectedWith', { provider: provider.label })}
+            subtitle={profile.email ?? t('personal.noEmail', { provider: provider.label })}
             chevron={false}
             control={<MaterialCommunityIcons name='check-circle' size={22} color={c.accent} />}
           />
         ) : (
           <SettingsRow
             icon='login'
-            title='Sign in'
-            subtitle='Save your collections and share duas with friends'
+            title={t('personal.signIn')}
+            subtitle={t('personal.signInSubtitle')}
             onPress={() => setSignInOpen(true)}
           />
         )}
       </SettingsGroup>
 
-      <DialogModal visible={signInOpen} title='Sign in' onClose={() => setSignInOpen(false)}>
+      <DialogModal visible={signInOpen} title={t('personal.signIn')} onClose={() => setSignInOpen(false)}>
         <Text
           style={tw`font-nunito text-[13px] leading-[19px] mb-4 ${isDark ? 'text-white' : 'text-dark-text'}`}
         >
-          Sign in to save your collections online and share duas with friends.
+          {t('personal.signInIntro')}
         </Text>
         <SignInOptions onSignIn={signIn} onSignedIn={() => setSignInOpen(false)} />
       </DialogModal>

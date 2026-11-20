@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { DialogModal } from '@/components/ui/dialog-modal'
 import { GoldButton } from '@/components/ui/gold-button'
 import { RichText } from '@/components/ui/rich-text'
@@ -21,23 +22,24 @@ interface DuaModalsProps {
 /** The three dialogs of the Dua screen: audio (coming soon), share, and the dua's virtue. */
 export function DuaModals({ kind, dua, onClose }: DuaModalsProps) {
   const isDark = useColorScheme() === 'dark'
-  const language = useSelector((state: RootState) => state.settings.language)
+  const t = useT()
+  const language = useSelector((state: RootState) => state.settings.translationLanguage)
   const text = tw`font-nunito text-[14px] leading-[21px] ${isDark ? 'text-white' : 'text-dark-text'}`
   const message = duaShareText(dua, language)
 
   return (
     <>
-      <DialogModal visible={kind === 'audio'} title='Audio' onClose={onClose}>
-        <Text style={text}>Coming soon. You will be able to listen to the recitation of each dua here.</Text>
+      <DialogModal visible={kind === 'audio'} title={t('duaModals.audio')} onClose={onClose}>
+        <Text style={text}>{t('duaModals.audioSoon')}</Text>
       </DialogModal>
 
       <DialogModal
         visible={kind === 'share'}
-        title='Share this dua'
+        title={t('duaModals.share')}
         onClose={onClose}
         footer={
           <GoldButton
-            label='Share'
+            label={t('common.share')}
             onPress={async () => {
               await Share.share({ message })
               onClose()
@@ -50,11 +52,11 @@ export function DuaModals({ kind, dua, onClose }: DuaModalsProps) {
         </Text>
       </DialogModal>
 
-      <DialogModal visible={kind === 'info'} title='Dua virtue' onClose={onClose}>
+      <DialogModal visible={kind === 'info'} title={t('duaModals.virtue')} onClose={onClose}>
         {dua.info ? (
           <RichText html={dua.info} color={isDark ? '#FFFFFF' : '#1A1A1A'} />
         ) : (
-          <Text style={text}>No virtue has been added for this dua yet.</Text>
+          <Text style={text}>{t('duaModals.noVirtue')}</Text>
         )}
       </DialogModal>
     </>

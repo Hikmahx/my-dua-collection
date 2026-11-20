@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { TasbihDuaLines } from '@/components/tasbih/tasbih-dua-lines'
 import { SearchField } from '@/components/ui/search-field'
 import { useTasbihColors } from '@/hooks/use-tasbih-colors'
@@ -62,7 +63,8 @@ export function TasbihDuaPickerModal({
 }: TasbihDuaPickerModalProps) {
   const c = useTasbihColors()
   const duas = useSelector((s: RootState) => s.duas.items)
-  const language = useSelector((s: RootState) => s.settings.language)
+  const language = useSelector((s: RootState) => s.settings.translationLanguage)
+  const t = useT()
   const { query, setQuery, results, isSearching } = useSearch(duas, duaSearchFields)
 
   useEffect(() => {
@@ -91,7 +93,7 @@ export function TasbihDuaPickerModal({
         style={[tw`flex-1 justify-end`, { backgroundColor: 'rgba(0,0,0,0.5)' }]}
       >
         {/* tap the dimmed area to close */}
-        <Pressable style={tw`flex-1`} onPress={onClose} accessibilityLabel='Close' />
+        <Pressable style={tw`flex-1`} onPress={onClose} accessibilityLabel={t('common.close')} />
 
         <View
           style={[
@@ -104,8 +106,8 @@ export function TasbihDuaPickerModal({
           </View>
 
           <View style={tw`flex-row items-center justify-between px-[20px] mb-[14px]`}>
-            <Text style={[tw`font-nunito-bold text-[18px]`, { color: c.text }]}>Choose a dua</Text>
-            <Pressable onPress={onClose} hitSlop={12} accessibilityLabel='Close'>
+            <Text style={[tw`font-nunito-bold text-[18px]`, { color: c.text }]}>{t('tasbih.chooseDua')}</Text>
+            <Pressable onPress={onClose} hitSlop={12} accessibilityLabel={t('common.close')}>
               <Feather name='x' size={22} color={c.text} />
             </Pressable>
           </View>
@@ -113,7 +115,7 @@ export function TasbihDuaPickerModal({
           <SearchField
             value={query}
             onChangeText={setQuery}
-            placeholder='Search all duas'
+            placeholder={t('tasbih.searchDuas')}
             style={tw`mx-[16px] mb-[14px]`}
           />
 
@@ -124,7 +126,7 @@ export function TasbihDuaPickerModal({
             contentContainerStyle={tw`px-[16px] pb-[24px]`}
             ListEmptyComponent={
               <Text style={[tw`font-nunito text-[14px] text-center mt-[24px]`, { color: c.translation }]}>
-                No duas found
+                {t('tasbih.noDuas')}
               </Text>
             }
             renderItem={({ item }) => (

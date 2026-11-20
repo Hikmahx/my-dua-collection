@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { ArabicText } from '@/components/ui/arabic-text'
 import { GoldButton } from '@/components/ui/gold-button'
 import { useTasbihColors } from '@/hooks/use-tasbih-colors'
@@ -33,6 +34,7 @@ export function TasbihDuaDetailModal({
   onClose,
 }: TasbihDuaDetailModalProps) {
   const c = useTasbihColors()
+  const t = useT()
   const { width, height } = useWindowDimensions()
 
   return (
@@ -45,7 +47,7 @@ export function TasbihDuaDetailModal({
     >
       <View style={[tw`flex-1 items-center justify-center`, { backgroundColor: 'rgba(0,0,0,0.6)' }]}>
         {/* tap the dimmed area to close (a sibling of the card, so scrolling the card still works) */}
-        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel='Close' />
+        <Pressable style={StyleSheet.absoluteFill} onPress={onClose} accessibilityLabel={t('common.close')} />
 
         <View
           style={[
@@ -62,7 +64,7 @@ export function TasbihDuaDetailModal({
             <Text style={[tw`flex-1 font-nunito-bold text-[17px] mr-[12px]`, { color: c.text }]}>
               {item.title}
             </Text>
-            <Pressable onPress={onClose} hitSlop={12} accessibilityLabel='Close'>
+            <Pressable onPress={onClose} hitSlop={12} accessibilityLabel={t('common.close')}>
               <Feather name='x' size={22} color={c.text} />
             </Pressable>
           </View>
@@ -97,7 +99,7 @@ export function TasbihDuaDetailModal({
             </Text>
           </ScrollView>
 
-          <GoldButton label='Change dua' onPress={onChangeDua} style={tw`mt-[20px]`} />
+          <GoldButton label={t('tasbih.changeDua')} onPress={onChangeDua} style={tw`mt-[20px]`} />
         </View>
       </View>
     </Modal>

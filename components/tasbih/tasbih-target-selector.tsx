@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { PRESET_TARGETS } from '@/constants/tasbih-config'
 import { useTasbihColors } from '@/hooks/use-tasbih-colors'
 import tw from '@/lib/tailwind'
@@ -44,13 +45,14 @@ export function TasbihTargetSelector({
   onSelectCustom,
 }: TasbihTargetSelectorProps) {
   const isCustom = !(PRESET_TARGETS as readonly number[]).includes(target)
+  const t = useT()
   return (
     <View style={tw`flex-row`}>
-      {PRESET_TARGETS.map((t) => (
-        <Pill key={t} label={String(t)} active={target === t} onPress={() => onSelectPreset(t)} />
+      {PRESET_TARGETS.map((preset) => (
+        <Pill key={preset} label={String(preset)} active={target === preset} onPress={() => onSelectPreset(preset)} />
       ))}
       <Pill
-        label={isCustom ? `Custom · ${target}` : 'Custom'}
+        label={isCustom ? t('tasbih.customValue', { target }) : t('tasbih.custom')}
         active={isCustom}
         onPress={onSelectCustom}
       />

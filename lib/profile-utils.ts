@@ -1,3 +1,4 @@
+import type { TFunction } from '@/locales'
 import type { AvatarConfig } from '@/constants/avatar-config'
 import { getAuthProvider, NAME_MAX_LENGTH } from '@/constants/auth-config'
 import type { AuthProvider } from '@/data/types'
@@ -79,16 +80,16 @@ export interface ProfileErrors {
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-export function validateDraft(draft: ProfileDraft, emailEditable: boolean): ProfileErrors {
+export function validateDraft(draft: ProfileDraft, emailEditable: boolean, t: TFunction): ProfileErrors {
   const errors: ProfileErrors = {}
   const firstName = cleanName(draft.firstName)
   const lastName = cleanName(draft.lastName)
 
-  if (!firstName) errors.firstName = 'Enter your first name'
-  else if (firstName.length > NAME_MAX_LENGTH) errors.firstName = `At most ${NAME_MAX_LENGTH} characters`
-  if (lastName.length > NAME_MAX_LENGTH) errors.lastName = `At most ${NAME_MAX_LENGTH} characters`
+  if (!firstName) errors.firstName = t('profile.errFirstName')
+  else if (firstName.length > NAME_MAX_LENGTH) errors.firstName = t('profile.errMaxLength', { max: NAME_MAX_LENGTH })
+  if (lastName.length > NAME_MAX_LENGTH) errors.lastName = t('profile.errMaxLength', { max: NAME_MAX_LENGTH })
   if (emailEditable && draft.email.trim() && !EMAIL_PATTERN.test(draft.email.trim())) {
-    errors.email = 'Enter a valid email address'
+    errors.email = t('profile.errEmail')
   }
   return errors
 }

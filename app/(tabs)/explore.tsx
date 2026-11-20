@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { ExploreCard } from '@/components/ui/explore-card'
 import { ExploreCardsBackground } from '@/components/ui/explore-cards-background'
 import { ScreenHeader } from '@/components/ui/screen-header'
@@ -18,6 +19,7 @@ const MIN_ROW_HEIGHT = 130 // rows never get shorter than this (the screen scrol
 
 export default function ExploreScreen() {
   const isDark = useColorScheme() === 'dark'
+  const t = useT()
   const c = exploreTheme[isDark ? 'dark' : 'light']
   const { query, setQuery, results: topics } = useSearch(EXPLORE_TOPICS, topicSearchFields)
 
@@ -28,7 +30,7 @@ export default function ExploreScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: Colors[isDark ? 'dark' : 'light'].screenBody }}>
-      <ScreenHeader title='Explore' bottomPadding={24} />
+      <ScreenHeader title={t('tabs.explore')} bottomPadding={24} />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
@@ -40,7 +42,7 @@ export default function ExploreScreen() {
           <SearchField
             value={query}
             onChangeText={setQuery}
-            placeholder='Search topics'
+            placeholder={t('explore.searchTopics')}
             style={{ marginHorizontal: 16 }}
           />
         </View>
@@ -81,7 +83,7 @@ export default function ExploreScreen() {
               <Text
                 style={tw`font-nunito ${isDark ? 'text-light-grayish-text-muted' : 'text-dark-grayish-text'}`}
               >
-                No topics found
+                {t('explore.noTopics')}
               </Text>
             </View>
           )}

@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { DialogButtons } from '@/components/ui/dialog-buttons'
 import { MAX_TARGET } from '@/constants/tasbih-config'
 import { themeColors } from '@/constants/theme-colors'
@@ -20,6 +21,7 @@ export function TasbihCustomTargetModal({
   onSubmit,
   onCancel,
 }: TasbihCustomTargetModalProps) {
+  const t = useT()
   const [text, setText] = useState('')
 
   useEffect(() => {
@@ -46,20 +48,20 @@ export function TasbihCustomTargetModal({
       >
         <TextInput
           value={text}
-          onChangeText={(t) => setText(t.replace(/[^0-9]/g, ''))}
-          placeholder='Target'
+          onChangeText={(input) => setText(input.replace(/[^0-9]/g, ''))}
+          placeholder={t('tasbih.targetPlaceholder')}
           placeholderTextColor='#555555'
           keyboardType='number-pad'
           maxLength={String(MAX_TARGET).length}
           autoFocus
           selectionColor={themeColors.brightGold}
           onSubmitEditing={submit}
-          accessibilityLabel='Custom target'
+          accessibilityLabel={t('tasbih.customTarget')}
           style={tw`w-[220px] text-center font-nunito text-[48px] text-white py-[8px] mb-[32px] border-b-2 border-bright-gold`}
         />
         <View style={tw`w-full max-w-[300px]`}>
           <DialogButtons
-            confirmLabel='OK'
+            confirmLabel={t('common.ok')}
             onCancel={onCancel}
             onConfirm={submit}
             confirmDisabled={!valid}

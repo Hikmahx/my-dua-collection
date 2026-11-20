@@ -1,5 +1,7 @@
+import { useT } from '@/hooks/use-t'
 import { useCollectionEditColors } from '@/hooks/use-collection-edit-colors'
 import tw from '@/lib/tailwind'
+import type { TFunction } from '@/locales'
 import { Modal, Pressable, Text, useWindowDimensions, View } from 'react-native'
 
 interface DeleteCollectionDialogProps {
@@ -11,10 +13,10 @@ interface DeleteCollectionDialogProps {
   onKeep: () => void
 }
 
-const keepSentence = (count: number) => {
+const keepSentence = (count: number, t: TFunction) => {
   if (count === 0) return ''
-  if (count === 1) return ' The dua will still be available in the dua library.'
-  return ` The ${count} duas will still be available in the dua library.`
+  if (count === 1) return t('deleteCollection.keepOne')
+  return t('deleteCollection.keepMany', { count })
 }
 
 /**
@@ -24,6 +26,7 @@ const keepSentence = (count: number) => {
 export function DeleteCollectionDialog({ visible, collectionName, duaCount, onDelete, onKeep }: DeleteCollectionDialogProps) {
   const c = useCollectionEditColors().dialog
   const { width } = useWindowDimensions()
+  const t = useT()
 
   return (
     <Modal visible={visible} transparent animationType='fade' statusBarTranslucent onRequestClose={onKeep}>
@@ -38,10 +41,10 @@ export function DeleteCollectionDialog({ visible, collectionName, duaCount, onDe
           ]}
         >
           <Text numberOfLines={2} style={[tw`font-nunito-extrabold text-[20px] leading-[28px]`, { color: c.title }]}>
-            Delete {collectionName}?
+            {t('deleteCollection.title', { name: collectionName })}
           </Text>
           <Text style={[tw`font-nunito text-[14px] leading-[20px] mt-[12px]`, { color: c.body }]}>
-            {`This permanently deletes your collection and its order.${keepSentence(duaCount)}`}
+            {`${t('deleteCollection.body')}${keepSentence(duaCount, t)}`}
           </Text>
 
           <Pressable
@@ -52,7 +55,7 @@ export function DeleteCollectionDialog({ visible, collectionName, duaCount, onDe
               { backgroundColor: c.destructiveBg, opacity: pressed ? 0.85 : 1 },
             ]}
           >
-            <Text style={[tw`font-nunito-semibold text-[14px]`, { color: c.destructiveText }]}>Delete collection</Text>
+            <Text style={[tw`font-nunito-semibold text-[14px]`, { color: c.destructiveText }]}>{t('deleteCollection.confirm')}</Text>
           </Pressable>
           <Pressable
             onPress={onKeep}
@@ -62,7 +65,7 @@ export function DeleteCollectionDialog({ visible, collectionName, duaCount, onDe
               { backgroundColor: c.keepBg, opacity: pressed ? 0.85 : 1 },
             ]}
           >
-            <Text style={[tw`font-nunito-semibold text-[14px]`, { color: c.keepText }]}>Keep collection</Text>
+            <Text style={[tw`font-nunito-semibold text-[14px]`, { color: c.keepText }]}>{t('deleteCollection.keep')}</Text>
           </Pressable>
         </View>
       </Pressable>

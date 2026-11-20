@@ -1,3 +1,5 @@
+import { getLanguage } from '@/constants/languages'
+
 export const APP_NAME = 'My Dua Collection'
 export const SUPPORT_EMAIL = 'hikmayousuph@gmail.com'
 
@@ -8,9 +10,9 @@ export type FontSizeTarget = 'arabic' | 'translation' | 'transliteration'
 
 /** The three font size sliders, in the order they appear (sizes in px). */
 export const FONT_SIZE_SETTINGS = [
-  { key: 'arabic', label: 'Arabic', min: 16, max: 36 },
-  { key: 'translation', label: 'Translation', min: 10, max: 26 },
-  { key: 'transliteration', label: 'Transliteration', min: 10, max: 24 },
+  { key: 'arabic', min: 16, max: 36 },
+  { key: 'translation', min: 10, max: 26 },
+  { key: 'transliteration', min: 10, max: 24 },
 ] as const
 
 export const DEFAULT_FONT_SIZES: Record<FontSizeTarget, number> = {
@@ -26,15 +28,5 @@ export const FONT_PREVIEW = {
   transliteration: "Rabbi zidni 'ilma",
 }
 
-const LANGUAGE_NAMES: Record<string, string> = {
-  en: 'English',
-  ar: 'Arabic',
-  ur: 'Urdu',
-  fr: 'French',
-  tr: 'Turkish',
-  id: 'Indonesian',
-  bn: 'Bengali',
-  es: 'Spanish',
-}
-
-export const languageName = (code: string) => LANGUAGE_NAMES[code] ?? code.toUpperCase()
+/** English name of a language code, e.g. 'ur' -> 'Urdu'. */
+export const languageName = (code: string) => getLanguage(code).name

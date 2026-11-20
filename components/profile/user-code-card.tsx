@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { useSettingsColors } from '@/hooks/use-settings-colors'
 import { copyText } from '@/lib/clipboard'
 import tw from '@/lib/tailwind'
@@ -44,6 +45,7 @@ function ActionButton({
 export function UserCodeCard({ code, onReset }: UserCodeCardProps) {
   const c = useSettingsColors()
   const [copied, setCopied] = useState(false)
+  const t = useT()
 
   useEffect(() => {
     if (!copied) return
@@ -53,7 +55,7 @@ export function UserCodeCard({ code, onReset }: UserCodeCardProps) {
 
   return (
     <View style={tw`py-4`}>
-      <Text style={[tw`font-nunito-semibold text-[13px]`, { color: c.title }]}>Your user code</Text>
+      <Text style={[tw`font-nunito-semibold text-[13px]`, { color: c.title }]}>{t('userCode.title')}</Text>
       <Text
         selectable
         style={[tw`font-nunito-extrabold text-[26px] mt-2`, { color: c.accent, letterSpacing: 2 }]}
@@ -61,18 +63,18 @@ export function UserCodeCard({ code, onReset }: UserCodeCardProps) {
         {formatUserCode(code)}
       </Text>
       <Text style={[tw`font-nunito text-[11px] mt-2 mb-3 leading-[16px]`, { color: c.muted }]}>
-        Friends type this code to share a dua with you. It stays the same when you change your name.
+        {t('userCode.hint')}
       </Text>
       <View style={tw`flex-row`}>
         <ActionButton
           icon={copied ? 'check' : 'content-copy'}
-          label={copied ? 'Copied' : 'Copy'}
+          label={copied ? t('userCode.copied') : t('userCode.copy')}
           onPress={async () => {
             await copyText(formatUserCode(code))
             setCopied(true)
           }}
         />
-        <ActionButton icon='refresh' label='Reset code' onPress={onReset} />
+        <ActionButton icon='refresh' label={t('profile.resetCode')} onPress={onReset} />
       </View>
     </View>
   )

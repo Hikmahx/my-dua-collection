@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { AddDuaOptionRow } from '@/components/ui/add-dua-option-row'
 import { useArabicFont } from '@/hooks/use-arabic-font'
 import { useColorScheme } from '@/hooks/use-color-scheme'
@@ -39,8 +40,9 @@ export default function AddDuaModal() {
   const isDark = colorScheme === 'dark'
   const router = useRouter()
   const dispatch = useDispatch()
-  const language = useSelector((state: RootState) => state.settings.language)
+  const language = useSelector((state: RootState) => state.settings.translationLanguage)
   const arabicFont = useArabicFont()
+  const t = useT()
   // Opened from a collection's "Add dua": the new dua goes into that collection
   const { collection } = useLocalSearchParams<{ collection?: string }>()
   const userCollections = useSelector((state: RootState) => state.collections.items)
@@ -80,14 +82,14 @@ export default function AddDuaModal() {
 
   const handleAddDua = useCallback(() => {
     if (!title.trim() || !arabicText.trim() || !translation.trim()) {
-      Alert.alert('Missing Fields', 'Please fill in all required fields')
+      Alert.alert(t('addDua.missingTitle'), t('addDua.missingBody'))
       return
     }
 
     if (source && reference.trim() && !isValidReference(source, reference)) {
       Alert.alert(
-        'Invalid Reference',
-        `Use a format like ${REFERENCE_PLACEHOLDERS[source]}`
+        t('addDua.invalidRefTitle'),
+        t('addDua.invalidRefBody', { format: REFERENCE_PLACEHOLDERS[source] })
       )
       return
     }
@@ -108,7 +110,7 @@ export default function AddDuaModal() {
     if (targetUserCollection) {
       dispatch(addDuaToCollection({ collectionId: targetUserCollection.id, duaId: newDua.id }))
     }
-    Alert.alert('Success', 'Dua added successfully!')
+    Alert.alert(t('addDua.successTitle'), t('addDua.successBody'))
     router.back()
   }, [
     title,
@@ -118,6 +120,7 @@ export default function AddDuaModal() {
     source,
     reference,
     language,
+    t,
     targetUserCollection,
     dispatch,
     router,
@@ -129,7 +132,7 @@ export default function AddDuaModal() {
         style={tw`flex-1 items-center justify-center ${isDark ? 'bg-very-dark-bg' : 'bg-light-bg'}`}
       >
         <Text style={tw`${isDark ? 'text-light-grayish-text' : 'text-dark-text'}`}>
-          Loading...
+          {t('common.loading')}
         </Text>
       </View>
     )
@@ -178,26 +181,26 @@ export default function AddDuaModal() {
             <Text
               style={[tw`text-lg font-bold ${textColor} mb-2 text-center`, { paddingHorizontal: 8 }]}
             >
-              Choose how you'd like to add your dua
+              {t('addDua.chooseMethod')}
             </Text>
 
             <View style={tw`mt-4`}>
               <AddDuaOptionRow
                 type='upload'
-                title='Upload Image'
-                description='Scan screenshot or camera text'
+                title={t('addDua.uploadTitle')}
+                description={t('addDua.uploadDesc')}
                 onPress={() => setSelectedMethod('upload')}
               />
               <AddDuaOptionRow
                 type='ai'
-                title='AI generated Dua'
-                description='Ask the AI for the dua you want to add'
+                title={t('addDua.aiTitle')}
+                description={t('addDua.aiDesc')}
                 onPress={() => setSelectedMethod('ai')}
               />
               <AddDuaOptionRow
                 type='manual'
-                title='Manual'
-                description='Add Dua using a form'
+                title={t('addDua.manualTitle')}
+                description={t('addDua.manualDesc')}
                 onPress={() => setSelectedMethod('manual')}
               />
             </View>
@@ -211,7 +214,7 @@ export default function AddDuaModal() {
                 style={({ pressed }) => [tw`flex-row items-center`, { opacity: pressed ? 0.7 : 1 }]}
               >
                 <Text style={tw`text-2xl mr-2 ${textColor}`}>‹</Text>
-                <Text style={tw`font-semibold ${textColor}`}>Back</Text>
+                <Text style={tw`font-semibold ${textColor}`}>{t('common.back')}</Text>
               </Pressable>
               <Pressable onPress={() => router.back()} style={tw`p-2`}>
                 <Text style={tw`text-xl ${textColor}`}>✕</Text>
@@ -223,7 +226,7 @@ export default function AddDuaModal() {
                 <Text
                   style={tw`text-center ${isDark ? 'text-light-grayish-text-muted' : 'text-dark-grayish-text'}`}
                 >
-                  Coming soon
+                  {t('addDua.comingSoon')}
                 </Text>
               </View>
             ) : (
@@ -231,10 +234,10 @@ export default function AddDuaModal() {
             {/* Title */}
             <View style={tw`mb-5`}>
               <Text style={tw`text-sm font-semibold ${textColor} mb-2`}>
-                Title *
+                {t('addDua.titleLabel')}
               </Text>
               <TextInput
-                placeholder='Enter dua title'
+                placeholder={t('addDua.titlePlaceholder')}
                 placeholderTextColor={isDark ? '#A0A0A0' : '#666666'}
                 value={title}
                 onChangeText={setTitle}
@@ -245,10 +248,10 @@ export default function AddDuaModal() {
             {/* Arabic Text */}
             <View style={tw`mb-5`}>
               <Text style={tw`text-sm font-semibold ${textColor} mb-2`}>
-                Arabic Text *
+                {t('addDua.arabicLabel')}
               </Text>
               <TextInput
-                placeholder='Enter Arabic dua text'
+                placeholder={t('addDua.arabicPlaceholder')}
                 placeholderTextColor={isDark ? '#A0A0A0' : '#666666'}
                 value={arabicText}
                 onChangeText={setArabicText}
@@ -261,10 +264,10 @@ export default function AddDuaModal() {
             {/* Translation (saved in the language chosen in Settings) */}
             <View style={tw`mb-5`}>
               <Text style={tw`text-sm font-semibold ${textColor} mb-2`}>
-                Translation *
+                {t('addDua.translationLabel')}
               </Text>
               <TextInput
-                placeholder='Enter translation'
+                placeholder={t('addDua.translationPlaceholder')}
                 placeholderTextColor={isDark ? '#A0A0A0' : '#666666'}
                 value={translation}
                 onChangeText={setTranslation}
@@ -277,7 +280,7 @@ export default function AddDuaModal() {
             {/* Categories (a dua can belong to several) */}
             <View style={tw`mb-5`}>
               <Text style={tw`text-sm font-semibold ${textColor} mb-2`}>
-                Categories
+                {t('addDua.categories')}
               </Text>
               <View style={tw`flex-row flex-wrap gap-2`}>
                 {categoryOptions.map((cat) => (
@@ -302,7 +305,7 @@ export default function AddDuaModal() {
             {/* Source (optional) */}
             <View style={tw`mb-5`}>
               <Text style={tw`text-sm font-semibold ${textColor} mb-2`}>
-                Source (optional)
+                {t('addDua.source')}
               </Text>
               <View style={tw`flex-row flex-wrap gap-2`}>
                 {(Object.keys(SOURCE_LABELS) as DuaSource[]).map((value) => (
@@ -327,11 +330,11 @@ export default function AddDuaModal() {
             {/* Reference (optional) - placeholder follows the selected source */}
             <View style={tw`mb-8`}>
               <Text style={tw`text-sm font-semibold ${textColor} mb-2`}>
-                Reference (optional)
+                {t('addDua.reference')}
               </Text>
               <TextInput
                 placeholder={
-                  source ? REFERENCE_PLACEHOLDERS[source] : 'Choose a source first'
+                  source ? REFERENCE_PLACEHOLDERS[source] : t('addDua.chooseSource')
                 }
                 placeholderTextColor={isDark ? '#A0A0A0' : '#666666'}
                 value={reference}
@@ -351,7 +354,7 @@ export default function AddDuaModal() {
                 ]}
               >
                 <Text style={tw`text-center font-semibold ${textColor}`}>
-                  Cancel
+                  {t('common.cancel')}
                 </Text>
               </Pressable>
 
@@ -363,7 +366,7 @@ export default function AddDuaModal() {
                 ]}
               >
                 <Text style={tw`text-center font-semibold text-light-grayish-text`}>
-                  Add Dua
+                  {t('addDua.submit')}
                 </Text>
               </Pressable>
             </View>

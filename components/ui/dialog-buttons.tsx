@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { GoldButton } from '@/components/ui/gold-button'
 import { themeColors } from '@/constants/theme-colors'
 import tw from '@/lib/tailwind'
@@ -16,7 +17,7 @@ interface DialogButtonsProps {
 
 /** Cancel (outlined) + confirm (gold) buttons shared by every dialog. */
 export function DialogButtons({
-  cancelLabel = 'Cancel',
+  cancelLabel,
   confirmLabel,
   onCancel,
   onConfirm,
@@ -24,6 +25,7 @@ export function DialogButtons({
   forceDark = false,
 }: DialogButtonsProps) {
   const isDark = useColorScheme() === 'dark' || forceDark
+  const t = useT()
 
   return (
     <View style={tw`flex-row`}>
@@ -36,7 +38,7 @@ export function DialogButtons({
         ]}
       >
         <Text style={tw`font-nunito-semibold text-[14px] ${isDark ? 'text-white' : 'text-dark-text'}`}>
-          {cancelLabel}
+          {cancelLabel ?? t('common.cancel')}
         </Text>
       </Pressable>
       <GoldButton

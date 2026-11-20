@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { CollectionIcon, type CollectionIconKey } from '@/components/icons/collection-icons'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import tw from '@/lib/tailwind'
@@ -19,6 +20,7 @@ export function CollectionCard({
   onPress,
 }: CollectionCardProps) {
   const isDark = useColorScheme() === 'dark'
+  const t = useT()
   const waveFill = isDark ? '#FFFFFF' : '#C2A462'
 
   return (
@@ -57,7 +59,7 @@ export function CollectionCard({
             { lineHeight: 14 },
           ]}
         >
-          {count} {count === 1 ? 'Dua' : 'Duas'}
+          {t('collection.duaCount', { count })}
         </Text>
 
         {/* icon box sits ~46pt from the top and 9pt from the right, like the design */}

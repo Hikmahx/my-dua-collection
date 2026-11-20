@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { TasbihCounter } from '@/components/tasbih/tasbih-counter'
 import { TasbihCustomTargetModal } from '@/components/tasbih/tasbih-custom-target-modal'
 import { TasbihDuaDetailModal } from '@/components/tasbih/tasbih-dua-detail-modal'
@@ -29,10 +30,11 @@ export default function TasbihScreen() {
   const isDark = useColorScheme() === 'dark'
   const dispatch = useDispatch()
   const store = useStore<RootState>()
+  const t = useT()
 
   const { count, target, dhikrId } = useSelector((s: RootState) => s.tasbih)
   const duas = useSelector((s: RootState) => s.duas.items)
-  const language = useSelector((s: RootState) => s.settings.language)
+  const language = useSelector((s: RootState) => s.settings.translationLanguage)
   const feedback = useTasbihFeedback()
 
   const item = useMemo(() => findTasbihItem(dhikrId, duas, language), [dhikrId, duas, language])
@@ -83,7 +85,7 @@ export default function TasbihScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: Colors[isDark ? 'dark' : 'light'].screenBody }}>
-      <ScreenHeader title='Tasbih' />
+      <ScreenHeader title={t('tabs.tasbih')} />
 
       <View style={tw`flex-1 w-full max-w-[480px] self-center px-[30px]`}>
         <View style={tw`mt-[17px]`}>
@@ -133,9 +135,9 @@ export default function TasbihScreen() {
 
       <ConfirmModal
         visible={resetOpen}
-        title='Reset counter?'
-        message={`Your count of ${count} will be set back to 0.`}
-        confirmLabel='Reset'
+        title={t('tasbih.resetTitle')}
+        message={t('tasbih.resetMessage', { count })}
+        confirmLabel={t('tasbih.reset')}
         onCancel={() => setResetOpen(false)}
         onConfirm={() => {
           dispatch(resetCount())
@@ -145,9 +147,9 @@ export default function TasbihScreen() {
 
       <ConfirmModal
         visible={pendingTarget !== null}
-        title='Change target?'
-        message={`Switching to ${pendingTarget} will reset your current count of ${count}.`}
-        confirmLabel='Change'
+        title={t('tasbih.changeTargetTitle')}
+        message={t('tasbih.changeTargetMessage', { target: pendingTarget ?? '', count })}
+        confirmLabel={t('tasbih.change')}
         onCancel={() => setPendingTarget(null)}
         onConfirm={() => {
           if (pendingTarget !== null) dispatch(setTarget(pendingTarget))
@@ -157,9 +159,9 @@ export default function TasbihScreen() {
 
       <ConfirmModal
         visible={pendingDhikr !== null}
-        title='Change dua?'
-        message={`Switching to this dua will reset your current count of ${count}.`}
-        confirmLabel='Change'
+        title={t('tasbih.changeDuaTitle')}
+        message={t('tasbih.changeDuaMessage', { count })}
+        confirmLabel={t('tasbih.change')}
         onCancel={() => setPendingDhikr(null)}
         onConfirm={() => {
           if (pendingDhikr) dispatch(selectDhikr(pendingDhikr.id))

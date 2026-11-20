@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { AUTH_PROVIDERS } from '@/constants/auth-config'
 import type { AuthProvider } from '@/data/types'
 import { useSettingsColors } from '@/hooks/use-settings-colors'
@@ -18,6 +19,7 @@ export function SignInOptions({ onSignIn, onSignedIn }: SignInOptionsProps) {
   const c = useSettingsColors()
   const [busy, setBusy] = useState<AuthProvider | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const t = useT()
 
   const signIn = async (provider: AuthProvider) => {
     setBusy(provider)
@@ -26,7 +28,7 @@ export function SignInOptions({ onSignIn, onSignedIn }: SignInOptionsProps) {
       await onSignIn(provider)
       onSignedIn?.()
     } catch {
-      setError('Could not sign in. Please try again.')
+      setError(t('signIn.failed'))
     } finally {
       setBusy(null)
     }
@@ -40,7 +42,7 @@ export function SignInOptions({ onSignIn, onSignedIn }: SignInOptionsProps) {
           onPress={() => signIn(id)}
           disabled={busy !== null}
           accessibilityRole='button'
-          accessibilityLabel={`Continue with ${label}`}
+          accessibilityLabel={t('signIn.continueWith', { provider: label })}
           style={({ pressed }) => [
             tw`flex-row items-center justify-center h-[48px] rounded-xl mb-3`,
             {
@@ -56,7 +58,7 @@ export function SignInOptions({ onSignIn, onSignedIn }: SignInOptionsProps) {
           ) : (
             <MaterialCommunityIcons name={icon} size={20} color={c.accent} style={tw`mr-[10px]`} />
           )}
-          <Text style={[tw`font-nunito-semibold text-[14px]`, { color: c.title }]}>Continue with {label}</Text>
+          <Text style={[tw`font-nunito-semibold text-[14px]`, { color: c.title }]}>{t('signIn.continueWith', { provider: label })}</Text>
         </Pressable>
       ))}
       {!!error && <Text style={[tw`font-nunito text-[12px] text-center mb-2`, { color: c.danger }]}>{error}</Text>}

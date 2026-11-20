@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import ExploreIcon from '@/components/icons/explore-icon'
 import { DuaListRow } from '@/components/dua-list/dua-list-row'
 import { AppearanceMenuButton } from '@/components/ui/appearance-menu-button'
@@ -59,6 +60,7 @@ export function DuaListScreen({
 }: DuaListScreenProps) {
   const c = useDuaListColors()
   const router = useRouter()
+  const t = useT()
   const [searchOpen, setSearchOpen] = useState(false)
   const [reordering, setReordering] = useState(false)
   const { filter, filtered, sections } = useSourceFilter(duas)
@@ -77,7 +79,7 @@ export function DuaListScreen({
 
   // "Reorder" sits above the filters in the dropdown; with fewer than two duas there is nothing to arrange
   const reorderAction: FilterMenuOption | null = onReorder
-    ? { id: 'reorder', label: 'Reorder', icon: 'swap-vertical', onSelect: startReordering }
+    ? { id: 'reorder', label: t('list.reorder'), icon: 'swap-vertical', onSelect: startReordering }
     : null
   const actions: FilterMenuOption[] = [...(menuActions ?? []), ...(reorderAction ? [reorderAction] : [])]
   const count = reordering ? duas.length : filtered.length
@@ -86,7 +88,7 @@ export function DuaListScreen({
     <View style={{ flex: 1, backgroundColor: c.background }}>
       <ScreenHeader
         title={title}
-        subtitle={`${count} ${count === 1 ? 'dua' : 'duas'}${reordering ? ' · Reordering' : filter ? ` · ${filter.name}` : ''}`}
+        subtitle={`${t('list.duaCount', { count })}${reordering ? ` · ${t('list.reordering')}` : filter ? ` · ${filter.name}` : ''}`}
         bottomPadding={7}
         left={onBack && <BackButton onPress={onBack} color={c.icon} />}
         right={
@@ -95,9 +97,9 @@ export function DuaListScreen({
               onPress={() => setReordering(false)}
               hitSlop={12}
               accessibilityRole='button'
-              accessibilityLabel='Done reordering'
+              accessibilityLabel={t('list.doneReordering')}
             >
-              <Text style={[tw`font-nunito-semibold text-[13px]`, { color: c.accent }]}>Done</Text>
+              <Text style={[tw`font-nunito-semibold text-[13px]`, { color: c.accent }]}>{t('common.done')}</Text>
             </Pressable>
           ) : (
             <View style={tw`flex-row items-center`}>
@@ -105,7 +107,7 @@ export function DuaListScreen({
                 onPress={toggleSearch}
                 hitSlop={12}
                 accessibilityRole='button'
-                accessibilityLabel={searchOpen ? 'Close search' : 'Search'}
+                accessibilityLabel={searchOpen ? t('list.closeSearch') : t('common.search')}
               >
                 {searchOpen ? (
                   <Feather name='x' size={22} color={c.icon} />
@@ -116,7 +118,7 @@ export function DuaListScreen({
               <View style={tw`ml-[18px]`}>
                 <AppearanceMenuButton
                   extraSections={
-                    actions.length > 0 ? [{ id: 'manage', title: 'Manage', options: actions }, ...sections] : sections
+                    actions.length > 0 ? [{ id: 'manage', title: t('list.manage'), options: actions }, ...sections] : sections
                   }
                   active={!!filter}
                 />
@@ -129,7 +131,7 @@ export function DuaListScreen({
       {reordering ? (
         <>
           <Text style={[tw`font-nunito text-[11px] leading-[14px] mx-[16px] mt-[12px]`, { color: c.muted }]}>
-            Press and hold the dots, then drag to reorder
+            {t('list.reorderHint')}
           </Text>
           <View style={tw`flex-1 mt-[12px]`}>
             <ReorderableList
@@ -151,7 +153,7 @@ export function DuaListScreen({
             <SearchField
               value={query}
               onChangeText={setQuery}
-              placeholder='Search duas, surah or hadith'
+              placeholder={t('list.searchPlaceholder')}
               autoFocus
               style={tw`mx-[16px] mt-[12px]`}
             />

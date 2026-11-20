@@ -1,3 +1,4 @@
+import { useT } from '@/hooks/use-t'
 import { DuaListScreen } from '@/components/dua-list/dua-list-screen'
 import { useCollections } from '@/hooks/use-collections'
 import {
@@ -14,6 +15,7 @@ import { useSelector } from 'react-redux'
 export default function CollectionScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
+  const t = useT()
   const allDuas = useSelector((state: RootState) => state.duas.items)
   const { userCollections, getName, find } = useCollections()
 
@@ -28,14 +30,14 @@ export default function CollectionScreen() {
     ? [
         {
           id: 'add',
-          label: 'Add dua',
+          label: t('collection.addDua'),
           icon: 'plus',
           onSelect: () =>
             router.push({ pathname: '/modal', params: { collection: id } }),
         },
         {
           id: 'edit',
-          label: 'Edit collection',
+          label: t('collection.edit'),
           icon: 'pencil-outline',
           onSelect: () =>
             router.push({ pathname: '/edit-collection/[id]', params: { id } }),
@@ -49,7 +51,7 @@ export default function CollectionScreen() {
       listId={id}
       duas={duas}
       onBack={() => router.back()}
-      emptyMessage='No duas in this collection yet'
+      emptyMessage={t('collection.empty')}
       menuActions={menuActions}
     />
   )
