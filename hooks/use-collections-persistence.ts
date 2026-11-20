@@ -4,11 +4,12 @@ import type { RootState } from '@/redux/store'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-const SAVE_DELAY_MS = 400
-
 /**
  * Restores the collections the user made on launch and saves every later change (edit, delete, a
  * dua added). Returns true once the saved ones have been loaded.
+ *
+ * A change is saved right away (no delay): a new dua and its new collection are created in the same
+ * step, and the duas are saved right away too, so the two stay together if the app is closed.
  */
 export function useCollectionsPersistence(): boolean {
   const dispatch = useDispatch()
@@ -29,8 +30,7 @@ export function useCollectionsPersistence(): boolean {
 
   useEffect(() => {
     if (!ready) return
-    const timer = setTimeout(() => saveCollections(collections), SAVE_DELAY_MS)
-    return () => clearTimeout(timer)
+    saveCollections(collections)
   }, [collections, ready])
 
   return ready

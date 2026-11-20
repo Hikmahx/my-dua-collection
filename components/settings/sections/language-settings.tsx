@@ -1,4 +1,4 @@
-import { LanguageSheet } from '@/components/settings/language-sheet'
+import { OptionSheet } from '@/components/settings/option-sheet'
 import { SettingsGroup, type SettingsVariant } from '@/components/settings/settings-group'
 import { SettingsRow } from '@/components/settings/settings-row'
 import { APP_LANGUAGE_CODES, getLanguage, isAppLanguageCode, LANGUAGES } from '@/constants/languages'
@@ -21,13 +21,13 @@ export function LanguageSettings({ variant }: { variant?: SettingsVariant }) {
   const duas = useSelector((state: RootState) => state.duas.items)
   const [openSheet, setOpenSheet] = useState<'app' | 'translation' | null>(null)
 
-  const appOptions = APP_LANGUAGE_CODES.map((code) => ({ code, label: getLanguage(code).nativeName }))
+  const appOptions = APP_LANGUAGE_CODES.map((code) => ({ id: code, label: getLanguage(code).nativeName }))
 
   // how many duas have a translation in each language
   const translationOptions = useMemo(
     () =>
       LANGUAGES.map(({ code, name, nativeName }) => ({
-        code,
+        id: code,
         label: code === 'en' ? name : `${name} · ${nativeName}`,
         sublabel: t('language.translatedCount', {
           count: duas.filter((dua) => !!dua.translations[code]).length,
@@ -54,7 +54,7 @@ export function LanguageSettings({ variant }: { variant?: SettingsVariant }) {
         />
       </SettingsGroup>
 
-      <LanguageSheet
+      <OptionSheet
         visible={openSheet === 'app'}
         onClose={() => setOpenSheet(null)}
         title={t('language.app')}
@@ -64,7 +64,7 @@ export function LanguageSettings({ variant }: { variant?: SettingsVariant }) {
         onSelect={(code) => isAppLanguageCode(code) && dispatch(setAppLanguage(code))}
         footnote={t('language.moreSoon')}
       />
-      <LanguageSheet
+      <OptionSheet
         visible={openSheet === 'translation'}
         onClose={() => setOpenSheet(null)}
         title={t('language.translation')}

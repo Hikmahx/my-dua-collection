@@ -79,7 +79,8 @@ Users can currently:
 - Tabs: All, My Collections and Pre-made.
 - Collections grid (2 columns on phones, 3 or 4 on larger screens) with an icon and the dua count on every card.
 - Tapping a collection opens it.
-- A "+" button opens the add-dua modal.
+- A "+" button opens the add-dua modal. A new dua must go into at least one of *your* collections (pre-made ones are read only and are never listed, and there is no default "General"); a "+" pill at the end of the collection pills turns into a name field to create a new collection. A new collection is only made together with the dua: cancelling or a failed save creates nothing. Transliteration is optional.
+- On a dua's screen, the **+** in the bottom bar opens a **Save to collection** sheet: tick one or more of your collections, or tap **New collection**, then **Done**. Nothing changes until Done, and a collection that would be left with no duas is deleted (after asking), because a collection cannot exist without a dua.
 - The filter icon opens the Appearance menu (Dark or Light).
 
 ---
@@ -91,7 +92,7 @@ Users can currently:
 </p>
 
 - The "+" button offers three ways to add a dua: Upload Image, AI generated Dua and Manual. Only **Manual** works for now.
-- The form takes a title, the Arabic text, a translation, the collections it belongs to, and an optional source and reference.
+- The form takes a title, the Arabic text, a translation, the collections it belongs to (yours only, at least one), and an optional source and reference.
 - The reference is checked: Quran references look like `21:87` or `11:39-42` and the surah number must be 114 or less.
 - Saved duas are stored on the device and the collection counts update straight away.
 
@@ -223,7 +224,7 @@ Then press `i` (iOS simulator), `a` (Android emulator) or scan the QR code with 
 - [ ] Explore topic screens and a universal search
 - [ ] AI chat assistant
 - [ ] Image upload (OCR) to add a dua
-- [ ] Audio recitations
+- [ ] Audio recitations (the Dua screen's audio button was replaced by **Save to collection**; the audio button comes back when recitations exist)
 - [ ] Reminders and Ramadan mode
 - [ ] Share cards and PDF export
 - [ ] Backend and cloud sync

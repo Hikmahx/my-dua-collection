@@ -27,3 +27,9 @@ export type UserCollection = CollectionDef & { isUserCreated: true; duaIds: stri
  */
 export const getCollectionName = (id: string, userCollections: CollectionDef[] = []) =>
   COLLECTION_DEFS.find((c) => c.id === id)?.name ?? userCollections.find((c) => c.id === id)?.name ?? id
+
+/** Longest name a collection the user makes can have (the add-dua form, the sidebar and Edit collection). */
+export const MAX_COLLECTION_NAME_LENGTH = 40
+
+/** Icon of a collection created from the add-dua form or the Dua screen's sidebar. */
+export const NEW_COLLECTION_ICON_KEY: CollectionIconKey = 'journal'

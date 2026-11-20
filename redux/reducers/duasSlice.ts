@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createAction, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { data } from '@/data'
 import { normalizeFavoriteOrder } from '@/lib/favorites'
 
@@ -16,7 +16,7 @@ export interface Dua {
   reference?: string // '21:87' or '11:39-42'
   info?: string // HTML from the rich editor
   repeat?: number // how many times the dua is recited; the Dua screen's counter counts down from it
-  audioUrl?: string // recording played by the Dua screen's audio button
+  // audioUrl?: string // reserved for audio recitations (nothing plays it yet)
   origin: DuaOrigin
   /** Id of the user who shared this dua. Missing (or null) when the user made it themselves. Shared copies also have `origin: 'shared'`. */
   sharedBy?: string | null
@@ -35,6 +35,24 @@ interface DuasState {
   /** Ids of the favorite duas in the order the user arranged them (Favorites lists them this way). */
   favoriteOrder: string[]
 }
+
+/** A collection the user is making together with a dua: it only exists once the dua is saved. */
+export interface NewCollectionDraft {
+  id: string
+  name: string
+}
+
+/**
+ * Saves a new dua together with the collections it goes into (existing ones by id, and new ones to
+ * create). Both slices handle this one action, so it is all-or-nothing: no dua without a
+ * collection, and no collection without its dua. Use the `createDuaInCollections` thunk, which
+ * checks the dua is going into at least one collection before it dispatches this.
+ */
+export const addDuaWithCollections = createAction<{
+  dua: Dua
+  collectionIds: string[]
+  newCollections: NewCollectionDraft[]
+}>('duas/addDuaWithCollections')
 
 const initialState: DuasState = {
   items: BUILT_IN_DUAS,
@@ -79,6 +97,12 @@ const duasSlice = createSlice({
       state.favoriteOrder = action.payload
       syncFavoriteOrder(state)
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(addDuaWithCollections, (state, action) => {
+      state.items.push(action.payload.dua)
+      syncFavoriteOrder(state)
+    })
   },
 })
 

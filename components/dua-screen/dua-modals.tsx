@@ -10,7 +10,7 @@ import type { RootState } from '@/redux/store'
 import { Share, Text } from 'react-native'
 import { useSelector } from 'react-redux'
 
-export type DuaModalKind = 'audio' | 'share' | 'info'
+export type DuaModalKind = 'share' | 'info'
 
 interface DuaModalsProps {
   /** Which modal is open, if any. */
@@ -19,7 +19,7 @@ interface DuaModalsProps {
   onClose: () => void
 }
 
-/** The three dialogs of the Dua screen: audio (coming soon), share, and the dua's virtue. */
+/** The two dialogs of the Dua screen: share, and the dua's virtue. */
 export function DuaModals({ kind, dua, onClose }: DuaModalsProps) {
   const isDark = useColorScheme() === 'dark'
   const t = useT()
@@ -29,10 +29,6 @@ export function DuaModals({ kind, dua, onClose }: DuaModalsProps) {
 
   return (
     <>
-      <DialogModal visible={kind === 'audio'} title={t('duaModals.audio')} onClose={onClose}>
-        <Text style={text}>{t('duaModals.audioSoon')}</Text>
-      </DialogModal>
-
       <DialogModal
         visible={kind === 'share'}
         title={t('duaModals.share')}

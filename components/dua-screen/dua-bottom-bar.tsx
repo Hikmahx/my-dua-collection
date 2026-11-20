@@ -11,7 +11,7 @@ const BAR_HEIGHT = 80
 const COUNTER_SIZE = 94
 
 // Where each icon is centred, as a share of the screen width (measured on the design)
-const ICON_POSITIONS = { play: 8, heart: 28.3, share: 75.7, info: 89.3 }
+const ICON_POSITIONS = { save: 8, heart: 28.3, share: 75.7, info: 89.3 }
 
 interface DuaBottomBarProps {
   /** What the counter shows: the taps still to go, and how far along the arc is. */
@@ -19,7 +19,10 @@ interface DuaBottomBarProps {
   progress: number
   onTap: () => void
   isFavorite: boolean
-  onPlay: () => void
+  /** True when the dua is in one of the user's collections (the + is drawn in the accent color). */
+  isSaved: boolean
+  /** Opens the "Save to collection" sheet. */
+  onSave: () => void
   onToggleFavorite: () => void
   onShare: () => void
   onInfo: () => void
@@ -58,7 +61,7 @@ function BarIcon({
 }
 
 /**
- * The bottom bar: audio and favorite on the left, share and info on the right, and the counter in
+ * The bottom bar: save-to-collection (+) and favorite on the left, share and info on the right, and the counter in
  * the middle, sitting half over the bar. The counter counts down to 0 for this dua. The icons sit at
  * fixed shares of the width, so they stay where the design has them on any screen.
  */
@@ -67,7 +70,8 @@ export function DuaBottomBar({
   progress,
   onTap,
   isFavorite,
-  onPlay,
+  isSaved,
+  onSave,
   onToggleFavorite,
   onShare,
   onInfo,
@@ -92,8 +96,8 @@ export function DuaBottomBar({
         }}
       >
         <View style={{ height: BAR_HEIGHT }}>
-          <BarIcon position={ICON_POSITIONS.play} label={t('bar.playAudio')} onPress={onPlay}>
-            <Feather name='play' size={24} color={c.icon} />
+          <BarIcon position={ICON_POSITIONS.save} label={t('bar.saveToCollection')} onPress={onSave}>
+            <Feather name='plus-circle' size={24} color={isSaved ? c.accent : c.icon} />
           </BarIcon>
           <BarIcon
             position={ICON_POSITIONS.heart}

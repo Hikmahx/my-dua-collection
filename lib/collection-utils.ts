@@ -23,3 +23,29 @@ export function getDuasInCollection(id: string, duas: Dua[], userCollections: Us
   const byId = new Map(duas.map((dua) => [dua.id, dua]))
   return own.duaIds.map((duaId) => byId.get(duaId)).filter((dua): dua is Dua => !!dua)
 }
+
+/** A new id for a collection the user makes. It cannot clash with the readable ids of pre-made ones. */
+export const createCollectionId = () =>
+  `user-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`
+
+/** True when one of the user's collections (or one of `pendingNames`) already has this name, ignoring case. */
+export function isCollectionNameTaken(
+  name: string,
+  userCollections: UserCollection[],
+  pendingNames: string[] = [],
+): boolean {
+  const wanted = name.trim().toLowerCase()
+  return [...userCollections.map((collection) => collection.name), ...pendingNames].some(
+    (existing) => existing.trim().toLowerCase() === wanted,
+  )
+}
+
+/**
+ * Every collection a dua is in: the pre-made ones that name it in its `categories`, and the user's
+ * collections that list it. Ids that no collection has any more are left out.
+ */
+export function getCollectionIdsOfDua(dua: Dua, userCollections: UserCollection[]): string[] {
+  const premade = dua.categories.filter((id) => COLLECTION_DEFS.some((collection) => collection.id === id))
+  const own = userCollections.filter((collection) => collection.duaIds.includes(dua.id)).map((collection) => collection.id)
+  return [...new Set([...premade, ...own])]
+}

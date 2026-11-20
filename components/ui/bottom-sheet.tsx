@@ -1,6 +1,6 @@
 import { useT } from '@/hooks/use-t'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { Animated, Modal, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native'
+import { Animated, Keyboard, Modal, Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 interface BottomSheetProps {
@@ -15,7 +15,7 @@ interface BottomSheetProps {
 const SLIDE_IN_MS = 240
 const SLIDE_OUT_MS = 200
 
-/** A panel that slides up from the bottom over a dimmed screen. Tap the dim area or back to close. */
+/** A panel that slides up from the bottom over a dimmed screen (and above the keyboard). Tap the dim area or back to close. */
 export function BottomSheet({ visible, onClose, backgroundColor, handleColor, children }: BottomSheetProps) {
   const { height } = useWindowDimensions()
   const insets = useSafeAreaInsets()
@@ -23,6 +23,8 @@ export function BottomSheet({ visible, onClose, backgroundColor, handleColor, ch
 
   // keep the Modal mounted while the sheet slides down
   const [mounted, setMounted] = useState(visible)
+  // the sheet rides up with the keyboard so a text field inside it is never hidden
+  const [keyboardHeight, setKeyboardHeight] = useState(0)
   const progress = useRef(new Animated.Value(visible ? 1 : 0)).current
 
   useEffect(() => {
@@ -37,6 +39,17 @@ export function BottomSheet({ visible, onClose, backgroundColor, handleColor, ch
       )
     }
   }, [visible, progress])
+
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow'
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide'
+    const show = Keyboard.addListener(showEvent, (event) => setKeyboardHeight(event.endCoordinates.height))
+    const hide = Keyboard.addListener(hideEvent, () => setKeyboardHeight(0))
+    return () => {
+      show.remove()
+      hide.remove()
+    }
+  }, [])
 
   if (!mounted) return null
 
@@ -54,12 +67,12 @@ export function BottomSheet({ visible, onClose, backgroundColor, handleColor, ch
             position: 'absolute',
             left: 0,
             right: 0,
-            bottom: 0,
-            maxHeight: height * 0.8,
+            bottom: keyboardHeight,
+            maxHeight: height * 0.8 - keyboardHeight,
             backgroundColor,
             borderTopLeftRadius: 24,
             borderTopRightRadius: 24,
-            paddingBottom: insets.bottom + 16,
+            paddingBottom: (keyboardHeight > 0 ? 0 : insets.bottom) + 16,
             transform: [{ translateY: progress.interpolate({ inputRange: [0, 1], outputRange: [height, 0] }) }],
           }}
         >

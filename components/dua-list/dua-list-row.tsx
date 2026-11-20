@@ -1,6 +1,8 @@
 import { CollectionPills } from '@/components/dua-list/collection-pills'
 import { DUA_ROW_HEIGHT } from '@/constants/dua-config'
+import { useCollections } from '@/hooks/use-collections'
 import { useDuaListColors } from '@/hooks/use-dua-list-colors'
+import { getCollectionIdsOfDua } from '@/lib/collection-utils'
 import { formatSourceLine } from '@/lib/dua-utils'
 import tw from '@/lib/tailwind'
 import type { Dua } from '@/redux/reducers/duasSlice'
@@ -30,6 +32,7 @@ export function DuaListRow({
   fixedHeight = false,
 }: DuaListRowProps) {
   const c = useDuaListColors()
+  const { userCollections } = useCollections()
   const source = formatSourceLine(dua)
 
   const content = (
@@ -53,7 +56,7 @@ export function DuaListRow({
           </Text>
         )}
 
-        {showCollections && <CollectionPills categories={dua.categories} />}
+        {showCollections && <CollectionPills collectionIds={getCollectionIdsOfDua(dua, userCollections)} />}
       </View>
 
       {trailing && <View style={tw`ml-[4px] -mr-[10px]`}>{trailing}</View>}

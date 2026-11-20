@@ -1,4 +1,5 @@
 import { useT } from '@/hooks/use-t'
+import { PillButton } from '@/components/ui/pill-button'
 import { useCollectionEditColors } from '@/hooks/use-collection-edit-colors'
 import tw from '@/lib/tailwind'
 import type { TFunction } from '@/locales'
@@ -36,7 +37,7 @@ export function DeleteCollectionDialog({ visible, collectionName, duaCount, onDe
           onStartShouldSetResponder={() => true}
           accessibilityViewIsModal
           style={[
-            tw`rounded-[20px] border px-[20px] pt-[24px] pb-[28px]`,
+            tw`rounded-[24px] border px-[20px] pt-[24px] pb-[26px]`,
             { width: Math.min(width - 32, 400), backgroundColor: c.card, borderColor: c.border },
           ]}
         >
@@ -47,26 +48,20 @@ export function DeleteCollectionDialog({ visible, collectionName, duaCount, onDe
             {`${t('deleteCollection.body')}${keepSentence(duaCount, t)}`}
           </Text>
 
-          <Pressable
+          <PillButton
+            label={t('deleteCollection.confirm')}
             onPress={onDelete}
-            accessibilityRole='button'
-            style={({ pressed }) => [
-              tw`h-[42px] rounded-[12px] items-center justify-center mt-[40px]`,
-              { backgroundColor: c.destructiveBg, opacity: pressed ? 0.85 : 1 },
-            ]}
-          >
-            <Text style={[tw`font-nunito-semibold text-[14px]`, { color: c.destructiveText }]}>{t('deleteCollection.confirm')}</Text>
-          </Pressable>
-          <Pressable
+            backgroundColor={c.destructiveBg}
+            textColor={c.destructiveText}
+            style={tw`mt-[40px]`}
+          />
+          <PillButton
+            label={t('deleteCollection.keep')}
             onPress={onKeep}
-            accessibilityRole='button'
-            style={({ pressed }) => [
-              tw`h-[42px] rounded-[12px] items-center justify-center mt-[14px]`,
-              { backgroundColor: c.keepBg, opacity: pressed ? 0.85 : 1 },
-            ]}
-          >
-            <Text style={[tw`font-nunito-semibold text-[14px]`, { color: c.keepText }]}>{t('deleteCollection.keep')}</Text>
-          </Pressable>
+            backgroundColor={c.keepBg}
+            textColor={c.keepText}
+            style={tw`mt-[12px]`}
+          />
         </View>
       </Pressable>
     </Modal>

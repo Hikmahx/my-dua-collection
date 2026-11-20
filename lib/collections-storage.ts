@@ -5,7 +5,9 @@ const COLLECTIONS_KEY = 'collections:v1'
 
 /**
  * Turns what was saved into valid collections, dropping what is not usable: no id or name, an id
- * that a pre-made collection or an earlier saved one already has, ids of duas that are not text.
+ * that a pre-made collection or an earlier saved one already has, ids of duas that are not text, and
+ * a collection with no duas (a collection cannot exist without a dua, so an empty one left behind by
+ * an interrupted save or an older version is cleaned up here).
  * Returns null when it is not a list at all.
  */
 export function sanitizeCollections(value: unknown): UserCollection[] | null {
@@ -17,15 +19,17 @@ export function sanitizeCollections(value: unknown): UserCollection[] | null {
     const { id, name, iconKey, duaIds, sharedBy } = item as Record<string, unknown>
     if (typeof id !== 'string' || !id || taken.has(id)) continue
     if (typeof name !== 'string' || !name.trim()) continue
+    const ownDuaIds = Array.isArray(duaIds)
+      ? [...new Set(duaIds.filter((duaId): duaId is string => typeof duaId === 'string'))]
+      : []
+    if (ownDuaIds.length === 0) continue
     taken.add(id)
     result.push({
       id,
       name: name.trim(),
       iconKey: (typeof iconKey === 'string' && iconKey ? iconKey : 'journal') as UserCollection['iconKey'],
       isUserCreated: true,
-      duaIds: Array.isArray(duaIds)
-        ? [...new Set(duaIds.filter((duaId): duaId is string => typeof duaId === 'string'))]
-        : [],
+      duaIds: ownDuaIds,
       ...(typeof sharedBy === 'string' && sharedBy ? { sharedBy } : {}),
     })
   }

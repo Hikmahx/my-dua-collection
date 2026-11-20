@@ -2,7 +2,9 @@ import { useT } from '@/hooks/use-t'
 import { DeleteCollectionDialog } from '@/components/collection-edit/delete-collection-dialog'
 import { ReorderableDuaList, type ReorderableDua } from '@/components/collection-edit/reorderable-dua-list'
 import { BackButton } from '@/components/ui/back-button'
+import { PillButton } from '@/components/ui/pill-button'
 import { ScreenHeader } from '@/components/ui/screen-header'
+import { MAX_COLLECTION_NAME_LENGTH } from '@/constants/collections'
 import { useCollectionEditColors } from '@/hooks/use-collection-edit-colors'
 import { useCollections } from '@/hooks/use-collections'
 import { formatSourceLine } from '@/lib/dua-utils'
@@ -11,11 +13,9 @@ import { removeCollection, updateCollection } from '@/redux/reducers/collections
 import type { RootState } from '@/redux/store'
 import { useRouter } from 'expo-router'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { KeyboardAvoidingView, Platform, Pressable, Text, TextInput, View } from 'react-native'
+import { Alert, KeyboardAvoidingView, Platform, Pressable, Text, TextInput, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useDispatch, useSelector } from 'react-redux'
-
-const MAX_NAME_LENGTH = 40
 
 /**
  * Edit a collection the user made: rename it, drag its duas into a new order, remove a dua from it,
@@ -66,6 +66,14 @@ export function EditCollectionScreen({ collectionId }: { collectionId: string })
 
   const save = () => {
     if (!canSave) return
+    // A collection cannot exist without a dua: with none left, offer to delete it instead of saving
+    if (items.length === 0) {
+      Alert.alert(t('editCollection.emptyTitle'), t('editCollection.emptyBody'), [
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('editCollection.delete'), style: 'destructive', onPress: () => setConfirmingDelete(true) },
+      ])
+      return
+    }
     dispatch(updateCollection({ id: collection.id, name: name.trim(), duaIds: items.map((item) => item.id) }))
     close()
   }
@@ -98,7 +106,7 @@ export function EditCollectionScreen({ collectionId }: { collectionId: string })
           <TextInput
             value={name}
             onChangeText={setName}
-            maxLength={MAX_NAME_LENGTH}
+            maxLength={MAX_COLLECTION_NAME_LENGTH}
             placeholder={t('editCollection.nameLabel')}
             placeholderTextColor={c.muted}
             returnKeyType='done'
@@ -130,28 +138,21 @@ export function EditCollectionScreen({ collectionId }: { collectionId: string })
           <Text style={[tw`font-nunito text-[11px] leading-[14px] mb-[12px]`, { color: c.muted }]}>
             {t('editCollection.removeNote')}
           </Text>
-          <Pressable
+          <PillButton
+            label={t('editCollection.delete')}
             onPress={() => setConfirmingDelete(true)}
-            accessibilityRole='button'
-            style={({ pressed }) => [
-              tw`h-[44px] rounded-[12px] border items-center justify-center`,
-              { backgroundColor: c.deleteBg, borderColor: c.deleteBorder, opacity: pressed ? 0.8 : 1 },
-            ]}
-          >
-            <Text style={[tw`font-nunito-semibold text-[14px]`, { color: c.deleteText }]}>{t('editCollection.delete')}</Text>
-          </Pressable>
-          <Pressable
+            backgroundColor={c.deleteBg}
+            borderColor={c.deleteBorder}
+            textColor={c.deleteText}
+          />
+          <PillButton
+            label={t('editCollection.save')}
             onPress={save}
             disabled={!canSave}
-            accessibilityRole='button'
-            accessibilityState={{ disabled: !canSave }}
-            style={({ pressed }) => [
-              tw`h-[44px] rounded-[12px] items-center justify-center mt-[12px]`,
-              { backgroundColor: c.saveBg, opacity: !canSave ? 0.4 : pressed ? 0.85 : 1 },
-            ]}
-          >
-            <Text style={[tw`font-nunito-semibold text-[14px]`, { color: c.saveText }]}>{t('editCollection.save')}</Text>
-          </Pressable>
+            backgroundColor={c.saveBg}
+            textColor={c.saveText}
+            style={tw`mt-[12px]`}
+          />
         </View>
       </KeyboardAvoidingView>
 
