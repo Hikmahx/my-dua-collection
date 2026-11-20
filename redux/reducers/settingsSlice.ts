@@ -1,3 +1,4 @@
+import { DEFAULT_ARABIC_FONT, type ArabicFontId } from '@/constants/arabic-fonts'
 import { DEFAULT_FONT_SIZES, type FontSizeTarget } from '@/constants/settings-config'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
@@ -9,6 +10,7 @@ export interface SettingsState {
   language: string // language code used for dua translations
   showTransliteration: boolean
   fontSizes: Record<FontSizeTarget, number> // px
+  arabicFont: ArabicFontId
   dailyReminder: boolean
   monthlyReminders: boolean
 }
@@ -19,6 +21,7 @@ export const initialSettingsState: SettingsState = {
   language: 'en',
   showTransliteration: true,
   fontSizes: DEFAULT_FONT_SIZES,
+  arabicFont: DEFAULT_ARABIC_FONT,
   dailyReminder: true,
   monthlyReminders: false,
 }
@@ -39,6 +42,9 @@ const settingsSlice = createSlice({
     setFontSize(state, action: PayloadAction<{ target: FontSizeTarget; size: number }>) {
       state.fontSizes[action.payload.target] = action.payload.size
     },
+    setArabicFont(state, action: PayloadAction<ArabicFontId>) {
+      state.arabicFont = action.payload
+    },
     setDailyReminder(state, action: PayloadAction<boolean>) {
       state.dailyReminder = action.payload
     },
@@ -57,6 +63,7 @@ export const {
   setLanguage,
   setShowTransliteration,
   setFontSize,
+  setArabicFont,
   setDailyReminder,
   setMonthlyReminders,
   hydrateSettings,

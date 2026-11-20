@@ -1,4 +1,5 @@
 import { AddDuaOptionRow } from '@/components/ui/add-dua-option-row'
+import { useArabicFont } from '@/hooks/use-arabic-font'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import {
   isValidReference,
@@ -39,6 +40,7 @@ export default function AddDuaModal() {
   const router = useRouter()
   const dispatch = useDispatch()
   const language = useSelector((state: RootState) => state.settings.language)
+  const arabicFont = useArabicFont()
   // Opened from a collection's "Add dua": the new dua goes into that collection
   const { collection } = useLocalSearchParams<{ collection?: string }>()
   const userCollections = useSelector((state: RootState) => state.collections.items)
@@ -252,7 +254,7 @@ export default function AddDuaModal() {
                 onChangeText={setArabicText}
                 multiline
                 numberOfLines={4}
-                style={[tw`p-3 rounded-lg border ${borderColor} ${inputBgColor} ${textColor}`, { textAlign: 'right' }]}
+                style={[tw`p-3 rounded-lg border ${borderColor} ${inputBgColor} ${textColor}`, { textAlign: 'right', fontFamily: arabicFont.family }]}
               />
             </View>
 

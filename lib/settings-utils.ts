@@ -1,3 +1,4 @@
+import { isArabicFontId } from '@/constants/arabic-fonts'
 import { DEFAULT_FONT_SIZES, FONT_SIZE_SETTINGS } from '@/constants/settings-config'
 import type { SettingsState } from '@/redux/reducers/settingsSlice'
 
@@ -13,6 +14,7 @@ export function sanitizeSettings(value: unknown): Partial<SettingsState> {
   if (saved.theme === 'dark' || saved.theme === 'light') result.theme = saved.theme
   if (typeof saved.language === 'string' && saved.language) result.language = saved.language
   if (typeof saved.showTransliteration === 'boolean') result.showTransliteration = saved.showTransliteration
+  if (isArabicFontId(saved.arabicFont)) result.arabicFont = saved.arabicFont
   if (typeof saved.dailyReminder === 'boolean') result.dailyReminder = saved.dailyReminder
   if (typeof saved.monthlyReminders === 'boolean') result.monthlyReminders = saved.monthlyReminders
 

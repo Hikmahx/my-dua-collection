@@ -1,4 +1,5 @@
 import FeaturedBannerHandsIcon from '@/components/icons/featured-banner-hands-icon'
+import { ArabicText } from '@/components/ui/arabic-text'
 import tw from '@/lib/tailwind'
 import React, { useState } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
@@ -75,9 +76,9 @@ const FeaturedDuaBanner = ({
             <Text style={tw`text-white font-nunito text-[14px]`}>{title}</Text>
           </View>
 
-          <Text style={[tw`text-white text-[15px]`, { lineHeight: 20, textAlign: 'left' }]}>
+          <ArabicText size={15} color='white' style={{ lineHeight: 26, textAlign: 'left' }}>
             {arabicText}
-          </Text>
+          </ArabicText>
           <Text
             style={[
               tw`text-white font-nunito opacity-90 text-[10px] mt-0.5`,

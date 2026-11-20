@@ -3,7 +3,6 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from '@react-navigation/native'
-import { Amiri_400Regular } from '@expo-google-fonts/amiri'
 import { BerkshireSwash_400Regular } from '@expo-google-fonts/berkshire-swash'
 import {
   NunitoSans_400Regular,
@@ -21,6 +20,7 @@ import 'react-native-reanimated'
 import { Provider, useDispatch, useSelector } from 'react-redux'
 
 import { AppSplash } from '@/components/splash/app-splash'
+import { ARABIC_FONT_ASSETS } from '@/constants/arabic-fonts'
 import { Colors } from '@/constants/theme'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import { useCollectionsPersistence } from '@/hooks/use-collections-persistence'
@@ -59,7 +59,7 @@ function AppShell() {
 
   // Load fonts once for the whole app (tab bar labels need them too)
   const [fontsLoaded] = useFonts({
-    Amiri_400Regular,
+    ...ARABIC_FONT_ASSETS,
     BerkshireSwash_400Regular,
     NunitoSans_400Regular,
     NunitoSans_600SemiBold,
