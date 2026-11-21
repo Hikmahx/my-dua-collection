@@ -1,0 +1,794 @@
+[
+  {
+    "id": "ar-rahman",
+    "topic": "names-of-allah",
+    "title": "Ar-Rahman",
+    "arabic": "ٱلرَّحْمَٰنُ",
+    "meaning": "The All-Compassionate / The Beneficent",
+    "body": "<p>Ar-Rahman describes Allah's vast, all-embracing mercy, which reaches every creature in this world, believers and non-believers alike. It is the name that opens nearly every surah, in the Bismillah (1:1).</p>"
+  },
+  {
+    "id": "ar-rahim",
+    "topic": "names-of-allah",
+    "title": "Ar-Rahim",
+    "arabic": "ٱلرَّحِيمُ",
+    "meaning": "The All-Merciful",
+    "body": "<p>Ar-Rahim points to Allah's special, continuous mercy toward the believers, above all on the Day of Judgment. Where Ar-Rahman is mercy for all, Ar-Rahim is mercy given to those who turn to Him.</p>"
+  },
+  {
+    "id": "al-malik",
+    "topic": "names-of-allah",
+    "title": "Al-Malik",
+    "arabic": "ٱلْمَلِكُ",
+    "meaning": "The Absolute Ruler / The King",
+    "body": "<p>Allah is the King who owns and rules everything, with no partner and no one above Him. Surah Al-Fatihah calls Him Master of the Day of Judgment (1:4).</p>"
+  },
+  {
+    "id": "al-quddus",
+    "topic": "names-of-allah",
+    "title": "Al-Quddus",
+    "arabic": "ٱلْقُدُّوسُ",
+    "meaning": "The Pure One / The Most Holy",
+    "body": "<p>Al-Quddus is the One free from every fault, weakness and resemblance to His creation. He is perfectly pure and holy in His essence and in His actions (59:23).</p>"
+  },
+  {
+    "id": "as-salam",
+    "topic": "names-of-allah",
+    "title": "As-Salam",
+    "arabic": "ٱلسَّلَامُ",
+    "meaning": "The Source of Peace",
+    "body": "<p>As-Salam means Allah is free from all defects and is the source of all peace and safety. The believers' greeting, 'As-salamu alaykum', is a prayer for His peace (59:23).</p>"
+  },
+  {
+    "id": "al-mumin",
+    "topic": "names-of-allah",
+    "title": "Al-Mu'min",
+    "arabic": "ٱلْمُؤْمِنُ",
+    "meaning": "The Inspirer of Faith / The Granter of Security",
+    "body": "<p>Al-Mu'min gives security and keeps His promises. He gives His servants safety from fear and confirms the truth of His messengers (59:23).</p>"
+  },
+  {
+    "id": "al-muhaymin",
+    "topic": "names-of-allah",
+    "title": "Al-Muhaymin",
+    "arabic": "ٱلْمُهَيْمِنُ",
+    "meaning": "The Guardian / The Overseer",
+    "body": "<p>Al-Muhaymin is the Guardian who watches over everything and keeps it in His care. Nothing in creation escapes His oversight (59:23).</p>"
+  },
+  {
+    "id": "al-aziz",
+    "topic": "names-of-allah",
+    "title": "Al-Aziz",
+    "arabic": "ٱلْعَزِيزُ",
+    "meaning": "The Victorious / The Almighty",
+    "body": "<p>Al-Aziz is the Almighty whom nothing can overcome, and who gives honor to whom He wills. All true might and dignity come from Him.</p>"
+  },
+  {
+    "id": "al-jabbar",
+    "topic": "names-of-allah",
+    "title": "Al-Jabbar",
+    "arabic": "ٱلْجَبَّارُ",
+    "meaning": "The Compeller",
+    "body": "<p>Al-Jabbar is the One whose will is carried out in all things. It is also understood as the One who mends what is broken, including hearts (59:23).</p>"
+  },
+  {
+    "id": "al-mutakabbir",
+    "topic": "names-of-allah",
+    "title": "Al-Mutakabbir",
+    "arabic": "ٱلْمُتَكَبِّرُ",
+    "meaning": "The Supreme",
+    "body": "<p>Al-Mutakabbir is the Supreme, whose greatness is beyond all creation. Pride belongs to Allah alone, because He alone deserves it (59:23).</p>"
+  },
+  {
+    "id": "al-khaliq",
+    "topic": "names-of-allah",
+    "title": "Al-Khaliq",
+    "arabic": "ٱلْخَالِقُ",
+    "meaning": "The Creator",
+    "body": "<p>Al-Khaliq is the Creator who brings things into being and measures them with wisdom. Everything other than Allah is His creation (59:24).</p>"
+  },
+  {
+    "id": "al-bari",
+    "topic": "names-of-allah",
+    "title": "Al-Bari'",
+    "arabic": "ٱلْبَارِئُ",
+    "meaning": "The Maker",
+    "body": "<p>Al-Bari' is the Maker who brings each creature into being, distinct from all others and fitted to its purpose (59:24).</p>"
+  },
+  {
+    "id": "al-musawwir",
+    "topic": "names-of-allah",
+    "title": "Al-Musawwir",
+    "arabic": "ٱلْمُصَوِّرُ",
+    "meaning": "The Fashioner",
+    "body": "<p>Al-Musawwir is the Fashioner who gives each creature its own form and appearance (59:24).</p>"
+  },
+  {
+    "id": "al-ghaffar",
+    "topic": "names-of-allah",
+    "title": "Al-Ghaffar",
+    "arabic": "ٱلْغَفَّارُ",
+    "meaning": "The Repeatedly Forgiving",
+    "body": "<p>Al-Ghaffar forgives sins again and again, however often a servant returns to Him. He covers faults and does not expose them.</p>"
+  },
+  {
+    "id": "al-qahhar",
+    "topic": "names-of-allah",
+    "title": "Al-Qahhar",
+    "arabic": "ٱلْقَهَّارُ",
+    "meaning": "The Subduer",
+    "body": "<p>Al-Qahhar is the One who overpowers everything, so that all creation is subject to His will. Nothing can resist or escape His command (12:39).</p>"
+  },
+  {
+    "id": "al-wahhab",
+    "topic": "names-of-allah",
+    "title": "Al-Wahhab",
+    "arabic": "ٱلْوَهَّابُ",
+    "meaning": "The Bestower",
+    "body": "<p>Al-Wahhab gives freely and constantly, without expecting anything in return. The believers call upon Him by this name in their prayers (3:8).</p>"
+  },
+  {
+    "id": "ar-razzaq",
+    "topic": "names-of-allah",
+    "title": "Ar-Razzaq",
+    "arabic": "ٱلرَّزَّاقُ",
+    "meaning": "The Provider",
+    "body": "<p>Ar-Razzaq is the Provider who sustains every creature with what it needs. Provision is in His hand alone, which is why believers ask Him for it (51:58).</p>"
+  },
+  {
+    "id": "al-fattah",
+    "topic": "names-of-allah",
+    "title": "Al-Fattah",
+    "arabic": "ٱلْفَتَّاحُ",
+    "meaning": "The Opener",
+    "body": "<p>Al-Fattah opens the doors of mercy, provision and relief, and also judges between people with truth (34:26). Believers turn to Him when a path seems closed.</p>"
+  },
+  {
+    "id": "al-alim",
+    "topic": "names-of-allah",
+    "title": "Al-Alim",
+    "arabic": "ٱلْعَلِيمُ",
+    "meaning": "The All-Knowing",
+    "body": "<p>Al-Alim knows everything, seen and unseen, past and future. His knowledge has no beginning and is never lacking or forgotten.</p>"
+  },
+  {
+    "id": "al-qabid",
+    "topic": "names-of-allah",
+    "title": "Al-Qabid",
+    "arabic": "ٱلْقَابِضُ",
+    "meaning": "The Withholder",
+    "body": "<p>Al-Qabid withholds or tightens provision and other things as He wills, always with wisdom. It is paired with Al-Basit (2:245).</p>"
+  },
+  {
+    "id": "al-basit",
+    "topic": "names-of-allah",
+    "title": "Al-Basit",
+    "arabic": "ٱلْبَاسِطُ",
+    "meaning": "The Extender",
+    "body": "<p>Al-Basit extends and expands provision, means and hearts as He wills. Ease and abundance are both from Him (2:245).</p>"
+  },
+  {
+    "id": "al-khafid",
+    "topic": "names-of-allah",
+    "title": "Al-Khafid",
+    "arabic": "ٱلْخَافِضُ",
+    "meaning": "The Abaser",
+    "body": "<p>Al-Khafid lowers whoever He wills, such as the proud and the unjust. It is paired with Ar-Rafi', since He brings down and raises up (56:3).</p>"
+  },
+  {
+    "id": "ar-rafi",
+    "topic": "names-of-allah",
+    "title": "Ar-Rafi'",
+    "arabic": "ٱلرَّافِعُ",
+    "meaning": "The Exalter",
+    "body": "<p>Ar-Rafi' raises the rank of whoever He wills, through faith and knowledge (58:11). True honor comes from drawing near to Him.</p>"
+  },
+  {
+    "id": "al-muizz",
+    "topic": "names-of-allah",
+    "title": "Al-Mu'izz",
+    "arabic": "ٱلْمُعِزُّ",
+    "meaning": "The Giver of Honor",
+    "body": "<p>Al-Mu'izz gives honor and strength to whom He wills. Real dignity comes from obedience to Him, not from wealth or status (3:26).</p>"
+  },
+  {
+    "id": "al-mudhill",
+    "topic": "names-of-allah",
+    "title": "Al-Mudhill",
+    "arabic": "ٱلْمُذِلُّ",
+    "meaning": "The Giver of Dishonor",
+    "body": "<p>Al-Mudhill humbles those who turn away in arrogance and injustice. Like Al-Qabid, it is best mentioned together with its pair, Al-Mu'izz (3:26).</p>"
+  },
+  {
+    "id": "as-sami",
+    "topic": "names-of-allah",
+    "title": "As-Sami'",
+    "arabic": "ٱلسَّمِيعُ",
+    "meaning": "The All-Hearing",
+    "body": "<p>As-Sami' hears every sound, spoken or silent, and every dua. Nothing is too quiet or too far for Him to hear (42:11).</p>"
+  },
+  {
+    "id": "al-basir",
+    "topic": "names-of-allah",
+    "title": "Al-Basir",
+    "arabic": "ٱلْبَصِيرُ",
+    "meaning": "The All-Seeing",
+    "body": "<p>Al-Basir sees everything, including the smallest things in the darkest places. Nothing is hidden from His sight (42:11).</p>"
+  },
+  {
+    "id": "al-hakam",
+    "topic": "names-of-allah",
+    "title": "Al-Hakam",
+    "arabic": "ٱلْحَكَمُ",
+    "meaning": "The Judge",
+    "body": "<p>Al-Hakam is the Judge whose judgment is final and perfectly just. On the Day of Judgment He will settle every dispute.</p>"
+  },
+  {
+    "id": "al-adl",
+    "topic": "names-of-allah",
+    "title": "Al-'Adl",
+    "arabic": "ٱلْعَدْلُ",
+    "meaning": "The Utterly Just",
+    "body": "<p>Al-'Adl is perfectly just and never wrongs anyone, even by the weight of an atom (4:40). Every right will be returned to its owner.</p>"
+  },
+  {
+    "id": "al-latif",
+    "topic": "names-of-allah",
+    "title": "Al-Latif",
+    "arabic": "ٱللَّطِيفُ",
+    "meaning": "The Subtle / The Most Gentle",
+    "body": "<p>Al-Latif is the Most Gentle, who knows the finest details and brings about good in subtle ways. He often helps His servants in ways they never expected (67:14).</p>"
+  },
+  {
+    "id": "al-khabir",
+    "topic": "names-of-allah",
+    "title": "Al-Khabir",
+    "arabic": "ٱلْخَبِيرُ",
+    "meaning": "The All-Aware",
+    "body": "<p>Al-Khabir is aware of the inner reality of all things, including what hearts keep hidden (67:14). Nothing is secret from Him.</p>"
+  },
+  {
+    "id": "al-halim",
+    "topic": "names-of-allah",
+    "title": "Al-Halim",
+    "arabic": "ٱلْحَلِيمُ",
+    "meaning": "The Forbearing",
+    "body": "<p>Al-Halim is the Forbearing, who does not rush to punish. He gives His servants time to repent despite their sins.</p>"
+  },
+  {
+    "id": "al-azim",
+    "topic": "names-of-allah",
+    "title": "Al-'Azim",
+    "arabic": "ٱلْعَظِيمُ",
+    "meaning": "The Magnificent",
+    "body": "<p>Al-'Azim is the Magnificent, whose greatness is beyond what the mind can grasp (2:255). Everything else is small compared to Him.</p>"
+  },
+  {
+    "id": "al-ghafur",
+    "topic": "names-of-allah",
+    "title": "Al-Ghafur",
+    "arabic": "ٱلْغَفُورُ",
+    "meaning": "The Forgiving",
+    "body": "<p>Al-Ghafur is the Forgiving, who erases sins and protects the sinner from their consequences. No sin is too great for His forgiveness when a servant sincerely returns to Him.</p>"
+  },
+  {
+    "id": "ash-shakur",
+    "topic": "names-of-allah",
+    "title": "Ash-Shakur",
+    "arabic": "ٱلشَّكُورُ",
+    "meaning": "The Appreciative",
+    "body": "<p>Ash-Shakur appreciates and rewards even small good deeds, many times over (35:30). No good act is ever lost with Him.</p>"
+  },
+  {
+    "id": "al-aliyy",
+    "topic": "names-of-allah",
+    "title": "Al-'Aliyy",
+    "arabic": "ٱلْعَلِيُّ",
+    "meaning": "The Most High",
+    "body": "<p>Al-'Aliyy is the Most High, above all creation in rank and power (2:255). Nothing is higher than Him.</p>"
+  },
+  {
+    "id": "al-kabir",
+    "topic": "names-of-allah",
+    "title": "Al-Kabir",
+    "arabic": "ٱلْكَبِيرُ",
+    "meaning": "The Most Great",
+    "body": "<p>Al-Kabir is the Most Great, to whom all greatness belongs (13:9). Everything seems small before His greatness.</p>"
+  },
+  {
+    "id": "al-hafiz",
+    "topic": "names-of-allah",
+    "title": "Al-Hafiz",
+    "arabic": "ٱلْحَفِيظُ",
+    "meaning": "The Preserver",
+    "body": "<p>Al-Hafiz is the Preserver who protects the heavens, the earth and every person by His command (12:64). He also preserves every deed in a record.</p>"
+  },
+  {
+    "id": "al-muqit",
+    "topic": "names-of-allah",
+    "title": "Al-Muqit",
+    "arabic": "ٱلْمُقِيتُ",
+    "meaning": "The Sustainer",
+    "body": "<p>Al-Muqit is the Sustainer who gives every creature its nourishment and has power over all things (4:85).</p>"
+  },
+  {
+    "id": "al-hasib",
+    "topic": "names-of-allah",
+    "title": "Al-Hasib",
+    "arabic": "ٱلْحَسِيبُ",
+    "meaning": "The Reckoner",
+    "body": "<p>Al-Hasib is the Reckoner who is enough for His servant and who also takes account of every deed (4:86). Believers find comfort in knowing He is sufficient for them.</p>"
+  },
+  {
+    "id": "al-jalil",
+    "topic": "names-of-allah",
+    "title": "Al-Jalil",
+    "arabic": "ٱلْجَلِيلُ",
+    "meaning": "The Majestic",
+    "body": "<p>Al-Jalil is the Majestic, who possesses every attribute of greatness. It is the name behind 'Dhul-Jalal' in Surah Ar-Rahman (55:27).</p>"
+  },
+  {
+    "id": "al-karim",
+    "topic": "names-of-allah",
+    "title": "Al-Karim",
+    "arabic": "ٱلْكَرِيمُ",
+    "meaning": "The Generous",
+    "body": "<p>Al-Karim is the Generous, who gives beyond what is asked and honors His servants (82:6). His generosity never runs out.</p>"
+  },
+  {
+    "id": "ar-raqib",
+    "topic": "names-of-allah",
+    "title": "Ar-Raqib",
+    "arabic": "ٱلرَّقِيبُ",
+    "meaning": "The Watchful",
+    "body": "<p>Ar-Raqib is always watching over everything, so nothing is lost on Him (4:1). Remembering this brings mindfulness in private and in public.</p>"
+  },
+  {
+    "id": "al-mujib",
+    "topic": "names-of-allah",
+    "title": "Al-Mujib",
+    "arabic": "ٱلْمُجِيبُ",
+    "meaning": "The Responsive One",
+    "body": "<p>Al-Mujib answers the call of those who ask Him (11:61). He answers in the way and at the time that is best for His servant.</p>"
+  },
+  {
+    "id": "al-wasi",
+    "topic": "names-of-allah",
+    "title": "Al-Wasi'",
+    "arabic": "ٱلْوَاسِعُ",
+    "meaning": "The All-Encompassing",
+    "body": "<p>Al-Wasi' is the All-Encompassing, whose knowledge, mercy and provision have no limit (2:115).</p>"
+  },
+  {
+    "id": "al-hakim",
+    "topic": "names-of-allah",
+    "title": "Al-Hakim",
+    "arabic": "ٱلْحَكِيمُ",
+    "meaning": "The All-Wise",
+    "body": "<p>Al-Hakim is perfectly wise in everything He creates and commands. Nothing He does is without purpose, even when we cannot see the reason.</p>"
+  },
+  {
+    "id": "al-wadud",
+    "topic": "names-of-allah",
+    "title": "Al-Wadud",
+    "arabic": "ٱلْوَدُودُ",
+    "meaning": "The Loving",
+    "body": "<p>Al-Wadud is the Loving, who loves His righteous servants and is loved by them. It appears beside Al-Ghafur in Surah Al-Buruj (85:14).</p>"
+  },
+  {
+    "id": "al-majid",
+    "topic": "names-of-allah",
+    "title": "Al-Majid",
+    "arabic": "ٱلْمَجِيدُ",
+    "meaning": "The Glorious",
+    "body": "<p>Al-Majid is the Glorious, whose majesty and generosity are boundless (85:15). It is found in the salawat said in the tashahhud, 'innaka hamidun majid'.</p>"
+  },
+  {
+    "id": "al-baith",
+    "topic": "names-of-allah",
+    "title": "Al-Ba'ith",
+    "arabic": "ٱلْبَاعِثُ",
+    "meaning": "The Resurrector",
+    "body": "<p>Al-Ba'ith will raise the dead on the Day of Judgment (22:7). He also sent messengers to guide mankind.</p>"
+  },
+  {
+    "id": "ash-shahid",
+    "topic": "names-of-allah",
+    "title": "Ash-Shahid",
+    "arabic": "ٱلشَّهِيدُ",
+    "meaning": "The Witness",
+    "body": "<p>Ash-Shahid is the Witness who is present at everything and aware of all that happens (5:117). Nothing is done without His seeing and knowing it.</p>"
+  },
+  {
+    "id": "al-haqq",
+    "topic": "names-of-allah",
+    "title": "Al-Haqq",
+    "arabic": "ٱلْحَقُّ",
+    "meaning": "The Truth",
+    "body": "<p>Al-Haqq is the Truth, whose existence and promises are real and certain (22:6). Everything besides Him depends on Him.</p>"
+  },
+  {
+    "id": "al-wakil",
+    "topic": "names-of-allah",
+    "title": "Al-Wakil",
+    "arabic": "ٱلْوَكِيلُ",
+    "meaning": "The Trustee / The Disposer of Affairs",
+    "body": "<p>Al-Wakil is the Trustee to whom affairs can be handed over with full confidence. 'Hasbunallahu wa ni'mal-wakil' (3:173) is said when facing fear or difficulty.</p>"
+  },
+  {
+    "id": "al-qawiyy",
+    "topic": "names-of-allah",
+    "title": "Al-Qawiyy",
+    "arabic": "ٱلْقَوِيُّ",
+    "meaning": "The All-Strong",
+    "body": "<p>Al-Qawiyy is the All-Strong, whose power never weakens or tires (22:40). Every strength creatures have is from Him.</p>"
+  },
+  {
+    "id": "al-matin",
+    "topic": "names-of-allah",
+    "title": "Al-Matin",
+    "arabic": "ٱلْمَتِينُ",
+    "meaning": "The Firm",
+    "body": "<p>Al-Matin is the Firm, whose strength is steady and unshakable (51:58). Nothing can wear Him down.</p>"
+  },
+  {
+    "id": "al-waliyy",
+    "topic": "names-of-allah",
+    "title": "Al-Waliyy",
+    "arabic": "ٱلْوَلِيُّ",
+    "meaning": "The Protecting Friend",
+    "body": "<p>Al-Waliyy is the Protecting Friend who supports the believers and brings them out of darkness into light (2:257).</p>"
+  },
+  {
+    "id": "al-hamid",
+    "topic": "names-of-allah",
+    "title": "Al-Hamid",
+    "arabic": "ٱلْحَمِيدُ",
+    "meaning": "The Praiseworthy",
+    "body": "<p>Al-Hamid is the Praiseworthy, deserving of praise for who He is, whether or not anyone praises Him (31:26). Every blessing a person has is a reason to praise Him.</p>"
+  },
+  {
+    "id": "al-muhsi",
+    "topic": "names-of-allah",
+    "title": "Al-Muhsi",
+    "arabic": "ٱلْمُحْصِي",
+    "meaning": "The Accounter",
+    "body": "<p>Al-Muhsi counts and records everything, from the smallest thing to the deeds of every person. Nothing escapes His account.</p>"
+  },
+  {
+    "id": "al-mubdi",
+    "topic": "names-of-allah",
+    "title": "Al-Mubdi'",
+    "arabic": "ٱلْمُبْدِئُ",
+    "meaning": "The Originator",
+    "body": "<p>Al-Mubdi' brings creation into being for the first time, with no earlier example (85:13).</p>"
+  },
+  {
+    "id": "al-muid",
+    "topic": "names-of-allah",
+    "title": "Al-Mu'id",
+    "arabic": "ٱلْمُعِيدُ",
+    "meaning": "The Restorer",
+    "body": "<p>Al-Mu'id will bring creation back after it perishes, as He began it (85:13). The name points to the resurrection.</p>"
+  },
+  {
+    "id": "al-muhyi",
+    "topic": "names-of-allah",
+    "title": "Al-Muhyi",
+    "arabic": "ٱلْمُحْيِي",
+    "meaning": "The Giver of Life",
+    "body": "<p>Al-Muhyi gives life, to bodies and also to hearts and dry earth (57:2). Hope can be placed in Him when things seem lifeless.</p>"
+  },
+  {
+    "id": "al-mumit",
+    "topic": "names-of-allah",
+    "title": "Al-Mumit",
+    "arabic": "ٱلْمُمِيتُ",
+    "meaning": "The Bringer of Death",
+    "body": "<p>Al-Mumit decrees death for every living thing at its appointed time (57:2). It is a reminder to prepare for meeting Him.</p>"
+  },
+  {
+    "id": "al-hayy",
+    "topic": "names-of-allah",
+    "title": "Al-Hayy",
+    "arabic": "ٱلْحَيُّ",
+    "meaning": "The Ever-Living",
+    "body": "<p>Al-Hayy is the Ever-Living, whose life has no beginning or end and who never sleeps or tires (2:255). Everything else lives only by His will.</p>"
+  },
+  {
+    "id": "al-qayyum",
+    "topic": "names-of-allah",
+    "title": "Al-Qayyum",
+    "arabic": "ٱلْقَيُّومُ",
+    "meaning": "The Self-Subsisting Sustainer",
+    "body": "<p>Al-Qayyum is the Self-Subsisting, who needs nothing and sustains everything else (2:255). It is often joined with Al-Hayy in dua.</p>"
+  },
+  {
+    "id": "al-wajid",
+    "topic": "names-of-allah",
+    "title": "Al-Wajid",
+    "arabic": "ٱلْوَاجِدُ",
+    "meaning": "The Finder",
+    "body": "<p>Al-Wajid finds all that He wills and lacks nothing. He is never in need, and nothing is out of His reach.</p>"
+  },
+  {
+    "id": "al-maajid",
+    "topic": "names-of-allah",
+    "title": "Al-Maajid",
+    "arabic": "ٱلْمَاجِدُ",
+    "meaning": "The Noble",
+    "body": "<p>Al-Maajid is the Noble, whose honor and generosity are complete. It is close in meaning to Al-Majid.</p>"
+  },
+  {
+    "id": "al-wahid",
+    "topic": "names-of-allah",
+    "title": "Al-Wahid",
+    "arabic": "ٱلْوَاحِدُ",
+    "meaning": "The Unique",
+    "body": "<p>Al-Wahid is the One, who has no partner, equal or rival (12:39). It is the heart of tawhid.</p>"
+  },
+  {
+    "id": "al-ahad",
+    "topic": "names-of-allah",
+    "title": "Al-Ahad",
+    "arabic": "ٱلْأَحَدُ",
+    "meaning": "The One",
+    "body": "<p>Al-Ahad is the Absolute One, unique and without any like Him. Surah Al-Ikhlas begins with it (112:1).</p>"
+  },
+  {
+    "id": "as-samad",
+    "topic": "names-of-allah",
+    "title": "As-Samad",
+    "arabic": "ٱلصَّمَدُ",
+    "meaning": "The Eternal / The Self-Sufficient",
+    "body": "<p>As-Samad is the Eternal Refuge, who needs no one while everyone needs Him (112:2). People turn to Him for every need.</p>"
+  },
+  {
+    "id": "al-qadir",
+    "topic": "names-of-allah",
+    "title": "Al-Qadir",
+    "arabic": "ٱلْقَادِرُ",
+    "meaning": "The All-Able",
+    "body": "<p>Al-Qadir has power over all things and is never incapable of anything (2:20). What He wills comes to be.</p>"
+  },
+  {
+    "id": "al-muqtadir",
+    "topic": "names-of-allah",
+    "title": "Al-Muqtadir",
+    "arabic": "ٱلْمُقْتَدِرُ",
+    "meaning": "The All-Powerful",
+    "body": "<p>Al-Muqtadir is the All-Powerful, whose power is complete and cannot be prevented (54:42).</p>"
+  },
+  {
+    "id": "al-muqaddim",
+    "topic": "names-of-allah",
+    "title": "Al-Muqaddim",
+    "arabic": "ٱلْمُقَدِّمُ",
+    "meaning": "The Expediter",
+    "body": "<p>Al-Muqaddim brings forward whoever and whatever He wills, such as a person, a moment or a matter. He places things in the order His wisdom requires.</p>"
+  },
+  {
+    "id": "al-muakhkhir",
+    "topic": "names-of-allah",
+    "title": "Al-Mu'akhkhir",
+    "arabic": "ٱلْمُؤَخِّرُ",
+    "meaning": "The Delayer",
+    "body": "<p>Al-Mu'akhkhir delays whatever He wills, whether a matter, a punishment or the answer to a dua, always with wisdom. It is paired with Al-Muqaddim.</p>"
+  },
+  {
+    "id": "al-awwal",
+    "topic": "names-of-allah",
+    "title": "Al-Awwal",
+    "arabic": "ٱلْأَوَّلُ",
+    "meaning": "The First",
+    "body": "<p>Al-Awwal is the First, before whom there was nothing (57:3). Everything else has a beginning, but He does not.</p>"
+  },
+  {
+    "id": "al-akhir",
+    "topic": "names-of-allah",
+    "title": "Al-Akhir",
+    "arabic": "ٱلْآخِرُ",
+    "meaning": "The Last",
+    "body": "<p>Al-Akhir is the Last, who remains after everything has ended (57:3).</p>"
+  },
+  {
+    "id": "az-zahir",
+    "topic": "names-of-allah",
+    "title": "Az-Zahir",
+    "arabic": "ٱلظَّاهِرُ",
+    "meaning": "The Manifest",
+    "body": "<p>Az-Zahir is the Manifest, above all things and clear in His signs (57:3). His existence is evident throughout creation.</p>"
+  },
+  {
+    "id": "al-batin",
+    "topic": "names-of-allah",
+    "title": "Al-Batin",
+    "arabic": "ٱلْبَاطِنُ",
+    "meaning": "The Hidden",
+    "body": "<p>Al-Batin is the Hidden, who knows the innermost secrets of every heart (57:3).</p>"
+  },
+  {
+    "id": "al-wali",
+    "topic": "names-of-allah",
+    "title": "Al-Wali",
+    "arabic": "ٱلْوَالِي",
+    "meaning": "The Governor",
+    "body": "<p>Al-Wali is the Governor who manages the affairs of all creation and is the close ally of the believers.</p>"
+  },
+  {
+    "id": "al-mutaali",
+    "topic": "names-of-allah",
+    "title": "Al-Muta'ali",
+    "arabic": "ٱلْمُتَعَالِي",
+    "meaning": "The Self Exalted",
+    "body": "<p>Al-Muta'ali is the Self-Exalted, far above any imperfection and above every description creation can give (13:9).</p>"
+  },
+  {
+    "id": "al-barr",
+    "topic": "names-of-allah",
+    "title": "Al-Barr",
+    "arabic": "ٱلْبَرُّ",
+    "meaning": "The Source of Goodness",
+    "body": "<p>Al-Barr is the Source of Goodness, kind and generous to all His creatures (52:28). In that verse He is mentioned together with Ar-Rahim.</p>"
+  },
+  {
+    "id": "at-tawwab",
+    "topic": "names-of-allah",
+    "title": "At-Tawwab",
+    "arabic": "ٱلتَّوَّابُ",
+    "meaning": "The Ever-Returning",
+    "body": "<p>At-Tawwab turns toward His servants in mercy again and again and accepts their repentance. He also inspires them to repent.</p>"
+  },
+  {
+    "id": "al-muntaqim",
+    "topic": "names-of-allah",
+    "title": "Al-Muntaqim",
+    "arabic": "ٱلْمُنْتَقِمُ",
+    "meaning": "The Avenger",
+    "body": "<p>Al-Muntaqim punishes those who persist in wrongdoing, with perfect justice. It refers to fair retribution, not to personal anger.</p>"
+  },
+  {
+    "id": "al-afuww",
+    "topic": "names-of-allah",
+    "title": "Al-'Afuww",
+    "arabic": "ٱلْعَفُوُّ",
+    "meaning": "The Pardoner",
+    "body": "<p>Al-'Afuww pardons sins and wipes them away completely. The Prophet (ﷺ) taught 'A'ishah to ask for it on Laylat al-Qadr: 'Allahumma innaka 'afuwwun tuhibbul-'afwa fa'fu 'anni'.</p>"
+  },
+  {
+    "id": "ar-rauf",
+    "topic": "names-of-allah",
+    "title": "Ar-Ra'uf",
+    "arabic": "ٱلرَّءُوفُ",
+    "meaning": "The Compassionate",
+    "body": "<p>Ar-Ra'uf is the Compassionate, whose tenderness is gentle and protective (2:143). He spares His servants from hardship.</p>"
+  },
+  {
+    "id": "malik-ul-mulk",
+    "topic": "names-of-allah",
+    "title": "Malik-ul-Mulk",
+    "arabic": "مَالِكُ ٱلْمُلْكِ",
+    "meaning": "The Owner of All Sovereignty",
+    "body": "<p>Malik-ul-Mulk is the Owner of all sovereignty, who gives authority to whom He wills and takes it from whom He wills (3:26).</p>"
+  },
+  {
+    "id": "dhul-jalali-wal-ikram",
+    "topic": "names-of-allah",
+    "title": "Dhul-Jalali wal-Ikram",
+    "arabic": "ذُو ٱلْجَلَالِ وَٱلْإِكْرَامِ",
+    "meaning": "Lord of Majesty and Generosity",
+    "body": "<p>Dhul-Jalali wal-Ikram is the Lord of Majesty and Generosity (55:27). After the salam of the prayer, the Prophet (ﷺ) would say 'Tabarakta ya Dhal-Jalali wal-Ikram'.</p>"
+  },
+  {
+    "id": "al-muqsit",
+    "topic": "names-of-allah",
+    "title": "Al-Muqsit",
+    "arabic": "ٱلْمُقْسِطُ",
+    "meaning": "The Equitable",
+    "body": "<p>Al-Muqsit is the Equitable, who gives each their due with complete fairness. He loves those who act justly (5:42).</p>"
+  },
+  {
+    "id": "al-jami",
+    "topic": "names-of-allah",
+    "title": "Al-Jami'",
+    "arabic": "ٱلْجَامِعُ",
+    "meaning": "The Gatherer",
+    "body": "<p>Al-Jami' will gather all people on the Day of Judgment, with no doubt about it (3:9). He also brings together what is scattered.</p>"
+  },
+  {
+    "id": "al-ghani",
+    "topic": "names-of-allah",
+    "title": "Al-Ghani",
+    "arabic": "ٱلْغَنِيُّ",
+    "meaning": "The Self-Sufficient",
+    "body": "<p>Al-Ghani is the Self-Sufficient, in need of nothing, while all creation needs Him (47:38). Our worship adds nothing to Him.</p>"
+  },
+  {
+    "id": "al-mughni",
+    "topic": "names-of-allah",
+    "title": "Al-Mughni",
+    "arabic": "ٱلْمُغْنِي",
+    "meaning": "The Enricher",
+    "body": "<p>Al-Mughni enriches whoever He wills and makes them independent of others. The Prophet (ﷺ) taught that real richness is richness of the soul.</p>"
+  },
+  {
+    "id": "al-mani",
+    "topic": "names-of-allah",
+    "title": "Al-Mani'",
+    "arabic": "ٱلْمَانِعُ",
+    "meaning": "The Withholder",
+    "body": "<p>Al-Mani' prevents harm and withholds what is not good for His servants. When something is held back, it can be a protection.</p>"
+  },
+  {
+    "id": "ad-darr",
+    "topic": "names-of-allah",
+    "title": "Ad-Darr",
+    "arabic": "ٱلضَّارُّ",
+    "meaning": "The Distressor",
+    "body": "<p>Ad-Darr is the One by whose permission harm reaches anyone, as a test or a consequence, always with wisdom. It is paired with An-Nafi'.</p>"
+  },
+  {
+    "id": "an-nafi",
+    "topic": "names-of-allah",
+    "title": "An-Nafi'",
+    "arabic": "ٱلنَّافِعُ",
+    "meaning": "The Propitious",
+    "body": "<p>An-Nafi' brings benefit and good. All the benefit people receive ultimately comes from Him.</p>"
+  },
+  {
+    "id": "an-nur",
+    "topic": "names-of-allah",
+    "title": "An-Nur",
+    "arabic": "ٱلنُّورُ",
+    "meaning": "The Light",
+    "body": "<p>An-Nur is the Light, who gives light to the heavens and the earth and guides hearts to faith (24:35).</p>"
+  },
+  {
+    "id": "al-hadi",
+    "topic": "names-of-allah",
+    "title": "Al-Hadi",
+    "arabic": "ٱلْهَادِي",
+    "meaning": "The Guide",
+    "body": "<p>Al-Hadi is the Guide who shows the way to the truth and helps whom He wills to follow it (25:31). We ask Him in every prayer: 'Guide us to the straight path' (1:6).</p>"
+  },
+  {
+    "id": "al-badi",
+    "topic": "names-of-allah",
+    "title": "Al-Badi'",
+    "arabic": "ٱلْبَدِيعُ",
+    "meaning": "The Incomparable Originator",
+    "body": "<p>Al-Badi' is the Incomparable Originator who created the heavens and the earth with no earlier model (2:117).</p>"
+  },
+  {
+    "id": "al-baqi",
+    "topic": "names-of-allah",
+    "title": "Al-Baqi",
+    "arabic": "ٱلْبَاقِي",
+    "meaning": "The Ever-Surviving",
+    "body": "<p>Al-Baqi is the Ever-Surviving, who remains when everything else has passed away (55:26-27).</p>"
+  },
+  {
+    "id": "al-warith",
+    "topic": "names-of-allah",
+    "title": "Al-Warith",
+    "arabic": "ٱلْوَارِثُ",
+    "meaning": "The Inheritor",
+    "body": "<p>Al-Warith is the Inheritor to whom everything returns after creation passes away (15:23). All we have is a loan from Him.</p>"
+  },
+  {
+    "id": "ar-rashid",
+    "topic": "names-of-allah",
+    "title": "Ar-Rashid",
+    "arabic": "ٱلرَّشِيدُ",
+    "meaning": "The Guide to the Right Path",
+    "body": "<p>Ar-Rashid directs all affairs with perfect wisdom, and everything He ordains leads to a right end.</p>"
+  },
+  {
+    "id": "as-sabur",
+    "topic": "names-of-allah",
+    "title": "As-Sabur",
+    "arabic": "ٱلصَّبُورُ",
+    "meaning": "The Patient",
+    "body": "<p>As-Sabur is the Patient, who does not hasten to punish. He gives time to those who wrong themselves, so that they may return.</p>"
+  }
+]

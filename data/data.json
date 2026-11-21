@@ -7,6 +7,8 @@
     "users": "user.json",
     "userFavorites": "user_favorites.json",
     "friends": "friends.json",
-    "shares": "shares.json"
+    "shares": "shares.json",
+    "exploreArticles": "explore_articles.json",
+    "namesOfAllah": "names_of_allah.json"
   }
 }

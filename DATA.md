@@ -5,7 +5,7 @@ Everything the app reads as data lives here. Each file is one resource and will 
 - `data.json` is the entry point. `index.ts` loads the files and exports them as `data`. `types.ts` has the types (the `Dua` type is in `redux/reducers/duasSlice.ts` and the collection type is in `constants/collections.ts`).
 - **Required** means the field is always there. **Optional** means it can be missing, and a missing optional field is left out of the object, not set to `""`. The one exception is an API reply, where `null` can stand in for a missing value, and the app treats `null` and missing the same way.
 - Field names are camelCase. Dates are ISO 8601 strings in UTC (`2026-10-25T07:33:00Z`).
-- Only `dua.json` and `collection.json` are read by the app today. The other files are ready-made data for login, favorites, friends and sharing.
+- Only `dua.json`, `collection.json`, `explore_articles.json` and `names_of_allah.json` are read by the app today. The other files are ready-made data for login, favorites, friends and sharing.
 
 ## data.json
 
@@ -15,7 +15,7 @@ The entry point.
 |---|---|---|---|
 | `version` | number | Required | Format version of the data. Raise it when a file changes in a way that breaks older code. |
 | `currentUserId` | string | Required | The sample user's id. The app does not sign this user in at launch (it starts as a guest). Must be an `id` in `user.json`. |
-| `resources` | object | Required | Resource name to file name: `duas`, `collections`, `users`, `userFavorites`, `friends`, `shares`. |
+| `resources` | object | Required | Resource name to file name: `duas`, `collections`, `users`, `userFavorites`, `friends`, `shares`, `exploreArticles`, `namesOfAllah`. |
 
 JSON files cannot import each other, so a new resource is added in `data.json` and in `index.ts`.
 
@@ -167,3 +167,18 @@ Example of a copy (not in `dua.json`):
 - What happens on a duplicate: for a collection (merge into the existing one, skip, or keep both) and for a dua (skip it, or pick another collection). The checks above only find duplicates.
 - Duas without `source` and `reference` cannot be matched by the dua check. A fallback would be to compare the Arabic text.
 - A pre-made collection lists its duas through the duas' `collection`, but a collection the user made lists its own `duaIds`, so it can hold built-in duas too. When a shared collection is copied, its `duaIds` must point at duas the recipient has: a built-in dua is the same on every device, but an added dua has to be copied with the collection.
+
+## explore_articles.json and names_of_allah.json
+
+The short articles of the Explore topics (`explore_articles.json`) and the 99 Names of Allah (`names_of_allah.json`). Both are arrays of `ExploreArticle` objects.
+
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `id` | string | Required | Unique inside its topic. Readable (`"what-is-tahajjud"`, `"ar-rahman"`). |
+| `topic` | string | Required | The topic it belongs to: an `id` in `constants/explore-topics.ts` (`"tahajjud"`, `"names-of-allah"`, ...). |
+| `title` | string | Required | Shown in the list and at the top of the article. |
+| `arabic` | string | Optional | The Arabic name, with diacritics. Names of Allah only. Shown on the right of the list row. |
+| `meaning` | string | Optional | Short meaning, shown as the list preview. Names of Allah only. Other articles preview their first lines. |
+| `body` | string | Required | The article as simple HTML (`<p>`, `<b>`, `<i>`, `<ul>`, `<li>`, headings). Parsed by `lib/rich-text.ts`, so nothing else is rendered. |
+
+The articles are drafts and should be checked by a knowledgeable reviewer before release.

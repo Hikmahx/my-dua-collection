@@ -79,11 +79,31 @@ export interface Share {
   respondedAt?: string
 }
 
+/**
+ * A short article in an Explore topic (explore_articles.json), or one of the 99 Names of Allah
+ * (names_of_allah.json). The list shows `title` and a one-line preview; opening it shows `body`.
+ */
+export interface ExploreArticle {
+  id: string
+  /** The Explore topic it belongs to (an `id` in constants/explore-topics.ts). */
+  topic: string
+  title: string
+  /** The Arabic name. Only the Names of Allah have it; it is shown on the right of the list row. */
+  arabic?: string
+  /** A short meaning, e.g. 'The Provider'. Shown as the preview in the Names list. Other articles preview their first lines instead. */
+  meaning?: string
+  /** The article, as simple HTML: <p>, <b>, <i>, <ul>/<li> and headings (see lib/rich-text.ts). */
+  body: string
+}
+
 /** What data.json holds: the entry point of the data. */
 export interface DataManifest {
   version: number
   /** The signed-in user, until real login exists. */
   currentUserId: string
   /** Resource name -> the file in data/ that holds it. */
-  resources: Record<'duas' | 'collections' | 'users' | 'userFavorites' | 'friends' | 'shares', string>
+  resources: Record<
+    'duas' | 'collections' | 'users' | 'userFavorites' | 'friends' | 'shares' | 'exploreArticles' | 'namesOfAllah',
+    string
+  >
 }
