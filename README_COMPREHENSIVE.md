@@ -283,7 +283,11 @@ Opened by the **+** in the Dua screen's bottom bar (`components/dua-screen/save-
 - Pattern background behind the cells: `assets/images/cards-bg-dark.svg` and `assets/images/cards-bg-light.svg`, switched with the theme
 - Each cell shows its icon in a 56x56 rounded box (translucent teal in dark mode, solid emerald `#066653` with the gold icon in light mode) and the topic name in the Berkshire font
 - Every Explore color for both modes lives in `constants/explore-theme.ts`
-- Tapping a topic does not navigate yet (the topic screens are still to build)
+- Tapping a topic opens its screen. Explore is a stack inside the tab (`app/(tabs)/explore/`), so these screens keep the tab bar:
+  - **Topic list** (`explore/[topic]`, `components/explore/article-list-screen.tsx`): back arrow, title, a search box and one row per article (title and a one-line preview). Every topic except Ask DuaAI uses it. The Names of Allah rows show the Arabic name on the right; all other rows show a chevron
+  - **Article** (`explore/[topic]/[article]`): the title (plus the Arabic name and meaning for a Name of Allah) and the text, drawn with `RichText`
+  - **Ask DuaAI** (`explore/ask-duaai`, `components/chat/`): a chat that is not saved. The messages live in the screen's state, so they are gone when the user leaves. Replies come from `askDuaAI` in `lib/duaai.ts`, which is a placeholder until the AI backend exists. The tab bar hides while the keyboard is open
+- The articles are data, not code: `data/explore_articles.json` (the topics) and `data/names_of_allah.json` (the 99 Names), described in `DATA.md`. They are drafts to be reviewed before release
 
 ### Tasbih Screen
 
@@ -805,8 +809,8 @@ Every search box in the app uses the same code, so they all behave the same way.
   - [ ] Review and edit scanned text
   - [ ] Auto-detect translation
 - [ ] **AI Chat Assistant:**
-  - [ ] Chat interface on Explore screen
-  - [ ] Conversation history
+  - [x] Chat interface on Explore screen (UI done; replies are a placeholder)
+  - [ ] Conversation history (the chat is not saved by design)
   - [ ] Suggested prompts
   - [ ] Dua recommendations
   - [ ] Islamic Q&A

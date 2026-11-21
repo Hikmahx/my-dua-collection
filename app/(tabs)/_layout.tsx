@@ -58,6 +58,7 @@ export default function TabLayout() {
         name='explore'
         options={{
           title: t('tabs.explore'),
+          tabBarHideOnKeyboard: true, // the Ask DuaAI chat has a text box at the bottom
           tabBarIcon: ({ focused, color, size }) => (
             <ExploreIcon color={color} size={size ?? 20} />
           ),

@@ -9,6 +9,7 @@ import { Colors } from '@/constants/theme'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import { useSearch } from '@/hooks/use-search'
 import tw from '@/lib/tailwind'
+import { useRouter } from 'expo-router'
 import { ScrollView, Text, View } from 'react-native'
 
 const topicSearchFields = (topic: ExploreTopic) => [topic.label]
@@ -20,6 +21,7 @@ const MIN_ROW_HEIGHT = 130 // rows never get shorter than this (the screen scrol
 export default function ExploreScreen() {
   const isDark = useColorScheme() === 'dark'
   const t = useT()
+  const router = useRouter()
   const c = exploreTheme[isDark ? 'dark' : 'light']
   const { query, setQuery, results: topics } = useSearch(EXPLORE_TOPICS, topicSearchFields)
 
@@ -67,7 +69,9 @@ export default function ExploreScreen() {
                     columns={COLUMNS}
                     isLastRow={r === rows - 1}
                     onPress={() => {
-                      // TODO: navigate to the topic screen, e.g. router.push(`/explore/${topic.id}`)
+                      if (!topic) return
+                      if (topic.kind === 'chat') router.push('/explore/ask-duaai')
+                      else router.push({ pathname: '/explore/[topic]', params: { topic: topic.id } })
                     }}
                   />
                 )
