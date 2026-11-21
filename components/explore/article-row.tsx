@@ -30,7 +30,7 @@ export function ArticleRow({ article, onPress }: ArticleRowProps) {
       ]}
     >
       <View style={tw`flex-1`}>
-        <Text numberOfLines={1} style={[tw`font-berkshire text-[16px] leading-[22px]`, { color: c.rowTitle }]}>
+        <Text numberOfLines={1} style={[tw`font-berkshire text-[16px] leading-[22px] mb-2`, { color: c.rowTitle }]}>
           {article.title}
         </Text>
         <Text numberOfLines={1} style={[tw`font-nunito text-[10px] leading-[14px]`, { color: c.rowPreview }]}>

@@ -33,7 +33,7 @@ export const exploreTheme = {
     searchBand: '#EDEDED',
     backIcon: p.darkText,
     rowTitle: p.darkText,
-    rowPreview: '#8A8A8A',
+    rowPreview: '#4A4A4A',
     chevron: '#8A8A8A',
     arabic: p.darkEmerald,
     card: withAlpha(p.lightBg, 0.9),
