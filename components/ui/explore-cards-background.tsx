@@ -120,6 +120,7 @@ export const ExploreCardsBackground = React.memo(function ExploreCardsBackground
       preserveAspectRatio='xMidYMid slice'
       fill='none'
       pointerEvents='none'
+      opacity={isDark ? 1 : 0.7}
     >
       {polys.map(([d, fill], i) => (
         <Path key={i} d={d} fill={fill} stroke={fill} strokeLinejoin='bevel' />
