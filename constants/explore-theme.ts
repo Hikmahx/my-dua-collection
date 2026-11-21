@@ -14,6 +14,14 @@ export const exploreTheme = {
     cellB: 'rgba(6, 55, 67, 0.7)',
     gridLine: withAlpha(p.darkGrayishBorder, 0.55),
     searchBand: 'transparent', // strip behind the search bar
+    // topic list + article screens
+    backIcon: p.lightGrayishText,
+    rowTitle: p.lightGrayishText,
+    rowPreview: '#A2B5B8',
+    chevron: '#7F9CA3',
+    arabic: '#D5BD7D', // the Arabic name on the right of a Names of Allah row
+    card: 'rgba(4, 51, 64, 0.7)', // behind an article's text
+    bodyText: p.lightGrayishText,
   },
   light: {
     label: p.darkText,
@@ -23,5 +31,12 @@ export const exploreTheme = {
     cellB: withAlpha(p.lightBg, 0.5),
     gridLine: p.veryLightGrayishBorder,
     searchBand: '#EDEDED',
+    backIcon: p.darkText,
+    rowTitle: p.darkText,
+    rowPreview: '#8A8A8A',
+    chevron: '#8A8A8A',
+    arabic: p.darkEmerald,
+    card: withAlpha(p.lightBg, 0.9),
+    bodyText: p.darkText,
   },
 } as const
