@@ -14,6 +14,8 @@ interface ConfirmModalProps {
   cancelLabel?: string
   onConfirm: () => void
   onCancel: () => void
+  /** Tapping outside or the back button. Defaults to `onCancel`; pass it when the cancel button does something a stray tap should not. */
+  onDismiss?: () => void
 }
 
 /** Centered "are you sure?" dialog. Tapping outside or the back button cancels. */
@@ -26,6 +28,7 @@ export function ConfirmModal({
   cancelLabel,
   onConfirm,
   onCancel,
+  onDismiss = onCancel,
 }: ConfirmModalProps) {
   const isDark = useColorScheme() === 'dark'
   const { width } = useWindowDimensions()
@@ -36,11 +39,11 @@ export function ConfirmModal({
       transparent
       animationType='fade'
       statusBarTranslucent
-      onRequestClose={onCancel}
+      onRequestClose={onDismiss}
     >
       <Pressable
         style={[tw`flex-1 items-center justify-center`, { backgroundColor: 'rgba(0,0,0,0.6)' }]}
-        onPress={onCancel}
+        onPress={onDismiss}
       >
         <View
           // swallow touches so tapping the card itself doesn't dismiss it
