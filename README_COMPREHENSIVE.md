@@ -718,7 +718,7 @@ Every search box in the app uses the same code, so they all behave the same way.
   - PDF generation library (react-native-pdf / pdf-lib)
   - Share functionality (react-native-share)
   - Image picker (react-native-image-picker / image_picker)
-  - Audio player (react-native-sound / audioplayers)
+  <!-- - Audio player (react-native-sound / audioplayers) -->
 
 ### Planned integrations
 
@@ -801,7 +801,7 @@ Every search box in the app uses the same code, so they all behave the same way.
   - [ ] Open it from the Collection and Bookmark lists
 - [ ] **Tasbih Counter:**
   <!-- - [x] Simple counter screen -->
-  - [ ] Customizable counters per dua
+  - [x] Customizable counters per dua
   - [ ] Preset counters for morning/evening adhkar
 - [ ] **Bookmark System:**
   <!-- - [x] Bookmark screen with all saved duas, the collections each one is in, search, and the surah / hadith filter -->
@@ -822,7 +822,7 @@ Every search box in the app uses the same code, so they all behave the same way.
   - [ ] Auto-detect translation
 - [ ] **AI Chat Assistant:**
   - [x] Chat interface on Explore screen (UI done; replies are a placeholder)
-  - [ ] Conversation history (the chat is not saved by design)
+  <!-- - [ ] Conversation history (the chat is not saved by design) -->
   - [ ] Suggested prompts
   - [ ] Dua recommendations
   - [ ] Islamic Q&A
@@ -839,10 +839,10 @@ Every search box in the app uses the same code, so they all behave the same way.
   - [ ] Filter and browse options
 
 ### Enhanced Features
-- [ ] **Audio Integration:**
+<!-- - [ ] **Audio Integration:**
   - [ ] Audio player for duas
   - [ ] Upload custom audio
-  - [ ] Audio file hosting
+  - [ ] Audio file hosting -->
 <!-- - [ ] **Word-by-Word Translation:**
   - [ ] Tap-to-reveal word meanings
   - [ ] Root word analysis
@@ -877,8 +877,8 @@ Every search box in the app uses the same code, so they all behave the same way.
   - [ ] Custom notification schedules
   - [ ] Push notification integration
 - [ ] **Additional Tools:**
-  - [ ] 99 Names of Allah reference
-  - [ ] Plain tasbih counter on Explore
+  - [x] 99 Names of Allah reference
+  <!-- - [ ] Plain tasbih counter on Explore -->
   - [ ] My Dua List/Notes (personal notepad)
   - [ ] Habits and Life tracker
 - [ ] **Multi-Language Support:**
@@ -892,11 +892,11 @@ Every search box in the app uses the same code, so they all behave the same way.
   - [ ] Background sync
 
 ### Future Considerations
-- [ ] Memorization quiz mode
+<!-- - [ ] Memorization quiz mode -->
 - [ ] Community features (share collections publicly)
-- [ ] Offline audio downloads
+<!-- - [ ] Offline audio downloads -->
 - [ ] Widget support (daily dua on home screen)
-- [ ] Apple Watch / Wear OS companion app
+<!-- - [ ] Apple Watch / Wear OS companion app -->
 - [ ] Family sharing features
 - [ ] Share duas with friends (the first time a dua is shared with someone, the app asks if they should be added as a friend)
 - [ ] Prayer time integration (optional)
