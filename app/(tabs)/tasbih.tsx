@@ -12,6 +12,7 @@ import { ConfirmModal } from '@/components/ui/confirm-modal'
 import { ScreenHeader } from '@/components/ui/screen-header'
 import { MAX_COUNT, PRESET_TARGETS } from '@/constants/tasbih-config'
 import { Colors } from '@/constants/theme'
+import { AFTER_MODAL_CLOSE_MS } from '@/constants/ui'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import { useTasbihFeedback } from '@/hooks/use-tasbih-feedback'
 import { findTasbihItem, isCompletionCount, type TasbihItem } from '@/lib/tasbih-utils'
@@ -21,10 +22,6 @@ import type { RootState } from '@/redux/store'
 import { useCallback, useMemo, useState } from 'react'
 import { View } from 'react-native'
 import { useDispatch, useSelector, useStore } from 'react-redux'
-
-// A Modal can't open while another one is still closing (iOS ignores it), so a modal or
-// confirmation that follows another modal waits for that one to finish closing.
-const AFTER_MODAL_CLOSE_MS = 350
 
 export default function TasbihScreen() {
   const isDark = useColorScheme() === 'dark'

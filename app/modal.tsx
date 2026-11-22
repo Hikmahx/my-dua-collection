@@ -1,10 +1,12 @@
-import { useT } from '@/hooks/use-t'
+import { CollectionField } from '@/components/add-dua/collection-field'
+import { ExistingDuaPicker } from '@/components/add-dua/existing-dua-picker'
+import { FormField, FormInput } from '@/components/add-dua/form-field'
 import { AddDuaOptionRow } from '@/components/ui/add-dua-option-row'
-import { useArabicFont } from '@/hooks/use-arabic-font'
-import { useCollections } from '@/hooks/use-collections'
-import { useNewCollectionInput } from '@/hooks/use-new-collection-input'
-import { useColorScheme } from '@/hooks/use-color-scheme'
-import { createCollectionId } from '@/lib/collection-utils'
+import { Dropdown } from '@/components/ui/dropdown'
+import { useAddDuaColors } from '@/hooks/use-add-dua-colors'
+import { useCollectionChoice, type ChosenCollections } from '@/hooks/use-collection-choice'
+import { useDuplicateDuaGuard } from '@/hooks/use-duplicate-dua-guard'
+import { useT } from '@/hooks/use-t'
 import {
   createDuaId,
   isValidReference,
@@ -14,50 +16,43 @@ import {
 import tw from '@/lib/tailwind'
 import type { Dua, DuaSource } from '@/redux/reducers/duasSlice'
 import type { AppDispatch, RootState } from '@/redux/store'
-import { createDuaInCollections } from '@/redux/thunks'
+import { createDuaInCollections, saveExistingDuasToCollections } from '@/redux/thunks'
 import { BerkshireSwash_400Regular } from '@expo-google-fonts/berkshire-swash'
 import {
   NunitoSans_400Regular,
   NunitoSans_700Bold,
 } from '@expo-google-fonts/nunito-sans'
-import { Feather } from '@expo/vector-icons'
 import { useFonts } from 'expo-font'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Alert,
+  Animated,
   Dimensions,
+  Easing,
   KeyboardAvoidingView,
   Platform,
   Pressable,
   ScrollView,
   Text,
-  TextInput,
   View,
 } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window')
-const SHEET_HEIGHT = SCREEN_HEIGHT * 0.5
 
-/** A collection made in this form. It is only created, with the dua in it, when the dua is saved. */
-interface PendingCollection {
-  id: string
-  name: string
-}
+/** Manual form: a dua that is not in the app yet, or duas that already are. */
+type DuaMode = 'new' | 'existing'
 
 export default function AddDuaModal() {
-  const colorScheme = useColorScheme()
-  const isDark = colorScheme === 'dark'
+  const c = useAddDuaColors()
   const router = useRouter()
   const dispatch = useDispatch<AppDispatch>()
   const language = useSelector((state: RootState) => state.settings.translationLanguage)
-  const arabicFont = useArabicFont()
   const t = useT()
-  // Opened from a collection's "Add dua": the new dua goes into that collection
+  // Opened from a collection's "Add dua": the dua goes into that collection
   const { collection } = useLocalSearchParams<{ collection?: string }>()
-  // Only the collections the user made can be chosen here: the pre-made ones are read only
-  const { userCollections } = useCollections()
+  const collections = useCollectionChoice(collection)
 
   const [fontsLoaded] = useFonts({
     BerkshireSwash_400Regular,
@@ -65,36 +60,43 @@ export default function AddDuaModal() {
     NunitoSans_700Bold,
   })
 
+  const [duaMode, setDuaMode] = useState<DuaMode>('new')
+  // "Existing": the ids of the duas picked from the list
+  const [existingDuaIds, setExistingDuaIds] = useState<string[]>([])
+  // "New": the form fields
   const [title, setTitle] = useState('')
   const [arabicText, setArabicText] = useState('')
   const [transliteration, setTransliteration] = useState('')
   const [translation, setTranslation] = useState('')
-  // Ids of the chosen collections (the user's own, or one of `pendingCollections`)
-  const [selectedIds, setSelectedIds] = useState<string[]>(() =>
-    collection && userCollections.some((c) => c.id === collection) ? [collection] : [],
-  )
-  // Collections typed with the "+" pill. They only exist in this form until the dua is saved
-  const [pendingCollections, setPendingCollections] = useState<PendingCollection[]>([])
   const [source, setSource] = useState<DuaSource | null>(null)
   const [reference, setReference] = useState('')
   const [selectedMethod, setSelectedMethod] = useState<
     'upload' | 'ai' | 'manual' | null
   >(null)
 
-  // Select or deselect a collection (saving needs at least one)
-  const toggleCollection = useCallback((id: string) => {
-    setSelectedIds((current) => (current.includes(id) ? current.filter((x) => x !== id) : [...current, id]))
+const sheetHeight = useRef(new Animated.Value(SCREEN_HEIGHT * 0.5)).current
+
+useEffect(() => {
+  Animated.timing(sheetHeight, {
+    toValue:
+      SCREEN_HEIGHT *
+      (duaMode === 'existing' ? 0.86 : selectedMethod === 'manual' ? 0.8 : 0.4),
+    duration: 300,
+    easing: Easing.out(Easing.ease),
+    useNativeDriver: false,
+  }).start()
+}, [duaMode, selectedMethod, sheetHeight])
+
+  const toggleExistingDua = useCallback((id: string) => {
+    setExistingDuaIds((current) => (current.includes(id) ? current.filter((x) => x !== id) : [...current, id]))
   }, [])
 
-  // The name typed after "+": the collection is chosen right away, but only made when the dua is saved
-  const newCollection = useNewCollectionInput(
-    (name) => {
-      const created = { id: createCollectionId(), name }
-      setPendingCollections((current) => [...current, created])
-      setSelectedIds((current) => [...current, created.id])
-    },
-    pendingCollections.map((c) => c.name),
-  )
+  // The user chose the dua that already exists instead of adding a copy: switch to "Existing" with
+  // it selected. The collections they picked stay as they are (they are shared by both forms)
+  const duplicateGuard = useDuplicateDuaGuard((existing) => {
+    setDuaMode('existing')
+    setExistingDuaIds((current) => (current.includes(existing.id) ? current : [...current, existing.id]))
+  })
 
   // Tap the selected source again to clear it (and its reference)
   const toggleSource = useCallback((value: DuaSource) => {
@@ -102,44 +104,32 @@ export default function AddDuaModal() {
     setReference('')
   }, [])
 
-  const handleAddDua = useCallback(() => {
-    if (!title.trim() || !arabicText.trim() || !translation.trim()) {
-      Alert.alert(t('addDua.missingTitle'), t('addDua.missingBody'))
-      return
-    }
-
-    if (source && reference.trim() && !isValidReference(source, reference)) {
-      Alert.alert(
-        t('addDua.invalidRefTitle'),
-        t('addDua.invalidRefBody', { format: REFERENCE_PLACEHOLDERS[source] })
-      )
-      return
-    }
-
-    // A name typed after "+" but not confirmed with the tick yet still counts: it is checked now and
-    // made together with the dua (a wrong name is shown under the field and nothing is saved)
-    let chosenIds = selectedIds
-    let drafts = pendingCollections
-    if (newCollection.creating && newCollection.name.trim()) {
-      const typed = newCollection.check()
-      if (!typed) return
-      const created = { id: createCollectionId(), name: typed }
-      drafts = [...drafts, created]
-      chosenIds = [...chosenIds, created.id]
-    }
-
+  /** The collections to save into, or null (with a message shown) when the form cannot be saved yet. */
+  const requireCollections = (): ChosenCollections | null => {
+    const chosen = collections.resolve()
+    if (!chosen) return null
     // A dua always belongs to at least one of the user's collections
-    if (chosenIds.length === 0) {
-      Alert.alert(
-        t('addDua.chooseCollectionTitle'),
-        t('addDua.chooseCollectionBody'),
-      )
+    if (chosen.isEmpty) {
+      Alert.alert(t('addDua.chooseCollectionTitle'), t('addDua.chooseCollectionBody'))
+      return null
+    }
+    return chosen
+  }
+
+  /** Shows the result of a save: a message and close the form, or an error and stay. */
+  const finishSave = (saved: boolean, successBody: string) => {
+    if (!saved) {
+      Alert.alert(t('addDua.saveFailedTitle'), t('addDua.saveFailedBody'))
       return
     }
+    Alert.alert(t('addDua.successTitle'), successBody)
+    router.back()
+  }
 
-    // Collections made with "+" and still chosen. The ones that were unchosen again are dropped
-    const newCollections = drafts.filter((c) => chosenIds.includes(c.id))
-
+  // The dua and its new collections are saved in one step: either both exist afterwards or neither
+  // does. Backing out of the form (Cancel, the X, the backdrop) never reaches this point, so a
+  // collection typed with "+" is simply forgotten
+  const saveNewDua = (chosen: ChosenCollections) => {
     const newDua: Dua = {
       id: createDuaId(),
       title: title.trim(),
@@ -153,60 +143,57 @@ export default function AddDuaModal() {
       ...(source && { source }),
       ...(source && reference.trim() && { reference: reference.trim() }),
     }
-
-    // The dua and its new collections are saved in one step: either both exist afterwards or neither
-    // does. Backing out of the form (Cancel, the X, the backdrop) never reaches this point, so a
-    // collection typed with "+" is simply forgotten
-    const saved = dispatch(
-      createDuaInCollections(
-        newDua,
-        chosenIds.filter((id) => !newCollections.some((c) => c.id === id)),
-        newCollections,
-      ),
+    finishSave(
+      dispatch(createDuaInCollections(newDua, chosen.existingIds, chosen.newCollections)),
+      t('addDua.successBody'),
     )
-    if (!saved) {
-      Alert.alert(t('addDua.saveFailedTitle'), t('addDua.saveFailedBody'))
+  }
+
+  const handleAddNewDua = () => {
+    if (!title.trim() || !arabicText.trim() || !translation.trim()) {
+      Alert.alert(t('addDua.missingTitle'), t('addDua.missingBody'))
       return
     }
-    Alert.alert(t('addDua.successTitle'), t('addDua.successBody'))
-    router.back()
-  }, [
-    title,
-    arabicText,
-    transliteration,
-    translation,
-    selectedIds,
-    pendingCollections,
-    newCollection,
-    source,
-    reference,
-    language,
-    t,
-    dispatch,
-    router,
-  ])
+
+    if (source && reference.trim() && !isValidReference(source, reference)) {
+      Alert.alert(
+        t('addDua.invalidRefTitle'),
+        t('addDua.invalidRefBody', { format: REFERENCE_PLACEHOLDERS[source] }),
+      )
+      return
+    }
+
+    const chosen = requireCollections()
+    if (!chosen) return
+
+    // Last step before saving: is it already in the app? (Image and AI do the same once their
+    // Arabic text is extracted or generated: duplicateGuard.checkBeforeSave(text, save))
+    duplicateGuard.checkBeforeSave(arabicText, () => saveNewDua(chosen))
+  }
+
+  const handleAddExistingDuas = () => {
+    if (existingDuaIds.length === 0) {
+      Alert.alert(t('addDua.chooseDuaTitle'), t('addDua.chooseDuaBody'))
+      return
+    }
+    const chosen = requireCollections()
+    if (!chosen) return
+
+    finishSave(
+      dispatch(saveExistingDuasToCollections(existingDuaIds, chosen.existingIds, chosen.newCollections)),
+      t('addDua.existingSuccessBody', { count: existingDuaIds.length }),
+    )
+  }
 
   if (!fontsLoaded) {
     return (
-      <View
-        style={tw`flex-1 items-center justify-center ${isDark ? 'bg-very-dark-bg' : 'bg-light-bg'}`}
-      >
-        <Text style={tw`${isDark ? 'text-light-grayish-text' : 'text-dark-text'}`}>
-          {t('common.loading')}
-        </Text>
+      <View style={tw`flex-1 items-center justify-center ${c.isDark ? 'bg-very-dark-bg' : 'bg-light-bg'}`}>
+        <Text style={tw`${c.text}`}>{t('common.loading')}</Text>
       </View>
     )
   }
 
-  const textColor = isDark ? 'text-light-grayish-text' : 'text-dark-text'
-  const inputBgColor = isDark
-    ? 'bg-very-dark-nav-bg'
-    : 'bg-very-light-grayish-bg'
-  const borderColor = isDark
-    ? 'border-dark-grayish-border'
-    : 'border-very-light-grayish-border'
-
-  const sheetBg = isDark ? '#00242F' : '#FFFFFF'
+  const sheetBg = c.isDark ? '#00242F' : '#FFFFFF'
 
   return (
     <View style={tw`flex-1`}>
@@ -224,11 +211,11 @@ export default function AddDuaModal() {
         pointerEvents='box-none'
         style={tw`flex-1 justify-end`}
       >
-      <View
+      <Animated.View
         style={[
           tw`left-0 right-0 rounded-t-3xl overflow-hidden`,
           {
-            height: SHEET_HEIGHT,
+            height: sheetHeight,
             backgroundColor: sheetBg,
           },
         ]}
@@ -243,7 +230,7 @@ export default function AddDuaModal() {
         {!selectedMethod ? (
           <View style={tw`px-6 pt-6`}>
             <Text
-              style={[tw`text-lg font-bold ${textColor} mb-2 text-center`, { paddingHorizontal: 8 }]}
+              style={[tw`text-lg font-bold ${c.text} mb-2 text-center`, { paddingHorizontal: 8 }]}
             >
               {t('addDua.chooseMethod')}
             </Text>
@@ -277,256 +264,151 @@ export default function AddDuaModal() {
                 onPress={() => setSelectedMethod(null)}
                 style={({ pressed }) => [tw`flex-row items-center`, { opacity: pressed ? 0.7 : 1 }]}
               >
-                <Text style={tw`text-2xl mr-2 ${textColor}`}>‹</Text>
-                <Text style={tw`font-semibold ${textColor}`}>{t('common.back')}</Text>
+                <Text style={tw`text-2xl mr-2 ${c.text}`}>‹</Text>
+                <Text style={tw`font-semibold ${c.text}`}>{t('common.back')}</Text>
               </Pressable>
               <Pressable onPress={() => router.back()} style={tw`p-2`}>
-                <Text style={tw`text-xl ${textColor}`}>✕</Text>
+                <Text style={tw`text-xl ${c.text}`}>✕</Text>
               </Pressable>
             </View>
 
             {selectedMethod !== 'manual' ? (
+              // Upload and AI: once the Arabic is extracted or generated, run
+              // duplicateGuard.checkBeforeSave(arabic, save) before saving, like the manual form
               <View style={tw`py-8`}>
-                <Text
-                  style={tw`text-center ${isDark ? 'text-light-grayish-text-muted' : 'text-dark-grayish-text'}`}
-                >
-                  {t('addDua.comingSoon')}
-                </Text>
+                <Text style={tw`text-center ${c.muted}`}>{t('addDua.comingSoon')}</Text>
               </View>
             ) : (
               <>
-            {/* Title */}
-            <View style={tw`mb-5`}>
-              <Text style={tw`text-sm font-semibold ${textColor} mb-2`}>
-                {t('addDua.titleLabel')}
-              </Text>
-              <TextInput
-                placeholder={t('addDua.titlePlaceholder')}
-                placeholderTextColor={isDark ? '#A0A0A0' : '#666666'}
-                value={title}
-                onChangeText={setTitle}
-                style={tw`p-3 rounded-lg border ${borderColor} ${inputBgColor} ${textColor}`}
-              />
-            </View>
-
-            {/* Arabic Text */}
-            <View style={tw`mb-5`}>
-              <Text style={tw`text-sm font-semibold ${textColor} mb-2`}>
-                {t('addDua.arabicLabel')}
-              </Text>
-              <TextInput
-                placeholder={t('addDua.arabicPlaceholder')}
-                placeholderTextColor={isDark ? '#A0A0A0' : '#666666'}
-                value={arabicText}
-                onChangeText={setArabicText}
-                multiline
-                numberOfLines={4}
-                style={[tw`p-3 rounded-lg border ${borderColor} ${inputBgColor} ${textColor}`, { textAlign: 'right', fontFamily: arabicFont.family }]}
-              />
-            </View>
-
-            {/* Transliteration (optional) */}
-            <View style={tw`mb-5`}>
-              <Text style={tw`text-sm font-semibold ${textColor} mb-2`}>
-                {t('addDua.transliterationLabel')}
-              </Text>
-              <TextInput
-                placeholder={t('addDua.transliterationPlaceholder')}
-                placeholderTextColor={isDark ? '#A0A0A0' : '#666666'}
-                value={transliteration}
-                onChangeText={setTransliteration}
-                multiline
-                numberOfLines={3}
-                style={tw`p-3 rounded-lg border ${borderColor} ${inputBgColor} ${textColor}`}
-              />
-            </View>
-
-            {/* Translation (saved in the language chosen in Settings) */}
-            <View style={tw`mb-5`}>
-              <Text style={tw`text-sm font-semibold ${textColor} mb-2`}>
-                {t('addDua.translationLabel')}
-              </Text>
-              <TextInput
-                placeholder={t('addDua.translationPlaceholder')}
-                placeholderTextColor={isDark ? '#A0A0A0' : '#666666'}
-                value={translation}
-                onChangeText={setTranslation}
-                multiline
-                numberOfLines={4}
-                style={tw`p-3 rounded-lg border ${borderColor} ${inputBgColor} ${textColor}`}
-              />
-            </View>
-
-            {/* Collection = the user's own collections (a dua can belong to several). "+" makes a new one. */}
-            <View style={tw`mb-5`}>
-              <Text style={tw`text-sm font-semibold ${textColor} mb-2`}>
-                {t('addDua.collection')}
-              </Text>
-              {userCollections.length === 0 && pendingCollections.length === 0 && !newCollection.creating && (
-                <Text
-                  style={tw`text-xs mb-2 ${isDark ? 'text-light-grayish-text-muted' : 'text-dark-grayish-text'}`}
-                >
-                  {t('addDua.noCollections')}
-                </Text>
-              )}
-              <View style={tw`flex-row flex-wrap gap-2`}>
-                {[...userCollections, ...pendingCollections].map((cat) => {
-                  const selected = selectedIds.includes(cat.id)
-                  return (
-                    <Pressable
-                      key={cat.id}
-                      onPress={() => toggleCollection(cat.id)}
-                      accessibilityRole='button'
-                      accessibilityState={{ selected }}
-                      style={({ pressed }) => [
-                        tw`px-4 py-2 rounded-full border ${borderColor} ${selected ? 'bg-dark-emerald' : inputBgColor}`,
-                        { opacity: pressed ? 0.8 : 1 },
-                      ]}
-                    >
-                      <Text
-                        style={tw`text-sm font-semibold ${selected ? 'text-light-grayish-text' : textColor}`}
-                      >
-                        {cat.name}
-                      </Text>
-                    </Pressable>
-                  )
-                })}
-
-                {/* The "+" pill, always last */}
-                {!newCollection.creating && (
-                  <Pressable
-                    onPress={newCollection.open}
-                    accessibilityRole='button'
-                    accessibilityLabel={t('addDua.newCollectionA11y')}
-                    style={({ pressed }) => [
-                      tw`px-4 py-2 rounded-full border ${borderColor} ${inputBgColor} flex-row items-center`,
-                      { opacity: pressed ? 0.8 : 1 },
+                <View style={tw`mb-5`}>
+                  <Dropdown
+                    label={t('addDua.modeLabel')}
+                    value={duaMode}
+                    onChange={setDuaMode}
+                    options={[
+                      { value: 'existing', label: t('addDua.modeExisting') },
+                      { value: 'new', label: t('addDua.modeNew') },
                     ]}
-                  >
-                    <Feather name='plus' size={16} color={isDark ? '#F3F3F3' : '#1A1A1A'} />
-                  </Pressable>
-                )}
-              </View>
-
-              {/* Turns into an input after tapping "+" */}
-              {newCollection.creating && (
-                <View style={tw`mt-3`}>
-                  <View style={tw`flex-row items-center gap-2`}>
-                    <TextInput
-                      autoFocus
-                      placeholder={t('newCollection.placeholder')}
-                      placeholderTextColor={isDark ? '#A0A0A0' : '#666666'}
-                      value={newCollection.name}
-                      onChangeText={newCollection.changeName}
-                      maxLength={newCollection.maxLength}
-                      returnKeyType='done'
-                      onSubmitEditing={newCollection.submit}
-                      style={tw`flex-1 p-3 rounded-lg border ${borderColor} ${inputBgColor} ${textColor}`}
-                    />
-                    <Pressable
-                      onPress={newCollection.submit}
-                      hitSlop={8}
-                      accessibilityRole='button'
-                      accessibilityLabel={t('newCollection.add')}
-                      style={({ pressed }) => [
-                        tw`w-[44px] h-[44px] rounded-lg bg-dark-emerald items-center justify-center`,
-                        { opacity: pressed ? 0.8 : 1 },
-                      ]}
-                    >
-                      <Feather name='check' size={20} color='#F3F3F3' />
-                    </Pressable>
-                    <Pressable
-                      onPress={newCollection.close}
-                      hitSlop={8}
-                      accessibilityRole='button'
-                      accessibilityLabel={t('newCollection.cancel')}
-                      style={tw`w-[44px] h-[44px] items-center justify-center`}
-                    >
-                      <Feather name='x' size={20} color={isDark ? '#F3F3F3' : '#1A1A1A'} />
-                    </Pressable>
-                  </View>
-                  {newCollection.error && (
-                    <Text style={tw`text-xs mt-2 text-red-500`}>{newCollection.error}</Text>
-                  )}
+                  />
                 </View>
-              )}
-            </View>
 
-            {/* Source (optional) */}
-            <View style={tw`mb-5`}>
-              <Text style={tw`text-sm font-semibold ${textColor} mb-2`}>
-                {t('addDua.source')}
-              </Text>
-              <View style={tw`flex-row flex-wrap gap-2`}>
-                {(Object.keys(SOURCE_LABELS) as DuaSource[]).map((value) => (
+                {duaMode === 'existing' ? (
+                  <ExistingDuaPicker selectedIds={existingDuaIds} onToggle={toggleExistingDua} />
+                ) : (
+                  <>
+                    <FormField label={t('addDua.titleLabel')}>
+                      <FormInput
+                        placeholder={t('addDua.titlePlaceholder')}
+                        value={title}
+                        onChangeText={setTitle}
+                      />
+                    </FormField>
+
+                    <FormField label={t('addDua.arabicLabel')}>
+                      <FormInput
+                        arabic
+                        placeholder={t('addDua.arabicPlaceholder')}
+                        value={arabicText}
+                        onChangeText={setArabicText}
+                        multiline
+                        numberOfLines={4}
+                      />
+                    </FormField>
+
+                    <FormField label={t('addDua.transliterationLabel')}>
+                      <FormInput
+                        placeholder={t('addDua.transliterationPlaceholder')}
+                        value={transliteration}
+                        onChangeText={setTransliteration}
+                        multiline
+                        numberOfLines={3}
+                      />
+                    </FormField>
+
+                    {/* Translation (saved in the language chosen in Settings) */}
+                    <FormField label={t('addDua.translationLabel')}>
+                      <FormInput
+                        placeholder={t('addDua.translationPlaceholder')}
+                        value={translation}
+                        onChangeText={setTranslation}
+                        multiline
+                        numberOfLines={4}
+                      />
+                    </FormField>
+                  </>
+                )}
+
+                <CollectionField choice={collections} last={duaMode === 'existing'} />
+
+                {duaMode === 'new' && (
+                  <>
+                    {/* Source (optional) */}
+                    <FormField label={t('addDua.source')}>
+                      <View style={tw`flex-row flex-wrap gap-2`}>
+                        {(Object.keys(SOURCE_LABELS) as DuaSource[]).map((value) => (
+                          <Pressable
+                            key={value}
+                            onPress={() => toggleSource(value)}
+                            style={({ pressed }) => [
+                              tw`px-4 py-2 rounded-full border ${c.border} ${source === value ? 'bg-dark-emerald' : c.inputBg}`,
+                              { opacity: pressed ? 0.8 : 1 },
+                            ]}
+                          >
+                            <Text
+                              style={tw`text-sm font-semibold ${source === value ? 'text-light-grayish-text' : c.text}`}
+                            >
+                              {SOURCE_LABELS[value]}
+                            </Text>
+                          </Pressable>
+                        ))}
+                      </View>
+                    </FormField>
+
+                    {/* Reference (optional) - placeholder follows the selected source */}
+                    <FormField label={t('addDua.reference')} last>
+                      <FormInput
+                        placeholder={source ? REFERENCE_PLACEHOLDERS[source] : t('addDua.chooseSource')}
+                        value={reference}
+                        onChangeText={setReference}
+                        editable={source !== null}
+                      />
+                    </FormField>
+                  </>
+                )}
+
+                {/* Action Buttons */}
+                <View style={tw`flex-row gap-3 mb-4`}>
                   <Pressable
-                    key={value}
-                    onPress={() => toggleSource(value)}
+                    onPress={() => router.back()}
                     style={({ pressed }) => [
-                      tw`px-4 py-2 rounded-full border ${borderColor} ${source === value ? 'bg-dark-emerald' : inputBgColor}`,
+                      tw`flex-1 px-4 py-3 rounded-lg border ${c.inputBg} ${c.border}`,
                       { opacity: pressed ? 0.8 : 1 },
                     ]}
                   >
-                    <Text
-                      style={tw`text-sm font-semibold ${source === value ? 'text-light-grayish-text' : textColor}`}
-                    >
-                      {SOURCE_LABELS[value]}
+                    <Text style={tw`text-center font-semibold ${c.text}`}>{t('common.cancel')}</Text>
+                  </Pressable>
+
+                  <Pressable
+                    onPress={duaMode === 'existing' ? handleAddExistingDuas : handleAddNewDua}
+                    style={({ pressed }) => [
+                      tw`flex-1 px-4 py-3 rounded-lg bg-dark-emerald`,
+                      { opacity: pressed ? 0.8 : 1 },
+                    ]}
+                  >
+                    <Text style={tw`text-center font-semibold text-light-grayish-text`}>
+                      {duaMode === 'existing' ? t('addDua.submitExisting') : t('addDua.submit')}
                     </Text>
                   </Pressable>
-                ))}
-              </View>
-            </View>
-
-            {/* Reference (optional) - placeholder follows the selected source */}
-            <View style={tw`mb-8`}>
-              <Text style={tw`text-sm font-semibold ${textColor} mb-2`}>
-                {t('addDua.reference')}
-              </Text>
-              <TextInput
-                placeholder={
-                  source ? REFERENCE_PLACEHOLDERS[source] : t('addDua.chooseSource')
-                }
-                placeholderTextColor={isDark ? '#A0A0A0' : '#666666'}
-                value={reference}
-                onChangeText={setReference}
-                editable={source !== null}
-                style={tw`p-3 rounded-lg border ${borderColor} ${inputBgColor} ${textColor}`}
-              />
-            </View>
-
-            {/* Action Buttons */}
-            <View style={tw`flex-row gap-3 mb-4`}>
-              <Pressable
-                onPress={() => router.back()}
-                style={({ pressed }) => [
-                  tw`flex-1 px-4 py-3 rounded-lg border ${inputBgColor} ${borderColor}`,
-                  { opacity: pressed ? 0.8 : 1 },
-                ]}
-              >
-                <Text style={tw`text-center font-semibold ${textColor}`}>
-                  {t('common.cancel')}
-                </Text>
-              </Pressable>
-
-              <Pressable
-                onPress={handleAddDua}
-                style={({ pressed }) => [
-                  tw`flex-1 px-4 py-3 rounded-lg bg-dark-emerald`,
-                  { opacity: pressed ? 0.8 : 1 },
-                ]}
-              >
-                <Text style={tw`text-center font-semibold text-light-grayish-text`}>
-                  {t('addDua.submit')}
-                </Text>
-              </Pressable>
-            </View>
+                </View>
               </>
             )}
           </View>
         )}
       </ScrollView>
-      </View>
+      </Animated.View>
       </KeyboardAvoidingView>
+
+      {duplicateGuard.modal}
     </View>
   )
 }
