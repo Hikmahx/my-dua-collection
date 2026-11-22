@@ -30,6 +30,15 @@ export type DuaContent = Omit<Dua, 'isFavorite'>
 /** The duas that ship with the app, read from data/dua.json (through `data`). Nothing is a favorite until the user says so. */
 export const BUILT_IN_DUAS: Dua[] = data.duas.map((dua) => ({ ...dua, isFavorite: false }))
 
+const BUILT_IN_IDS = new Set(BUILT_IN_DUAS.map((dua) => dua.id))
+
+/**
+ * True for a dua that ships with the app (an id in dua.json). Pre-made duas are read only: they
+ * can be favorited and put in the user's collections, but never edited or deleted. `updateDua` and
+ * `removeDua` (here and in the collections slice) ignore them, whatever screen sends the action.
+ */
+export const isBuiltInDuaId = (id: string) => BUILT_IN_IDS.has(id)
+
 interface DuasState {
   items: Dua[]
   /** Ids of the favorite duas in the order the user arranged them (Favorites lists them this way). */
@@ -54,6 +63,17 @@ export const addDuaWithCollections = createAction<{
   newCollections: NewCollectionDraft[]
 }>('duas/addDuaWithCollections')
 
+/**
+ * Puts duas that already exist (pre-made or the user's own) into collections of the user's: the
+ * ones they have, and new ones that are created with these duas. Only the collections slice
+ * handles it, since the duas themselves do not change. Use the `saveExistingDuasToCollections` thunk.
+ */
+export const addDuasToCollections = createAction<{
+  duaIds: string[]
+  collectionIds: string[]
+  newCollections: NewCollectionDraft[]
+}>('duas/addDuasToCollections')
+
 const initialState: DuasState = {
   items: BUILT_IN_DUAS,
   favoriteOrder: [],
@@ -76,7 +96,9 @@ const duasSlice = createSlice({
       state.items.push(action.payload)
       syncFavoriteOrder(state)
     },
+    /** Deletes a dua the user added. Pre-made duas are read only, so this ignores them. */
     removeDua(state, action: PayloadAction<string>) {
+      if (isBuiltInDuaId(action.payload)) return
       state.items = state.items.filter((dua) => dua.id !== action.payload)
       syncFavoriteOrder(state)
     },
@@ -85,7 +107,9 @@ const duasSlice = createSlice({
       if (dua) dua.isFavorite = !dua.isFavorite
       syncFavoriteOrder(state)
     },
+    /** Replaces a dua the user added. Pre-made duas are read only, so this ignores them. */
     updateDua(state, action: PayloadAction<Dua>) {
+      if (isBuiltInDuaId(action.payload.id)) return
       const index = state.items.findIndex((d) => d.id === action.payload.id)
       if (index !== -1) {
         state.items[index] = action.payload

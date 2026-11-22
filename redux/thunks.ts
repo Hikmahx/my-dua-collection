@@ -1,6 +1,7 @@
 import { COLLECTION_DEFS } from '@/constants/collections'
 import { setDuaCollections } from '@/redux/reducers/collectionsSlice'
 import {
+  addDuasToCollections,
   addDuaWithCollections,
   type Dua,
   type NewCollectionDraft,
@@ -42,5 +43,21 @@ export const saveDuaCollections =
     const existing = ownCollectionIds(getState(), collectionIds)
     if (existing.length + newCollections.length === 0 && !isInPremadeCollection(dua)) return false
     dispatch(setDuaCollections({ duaId: dua.id, collectionIds: existing, newCollections }))
+    return true
+  }
+
+/**
+ * Adds duas that already exist (pre-made or the user's own) to the user's collections, existing or
+ * new (a new collection is created with these duas). Ids that are not a real dua are dropped.
+ * Returns false (and changes nothing) when no dua or no collection is left.
+ */
+export const saveExistingDuasToCollections =
+  (duaIds: string[], collectionIds: string[], newCollections: NewCollectionDraft[]): AppThunk<boolean> =>
+  (dispatch, getState) => {
+    const state = getState()
+    const duas = duaIds.filter((id) => state.duas.items.some((dua) => dua.id === id))
+    const existing = ownCollectionIds(state, collectionIds)
+    if (duas.length === 0 || existing.length + newCollections.length === 0) return false
+    dispatch(addDuasToCollections({ duaIds: duas, collectionIds: existing, newCollections }))
     return true
   }

@@ -4,7 +4,7 @@ import { DEFAULT_DUA_REPEAT, FAVORITES_LIST_ID } from '@/constants/dua-config'
 import { normalizeForSearch } from '@/lib/search'
 import { getDuasInCollection } from '@/lib/collection-utils'
 import { getFavoriteDuas, normalizeFavoriteOrder } from '@/lib/favorites'
-import type { Dua, DuaContent, DuaSource } from '@/redux/reducers/duasSlice'
+import { isBuiltInDuaId, type Dua, type DuaContent, type DuaSource } from '@/redux/reducers/duasSlice'
 
 export const SOURCE_LABELS: Record<DuaSource, string> = {
   quran: 'Quran',
@@ -151,7 +151,8 @@ export function duaShareText(dua: Dua, language: string): string {
     .join('\n\n')
 }
 
-export const isBuiltin = (dua: Dua) => dua.origin === 'builtin'
+/** A pre-made dua (read only). Same rule the slices use to ignore edits and deletes: see `isBuiltInDuaId`. */
+export const isBuiltin = (dua: Pick<Dua, 'id'>) => isBuiltInDuaId(dua.id)
 
 /** A new id for a dua the user adds. The random part keeps two duas made in the same millisecond apart. */
 export const createDuaId = () =>

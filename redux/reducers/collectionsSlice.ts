@@ -1,6 +1,8 @@
 import { NEW_COLLECTION_ICON_KEY, type UserCollection } from '@/constants/collections'
 import {
+  addDuasToCollections,
   addDuaWithCollections,
+  isBuiltInDuaId,
   removeDua,
   type NewCollectionDraft,
 } from '@/redux/reducers/duasSlice'
@@ -97,9 +99,19 @@ const collectionsSlice = createSlice({
       const { dua, collectionIds, newCollections } = action.payload
       applyDuaMembership(state, dua.id, collectionIds, newCollections, false)
     })
+    // Existing duas go into collections: new collections are created with the first dua, and the
+    // rest of the duas are added to them like to any other collection
+    builder.addCase(addDuasToCollections, (state, action) => {
+      const { duaIds, collectionIds, newCollections } = action.payload
+      const wanted = [...collectionIds, ...newCollections.map((collection) => collection.id)]
+      duaIds.forEach((duaId, index) =>
+        applyDuaMembership(state, duaId, wanted, index === 0 ? newCollections : [], false),
+      )
+    })
     // A dua deleted from the library leaves every collection. A collection that only had this dua
     // goes with it, because a collection cannot exist without a dua
     builder.addCase(removeDua, (state, action) => {
+      if (isBuiltInDuaId(action.payload)) return // pre-made duas are never deleted (see duasSlice)
       for (const collection of state.items) {
         collection.duaIds = collection.duaIds.filter((id) => id !== action.payload)
       }
