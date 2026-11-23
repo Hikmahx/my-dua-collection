@@ -68,14 +68,11 @@ export const PDF_COLORS = {
 /** Browsers lay the page out at 96 px per inch too, like Android. */
 export const PDF_UNIT_BROWSER = PDF_UNIT_ANDROID
 
-/** Put the export date at the end of the file name (`quranic-duas-22-11-2026.pdf`)? */
-export const INCLUDE_DATE_IN_PDF_FILE_NAME = false
-
 /**
  * Turns a collection name into the file name of its PDF: lowercase, words joined with "-", and no characters a
  * file name can't have. "Quranic Duas" becomes "quranic-duas" (without the ".pdf").
  */
-export function pdfFileName(collectionName: string, date: Date = new Date(), fallback = 'my-dua-collection'): string {
+export function pdfFileName(collectionName: string, fallback = 'my-dua-collection'): string {
   const slug = collectionName
     .toLowerCase()
     .replace(/[\\/:*?"<>|\u0000-\u001f]/g, ' ')
@@ -85,8 +82,5 @@ export function pdfFileName(collectionName: string, date: Date = new Date(), fal
     .replace(/^[-.]+|[-.]+$/g, '')
     .slice(0, 80)
     .replace(/-+$/, '')
-  const name = slug || fallback
-  if (!INCLUDE_DATE_IN_PDF_FILE_NAME) return name
-  const two = (n: number) => String(n).padStart(2, '0')
-  return `${name}-${two(date.getDate())}-${two(date.getMonth() + 1)}-${date.getFullYear()}`
+  return slug || fallback
 }

@@ -9,15 +9,16 @@ import {
   createCollectionPdf,
   PdfExportError,
   printCollectionPdfInBrowser,
+  savePdfToDevice,
   shareCollectionPdf,
 } from '@/lib/pdf/export-collection-pdf'
-import { DEFAULT_PDF_OPTIONS, type PdfExportOptions } from '@/lib/pdf/pdf-config'
+import { DEFAULT_PDF_OPTIONS, pdfFileName, type PdfExportOptions } from '@/lib/pdf/pdf-config'
 import tw from '@/lib/tailwind'
 import type { TranslationKey } from '@/locales'
 import type { Dua } from '@/redux/reducers/duasSlice'
 import type { RootState } from '@/redux/store'
 import { useState } from 'react'
-import { Alert, Platform, Text, View } from 'react-native'
+import { Alert, Platform, Pressable, Text, View } from 'react-native'
 import { useSelector } from 'react-redux'
 
 interface ExportCollectionModalProps {
@@ -84,7 +85,8 @@ export function ExportCollectionModal({ visible, collectionName, duas, onClose }
     return t('export.errorBody')
   }
 
-  const handleExport = async () => {
+  /** `share` opens the share sheet; `save` (Android) saves the file in a folder the user picks. */
+  const handleExport = async (mode: 'share' | 'save' = 'share') => {
     if (busy) return
     if (duas.length === 0) {
       setError(t('export.emptyBody'))
@@ -118,8 +120,23 @@ export function ExportCollectionModal({ visible, collectionName, duas, onClose }
       return
     }
 
-    // the PDF is ready: close the dialog first, then open the share sheet over the collection
     setBusy(false)
+
+    if (mode === 'save') {
+      try {
+        const saved = await savePdfToDevice(fileUri, pdfFileName(collectionName))
+        if (saved) {
+          onClose()
+          Alert.alert(t('export.savedTitle'), t('export.savedBody'))
+        }
+      } catch (caught) {
+        console.warn(caught)
+        setError(errorMessage(caught))
+      }
+      return
+    }
+
+    // the PDF is ready: close the dialog first, then open the share sheet over the collection
     onClose()
     await wait(CLOSE_ANIMATION_MS)
     try {
@@ -144,10 +161,20 @@ export function ExportCollectionModal({ visible, collectionName, duas, onClose }
               {error}
             </Text>
           )}
+          {Platform.OS === 'android' && (
+            <Pressable
+              onPress={() => handleExport('save')}
+              disabled={busy}
+              accessibilityRole='button'
+              style={tw`items-center py-[10px] mb-[8px] ${busy ? 'opacity-50' : ''}`}
+            >
+              <Text style={[tw`font-nunito-semibold text-[14px]`, { color: c.title }]}>{t('export.saveToDevice')}</Text>
+            </Pressable>
+          )}
           <DialogButtons
             confirmLabel={busy ? t('export.working') : t('export.action')}
             onCancel={close}
-            onConfirm={handleExport}
+            onConfirm={() => handleExport('share')}
             confirmDisabled={busy}
           />
         </>

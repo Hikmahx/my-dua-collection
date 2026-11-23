@@ -559,11 +559,13 @@ Every search box in the app uses the same code, so they all behave the same way.
 | Translation | The translation in the language chosen in Settings (English when a dua has none in that language) |
 | Transliteration | The transliteration line |
 | Source & reference | e.g. `Al-Anbiya · 21:87` or `Hadith · Qudsi 234` |
-| Notes & background | The dua's note (`info`) in a tinted box |
-| Times to recite | "Recite 3 times", for duas recited more than once |
 | One dua per page | On: every dua starts a page (like the Salah Resources PDF). Off: short duas share a page; a dua is never cut in two if it fits on one page |
+| Times to recite | "Recite 3 times" under every dua, next to the source |
+| Notes & background | The dua's note (`info`) in a tinted box |
 
-The Arabic text is always included, in the **Arabic font chosen in Settings**. **Export PDF** makes the file, closes the dialog, and opens the share sheet (save to Files, send, print). The file is named after the collection, in lowercase with hyphens (`quranic-duas.pdf`). To add the date (`quranic-duas-22-11-2026.pdf`), set `INCLUDE_DATE_IN_PDF_FILE_NAME` to `true` in `lib/pdf/pdf-config.ts`.
+The Arabic text is always included, in the **Arabic font chosen in Settings**. **Export PDF** makes the file, closes the dialog, and opens the share sheet (save to Files, send, print). The file is named after the collection, in lowercase with hyphens (`quranic-duas.pdf`). 
+
+**On Android** there is also **Save to device** in the dialog: it opens the system folder picker (e.g. Downloads) and saves the PDF there. An emulator often has nothing in its share sheet that can save a file, so use this one there. (iOS: **Save to Files** in the share sheet.)
 
 **On web** the browser's print dialog opens with the PDF pages (a hidden frame, so the app itself is not printed); choose **Save as PDF** there. The page title is the suggested file name. (`expo-print`'s own web support just prints the current page, so the app prints the frame itself.)
 

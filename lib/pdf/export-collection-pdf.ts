@@ -80,6 +80,26 @@ export async function createCollectionPdf(params: CreateCollectionPdfParams): Pr
   }
 }
 
+/**
+ * Android: saves the PDF in a folder the user picks (the system folder picker, e.g. Downloads). Returns false when
+ * the user did not pick a folder. An emulator often has no app in its share sheet that can save a file, so this is
+ * the sure way to get the file onto the device.
+ */
+export async function savePdfToDevice(fileUri: string, fileName: string): Promise<boolean> {
+  const { StorageAccessFramework } = FileSystem
+  const permission = await StorageAccessFramework.requestDirectoryPermissionsAsync()
+  if (!permission.granted) return false
+
+  try {
+    const base64 = await FileSystem.readAsStringAsync(fileUri, { encoding: FileSystem.EncodingType.Base64 })
+    const target = await StorageAccessFramework.createFileAsync(permission.directoryUri, fileName, 'application/pdf')
+    await FileSystem.writeAsStringAsync(target, base64, { encoding: FileSystem.EncodingType.Base64 })
+    return true
+  } catch (error) {
+    throw new PdfExportError('failed', error)
+  }
+}
+
 /** Opens the share sheet for a PDF, where the user can save it to Files, send it, or print it. */
 export async function shareCollectionPdf(fileUri: string, t: TFunction): Promise<void> {
   if (!(await Sharing.isAvailableAsync())) throw new PdfExportError('sharing-unavailable')
@@ -102,7 +122,8 @@ export async function shareCollectionPdf(fileUri: string, t: TFunction): Promise
 function printHtmlInBrowser(html: string, fileName: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const frame = document.createElement('iframe')
-    frame.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden'
+    // off screen but at the size of an A4 page (a frame of 0 x 0 can print as an empty page)
+    frame.style.cssText = 'position:fixed;left:-10000px;top:0;width:794px;height:1123px;border:0'
     const previousTitle = document.title
     let finished = false
 
