@@ -100,7 +100,6 @@ body{font-family:${LATIN_STACK};font-size:${u(12.5)};line-height:1.8;color:${c.b
 .cover-meta{font-size:${u(11)};letter-spacing:0.06em;color:${c.coverMuted};text-align:center;margin-top:${u(16)}}
 
 .title{font-family:'MDC Berkshire',Georgia,serif;font-weight:400;font-size:${u(TITLE.fontSize)};line-height:${TITLE.lineHeight};color:${c.teal};margin:0 0 ${u(10)} 0}
-.title .num{color:${c.gold}}
 .rule{width:${u(54)};height:${u(2.5)};background:${c.gold};border-radius:${u(2)};margin-bottom:${u(26)}}
 .cont{font-family:'MDC Berkshire',Georgia,serif;font-size:${u(15)};line-height:1.3;color:${c.teal};margin-bottom:${u(8)}}
 .cont-rule{width:${u(34)};height:${u(2)};background:${c.gold};margin-bottom:${u(18)}}

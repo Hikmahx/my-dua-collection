@@ -263,7 +263,7 @@ export const en = {
   'export.notes': 'Notes & background',
   'export.notesHint': 'The note saved with each dua',
   'export.repeat': 'Times to recite',
-  'export.repeatHint': 'Shown for duas recited more than once',
+  'export.repeatHint': 'How many times each dua is recited',
   'export.onePerPage': 'One dua per page',
   'export.onePerPageHint': 'Turn off to fit more duas on a page',
   'export.action': 'Export PDF',
