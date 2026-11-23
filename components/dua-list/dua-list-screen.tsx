@@ -12,7 +12,7 @@ import { useSearch } from '@/hooks/use-search'
 import { useSourceFilter } from '@/hooks/use-source-filter'
 import { duaSourceSearchFields } from '@/lib/dua-utils'
 import tw from '@/lib/tailwind'
-import type { FilterMenuOption } from '@/lib/types'
+import type { FilterMenuOption, FilterMenuSection } from '@/lib/types'
 import type { Dua } from '@/redux/reducers/duasSlice'
 import { Feather } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
@@ -32,6 +32,8 @@ interface DuaListScreenProps {
   emptyMessage: string
   /** Actions for the top of the header dropdown (the collection screen: Add, Edit). */
   menuActions?: FilterMenuOption[]
+  /** Sections for the bottom of the header dropdown, below Appearance (the collection screen: Export). */
+  footerSections?: FilterMenuSection[]
   /**
    * Makes the list reorderable (Favorites). The dropdown gets "Reorder", which shows a grip on every
    * row; each drag calls this with the new order of ids, and "Done" goes back to the normal list.
@@ -56,6 +58,7 @@ export function DuaListScreen({
   showCollections = false,
   emptyMessage,
   menuActions,
+  footerSections,
   onReorder,
 }: DuaListScreenProps) {
   const c = useDuaListColors()
@@ -120,6 +123,7 @@ export function DuaListScreen({
                   extraSections={
                     actions.length > 0 ? [{ id: 'manage', title: t('list.manage'), options: actions }, ...sections] : sections
                   }
+                  trailingSections={footerSections}
                   active={!!filter}
                 />
               </View>

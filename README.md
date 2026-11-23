@@ -106,6 +106,7 @@ Users can currently:
 
 - Header with a back arrow, the collection name, a count such as "11 duas", a search icon and a filter icon.
 - One numbered row per dua with its title and source line.
+- **Export as PDF** (an **Export** section at the bottom of the same menu, under Appearance) opens a dialog where you choose what goes in the PDF: cover page, translation, transliteration, source, notes and "Times to recite", and whether every dua gets its own page. The PDF is made on the phone (no backend), named after the collection, and opened in the share sheet to save, send or print. See [PDF export](README_COMPREHENSIVE.md#pdf-export).
 - **Search** opens under the header and finds duas by title, transliteration, Arabic, translation, or surah and hadith name. It ignores Arabic diacritics, apostrophes and hyphens, so "ali imran" finds "Ali 'Imran".
 - **Filter** (the filter icon menu) has one section for what is found in this collection: Filter (with Surah and Hadith groups) when there are both, or just Surah or Hadith when there is only one. Pick one, and tap it again to clear it. The section has a maximum height and scrolls when the list is long. A gold dot shows a filter is on.
 
@@ -192,6 +193,7 @@ npx expo start
 
 Then press `i` (iOS simulator), `a` (Android emulator) or scan the QR code with Expo Go.
 
+- PDF export uses `expo-print`, `expo-sharing`, `expo-file-system` and `expo-asset`. They are in `package.json`, so `npm install` is enough; if you add them to another project, use `npx expo install expo-print expo-sharing expo-file-system expo-asset`.
 - After changing `metro.config.js` or adding a dependency, restart with `npx expo start -c` to clear the cache.
 - The native splash color is set in `app.json`, so a change to it needs a development build (`npx expo prebuild`), not Expo Go.
 
@@ -209,7 +211,8 @@ Then press `i` (iOS simulator), `a` (Android emulator) or scan the QR code with 
 - [React Hook Form](https://react-hook-form.com/) - Add-a-dua form
 - [AsyncStorage](https://react-native-async-storage.github.io/async-storage/) - Offline storage
 - [Expo Haptics](https://docs.expo.dev/versions/latest/sdk/haptics/) and [Expo Audio](https://docs.expo.dev/versions/latest/sdk/audio/) - Tasbih feedback
-- [Google Fonts](https://fonts.google.com/) - Nunito Sans, Berkshire Swash and Amiri (Arabic)
+- [Google Fonts](https://fonts.google.com/) - Nunito Sans, Berkshire Swash and the Arabic fonts
+- [Expo Print](https://docs.expo.dev/versions/latest/sdk/print/), [Expo Sharing](https://docs.expo.dev/versions/latest/sdk/sharing/), [Expo File System](https://docs.expo.dev/versions/latest/sdk/filesystem/) and [Expo Asset](https://docs.expo.dev/versions/latest/sdk/asset/) - PDF export of a collection
 - [Figma](https://www.figma.com) - UI design
 
 ---
@@ -226,7 +229,8 @@ Then press `i` (iOS simulator), `a` (Android emulator) or scan the QR code with 
 - [ ] Image upload (OCR) to add a dua
 - [ ] Audio recitations (the Dua screen's audio button was replaced by **Save to collection**; the audio button comes back when recitations exist)
 - [ ] Reminders and Ramadan mode
-- [ ] Share cards and PDF export
+- [x] PDF export of a collection
+- [ ] Share cards
 - [ ] Backend and cloud sync
 
 The full list is in [README_COMPREHENSIVE.md](README_COMPREHENSIVE.md#to-do).

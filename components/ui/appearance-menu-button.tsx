@@ -14,16 +14,19 @@ import { useDispatch, useSelector } from 'react-redux'
 interface AppearanceMenuButtonProps {
   /** Extra sections shown above Appearance (e.g. the Surah / Hadith filters). */
   extraSections?: FilterMenuSection[]
+  /** Extra sections shown below Appearance (e.g. Export). */
+  trailingSections?: FilterMenuSection[]
   /** Shows a small gold dot on the icon (a filter in the menu is on). */
   active?: boolean
 }
 
 /**
  * The header "tune" icon with its Appearance (Dark / Light) dropdown, and optionally more
- * sections above it. Used in every screen header, so the menu logic lives here once.
+ * sections above it and below it. Used in every screen header, so the menu logic lives here once.
  */
 export function AppearanceMenuButton({
   extraSections = [],
+  trailingSections = [],
   active = false,
 }: AppearanceMenuButtonProps) {
   const isDark = useColorScheme() === 'dark'
@@ -64,6 +67,7 @@ export function AppearanceMenuButton({
         },
       ],
     },
+    ...trailingSections,
   ]
 
   return (

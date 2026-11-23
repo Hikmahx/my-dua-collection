@@ -29,6 +29,7 @@ A comprehensive Islamic dua management application designed to help Muslims orga
   - [Theming](#theming)
   - [Icon Library](#icon-library)
   - [Search](#search)
+  - [PDF Export](#pdf-export)
   - [Project Structure and Naming](#project-structure-and-naming)
 - [Key Features](#key-features)
   - [Collections System](#collections-system)
@@ -100,8 +101,8 @@ Users should be able to:
   - Generate beautiful dua cards with Arabic text, translation, transliteration, and app watermark
   - Share to social media and messaging
   - Save as image or copy text
-  - Print entire collections
-  - Download collections in PDF format with source and background for each dua (with customizable options)
+  - Print entire collections (from the share sheet that opens after a PDF export)
+  - Download collections in PDF format with source and background for each dua (with customizable options). Done: see [PDF export](#pdf-export)
 
 - **Notifications:**
   - Daily dua reminders (customizable)
@@ -198,7 +199,7 @@ Opened by tapping a collection card on Home (route `app/collection/[id].tsx`, wh
   - Collection name
   - Count of duas under the name ("11 duas"). While a filter is on it adds the filter, e.g. "3 duas · Bukhari"
   - Search icon: opens a search field under the header, and closes and clears it when tapped again. It also finds duas by surah and hadith name (see [Search](#search))
-  - Filter icon: opens a menu with a **Manage** section (**Add dua** and **Edit collection**), then the source filter section (see below), then Appearance
+  - Filter icon: opens a menu with a **Manage** section (**Add dua** and **Edit collection**), then the source filter section (see below), then Appearance, then an **Export** section (**Export as PDF**, see [PDF export](#pdf-export))
 - **Manage section:**
   - **Add dua** opens the add-dua sheet ("Choose how you'd like to add your dua"). The new dua goes into this collection, which is already ticked in the form's collection list (see [Adding Duas](#adding-duas))
   - **Edit collection** opens the [Edit Collection Screen](#edit-collection-screen). It is dimmed (and does nothing) for pre-made collections, because only collections the user made can be edited
@@ -217,7 +218,7 @@ Opened by tapping a collection card on Home (route `app/collection/[id].tsx`, wh
   <!-- - Grid/list view toggle -->
   <!-- - Sort options: Date added, Alphabetical, Custom order -->
   - Share entire collection button
-  - Print entire collection button
+  - <!-- Print entire collection button: available from the share sheet after Export as PDF -->
   - Tapping a row opens the dua (see [Dua Features](#dua-features))
 
 The list is built from shared parts (`DuaListScreen`, `DuaListRow` in `components/dua-list/`, `ScreenHeader`, and the `useSourceFilter` hook), which the [Bookmark Screen](#bookmark-screen) uses too. Dragging rows into a new order is the shared `ReorderableList` (`components/ui/reorderable-list.tsx`), used by the Edit collection screen and by Favorites; the math is in `lib/reorder.ts`. A collection the user made shows its duas in the order they chose (see below).
@@ -548,6 +549,37 @@ Every search box in the app uses the same code, so they all behave the same way.
 - **Filter by surah or hadith** (Collection and Bookmark screens): `useSourceFilter(duas)` in `hooks/use-source-filter.ts` returns the filtered duas and one menu section: "Filter" with Surah and Hadith groups when there are both, or just "Surah" or "Hadith" when there is only one (none when there is neither). It is capped by `FILTER_MAX_HEIGHT`, so it scrolls on its own. The helpers behind it are in `lib/dua-utils.ts`: `getSurahName`, `getHadithName`, `listSourceNames` and `matchesSourceFilter`. The filter runs first, then the search runs on what is left
 - **To add search to a new list:** call `useSearch(items, getFields)`, render a `SearchField` bound to `query` and `setQuery`, and show `results`
 
+### PDF Export
+
+**What the user sees:** on a collection (pre-made or their own), the header menu has an **Export** section under Appearance with **Export as PDF**. It opens a dialog with these switches (all on by default, except that **Transliteration** starts from the Settings switch):
+
+| Switch | Effect |
+| --- | --- |
+| Cover page | A first page in the style of the splash screen: the beads logo, **My Dua Collection** (Berkshire Swash), the collection name (Nunito Sans) and the number of duas with the date |
+| Translation | The translation in the language chosen in Settings (English when a dua has none in that language) |
+| Transliteration | The transliteration line |
+| Source & reference | e.g. `Al-Anbiya · 21:87` or `Hadith · Qudsi 234` |
+| Notes & background | The dua's note (`info`) in a tinted box |
+| Times to recite | "Recite 3 times", for duas recited more than once |
+| One dua per page | On: every dua starts a page (like the Salah Resources PDF). Off: short duas share a page; a dua is never cut in two if it fits on one page |
+
+The Arabic text is always included, in the **Arabic font chosen in Settings**. **Export PDF** makes the file, closes the dialog, and opens the share sheet (save to Files, send, print). The file is named after the collection (`Quranic Duas.pdf`).
+
+**Look of the PDF:** A4, white pages. Each dua has a small gold label (`COLLECTION · 3 / 12`), its title in **Berkshire Swash in deep teal** (`#013241`) with a short gold rule, then the Arabic, the transliteration (bold italic), the translation, the source line (grey) and the notes box. Every page has the beads logo and **My Dua Collection** (Berkshire Swash) at the bottom left and the page number at the bottom right. A dua longer than a page continues on the next page under a short "continued" heading.
+
+**How it works (no backend):** the PDF is made on the device.
+1. `lib/pdf/pdf-fonts.ts` reads the font files as base64 (the web view that prints knows nothing about the app's fonts, so they are written into the HTML as `@font-face`).
+2. `lib/pdf/collection-pdf-html.ts` builds one HTML document. `lib/pdf/pdf-layout.ts` places the duas on pages: it estimates how tall each piece of text is (on the tall side, so a page never overflows into its footer) and splits long text between pages.
+3. `expo-print` turns the HTML into a PDF file, `lib/pdf/export-collection-pdf.ts` renames it after the collection, and `expo-sharing` opens the share sheet.
+
+Files: `components/export/export-collection-modal.tsx` (the dialog), `lib/pdf/` (everything above, plus `pdf-config.ts` for the options, colors and page size, and `cover-art.ts`), `constants/prayer-beads-path.ts` (the logo outline, shared with the `PrayerBeadsLogo` component). `cover-art.ts` is generated from `assets/images/splash-background.svg` by `node scripts/generate-pdf-cover-art.js`; run it again if the splash artwork changes.
+
+**Good to know:**
+- Arabic needs a real text engine, so the PDF is made from HTML (the phone's own web view shapes the Arabic). A library that draws text itself (`pdf-lib`) would show disconnected letters.
+- expo-print lays the page out at 72 px per inch on iOS and 96 on Android, so every length in the PDF is `n` units times `--u`, set per platform in `lib/pdf/pdf-config.ts` (`PDF_UNIT_IOS`, `PDF_UNIT_ANDROID`). If a platform shows the content too small or too large on the page, change that one number.
+- It works in Expo Go and in development builds. It is not available in the browser (the dialog says so).
+- To change what the PDF looks like, edit `buildStyles` in `lib/pdf/collection-pdf-html.ts`. To add a switch: add it to `PdfExportOptions` and `DEFAULT_PDF_OPTIONS` (`pdf-config.ts`), the text keys in `locales/en.ts`, the `OPTION_ROWS` list in the dialog, and use it in `buildDuaUnit`.
+
 ### Project Structure and Naming
 
 - File names are lowercase with hyphens (`explore-card.tsx`, `theme-colors.ts`). Redux reducer files stay camelCase (`duasSlice.ts`). Route files in `app/` follow Expo Router
@@ -678,11 +710,9 @@ Every search box in the app uses the same code, so they all behave the same way.
 - Copy text to clipboard
 
 **Collection Export:**
-- **PDF Download:**
+- **PDF Download:** see [PDF export](#pdf-export)
   - Entire collection exportable
-  - User choice of content:
-    - Option 1: All context and commentary for each dua
-    - Option 2: Just source and background
+  - User choice of content (a dialog of switches, see below)
   - Formatted for printing
   - Includes collection name and metadata
 
@@ -715,10 +745,10 @@ Every search box in the app uses the same code, so they all behave the same way.
   - [TBD] - Cloud storage for images/audio (AWS S3 / Firebase Storage / Cloudinary)
 
 - **Additional Libraries:**
-  - PDF generation library (react-native-pdf / pdf-lib)
+  - PDF generation: `expo-print` (HTML to PDF on the device), `expo-sharing`, `expo-file-system`, `expo-asset` (see [PDF export](#pdf-export)). `pdf-lib` was ruled out because it cannot shape Arabic text
   - Share functionality (react-native-share)
   - Image picker (react-native-image-picker / image_picker)
-  <!-- - Audio player (react-native-sound / audioplayers) -->
+  - Audio player (react-native-sound / audioplayers)
 
 ### Planned integrations
 
@@ -801,7 +831,7 @@ Every search box in the app uses the same code, so they all behave the same way.
   - [ ] Open it from the Collection and Bookmark lists
 - [ ] **Tasbih Counter:**
   <!-- - [x] Simple counter screen -->
-  - [x] Customizable counters per dua
+  - [ ] Customizable counters per dua
   - [ ] Preset counters for morning/evening adhkar
 - [ ] **Bookmark System:**
   <!-- - [x] Bookmark screen with all saved duas, the collections each one is in, search, and the surah / hadith filter -->
@@ -822,7 +852,7 @@ Every search box in the app uses the same code, so they all behave the same way.
   - [ ] Auto-detect translation
 - [ ] **AI Chat Assistant:**
   - [x] Chat interface on Explore screen (UI done; replies are a placeholder)
-  <!-- - [ ] Conversation history (the chat is not saved by design) -->
+  - [ ] Conversation history (the chat is not saved by design)
   - [ ] Suggested prompts
   - [ ] Dua recommendations
   - [ ] Islamic Q&A
@@ -839,10 +869,10 @@ Every search box in the app uses the same code, so they all behave the same way.
   - [ ] Filter and browse options
 
 ### Enhanced Features
-<!-- - [ ] **Audio Integration:**
+- [ ] **Audio Integration:**
   - [ ] Audio player for duas
   - [ ] Upload custom audio
-  - [ ] Audio file hosting -->
+  - [ ] Audio file hosting
 <!-- - [ ] **Word-by-Word Translation:**
   - [ ] Tap-to-reveal word meanings
   - [ ] Root word analysis
@@ -860,10 +890,11 @@ Every search box in the app uses the same code, so they all behave the same way.
   - [ ] App watermark
   - [ ] Save as image
   - [ ] Share to social media
-- [ ] **PDF Export:**
-  - [ ] Export entire collections
-  - [ ] Customizable content (full commentary vs. basic)
-  - [ ] Print-ready formatting
+- [x] **PDF Export:**
+  - [x] Export entire collections (pre-made and the user's own)
+  - [x] Customizable content (cover page, translation, transliteration, source, notes, times to recite, one dua per page)
+  - [x] Print-ready formatting (A4, page numbers, app logo and name on every page)
+  - [ ] Check the layout on real iOS and Android devices (see [PDF export](#pdf-export))
 
 ### Special Features & Optimization
 - [ ] **Month Mode System:**
@@ -877,8 +908,8 @@ Every search box in the app uses the same code, so they all behave the same way.
   - [ ] Custom notification schedules
   - [ ] Push notification integration
 - [ ] **Additional Tools:**
-  - [x] 99 Names of Allah reference
-  <!-- - [ ] Plain tasbih counter on Explore -->
+  - [ ] 99 Names of Allah reference
+  - [ ] Plain tasbih counter on Explore
   - [ ] My Dua List/Notes (personal notepad)
   - [ ] Habits and Life tracker
 - [ ] **Multi-Language Support:**
@@ -892,11 +923,11 @@ Every search box in the app uses the same code, so they all behave the same way.
   - [ ] Background sync
 
 ### Future Considerations
-<!-- - [ ] Memorization quiz mode -->
+- [ ] Memorization quiz mode
 - [ ] Community features (share collections publicly)
-<!-- - [ ] Offline audio downloads -->
+- [ ] Offline audio downloads
 - [ ] Widget support (daily dua on home screen)
-<!-- - [ ] Apple Watch / Wear OS companion app -->
+- [ ] Apple Watch / Wear OS companion app
 - [ ] Family sharing features
 - [ ] Share duas with friends (the first time a dua is shared with someone, the app asks if they should be added as a friend)
 - [ ] Prayer time integration (optional)
