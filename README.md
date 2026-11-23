@@ -106,7 +106,7 @@ Users can currently:
 
 - Header with a back arrow, the collection name, a count such as "11 duas", a search icon and a filter icon.
 - One numbered row per dua with its title and source line.
-- **Export as PDF** (an **Export** section at the bottom of the same menu, under Appearance) opens a dialog where you choose what goes in the PDF: cover page, translation, transliteration, source, notes and "Times to recite", and whether every dua gets its own page. The PDF is made on the phone (no backend), named after the collection, and opened in the share sheet to save, send or print. See [PDF export](README_COMPREHENSIVE.md#pdf-export).
+- **Export as PDF** (an **Export** section at the bottom of the same menu, under Appearance) opens a dialog where you choose what goes in the PDF: cover page, translation, transliteration, source, notes and "Times to recite", and whether every dua gets its own page. The PDF is made on the device (no backend), named after the collection in lowercase with hyphens (`quranic-duas.pdf`), and opened in the share sheet to save, send or print. On web it opens the browser's print dialog, where **Save as PDF** saves it. See [PDF export](README_COMPREHENSIVE.md#pdf-export).
 - **Search** opens under the header and finds duas by title, transliteration, Arabic, translation, or surah and hadith name. It ignores Arabic diacritics, apostrophes and hyphens, so "ali imran" finds "Ali 'Imran".
 - **Filter** (the filter icon menu) has one section for what is found in this collection: Filter (with Surah and Hadith groups) when there are both, or just Surah or Hadith when there is only one. Pick one, and tap it again to clear it. The section has a maximum height and scrolls when the list is long. A gold dot shows a filter is on.
 
@@ -229,7 +229,7 @@ Then press `i` (iOS simulator), `a` (Android emulator) or scan the QR code with 
 - [ ] Image upload (OCR) to add a dua
 - [ ] Audio recitations (the Dua screen's audio button was replaced by **Save to collection**; the audio button comes back when recitations exist)
 - [ ] Reminders and Ramadan mode
-- [x] PDF export of a collection
+- [x] PDF export of a collection (still to check on a real iOS and Android device, see [PDF export](README_COMPREHENSIVE.md#pdf-export))
 - [ ] Share cards
 - [ ] Backend and cloud sync
 

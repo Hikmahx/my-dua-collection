@@ -273,12 +273,10 @@ export const en = {
   'export.emptyBody': 'This collection has no duas yet.',
   'export.errorTitle': "Couldn't create the PDF",
   'export.errorBody': 'Something went wrong while making the PDF. Please try again.',
-  'export.unsupportedBody': 'Exporting a PDF is available in the mobile app.',
   'export.sharingUnavailableBody': 'Sharing is not available on this device.',
   'export.pdfNotes': 'Notes',
   'export.pdfContinued': 'continued',
   'export.pdfUntitled': 'Untitled dua',
-  'export.pdfExported': 'Exported {date}',
   'export.pdfRecite': ({ count }: { count: number }) => `Recite ${count} ${count === 1 ? 'time' : 'times'}`,
 } as const
 

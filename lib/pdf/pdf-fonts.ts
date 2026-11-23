@@ -8,6 +8,7 @@ import {
 } from '@expo-google-fonts/nunito-sans'
 import { Asset } from 'expo-asset'
 import * as FileSystem from 'expo-file-system/legacy'
+import { Platform } from 'react-native'
 
 /**
  * The PDF is made from HTML, and the HTML has to carry its fonts: the web view that prints it knows nothing
@@ -16,12 +17,24 @@ import * as FileSystem from 'expo-file-system/legacy'
  */
 const cache = new Map<number, Promise<string>>()
 
+/** In a browser the font is a URL: it is fetched and turned into base64 (there are no files to read). */
+async function readUrlAsBase64(url: string): Promise<string> {
+  const blob = await (await fetch(url)).blob()
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onloadend = () => resolve(String(reader.result).split(',')[1] ?? '')
+    reader.onerror = () => reject(reader.error)
+    reader.readAsDataURL(blob)
+  })
+}
+
 function readFontAsBase64(module: number): Promise<string> {
   const cached = cache.get(module)
   if (cached) return cached
 
   const loading = (async () => {
     const asset = Asset.fromModule(module)
+    if (Platform.OS === 'web') return readUrlAsBase64(asset.uri)
     if (!asset.localUri) await asset.downloadAsync()
     const uri = asset.localUri ?? asset.uri
     return FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 })

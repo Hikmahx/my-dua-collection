@@ -42,8 +42,8 @@ export interface CollectionPdfInput {
   /** Size of one layout unit in CSS px: PDF_UNIT_IOS or PDF_UNIT_ANDROID. */
   unit: number
   t: TFunction
-  /** Date shown on the cover. */
-  now?: Date
+  /** Also set the page size in the CSS. Needed in a browser, whose print dialog may default to Letter. */
+  cssPageSize?: boolean
 }
 
 // How much room each kind of text takes (used to fill the pages, see pdf-layout.ts)
@@ -58,26 +58,9 @@ const NOTES_BOX_EXTRA = 24 + 18 // top and bottom padding + the space under the 
 const ARABIC_STACK = "'MDC Arabic', 'Geeza Pro', 'Noto Naskh Arabic', serif"
 const LATIN_STACK = "'MDC Nunito', -apple-system, 'Helvetica Neue', Roboto, Arial, sans-serif"
 
-const MONTHS = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-]
-
 export function escapeHtml(text: string): string {
   return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 }
-
-const formatDate = (date: Date) => `${date.getDate()} ${MONTHS[date.getMonth()]} ${date.getFullYear()}`
 
 /** The beads logo as a CSS image, so its outline is in the document once however many pages use it. */
 const logoImage = () => {
@@ -90,7 +73,7 @@ const logoImage = () => {
 const fontFace = (family: string, base64: string, weight: number, style = 'normal') =>
   `@font-face{font-family:'${family}';src:url(data:font/ttf;base64,${base64}) format('truetype');font-weight:${weight};font-style:${style}}`
 
-function buildStyles({ fonts, unit }: Pick<CollectionPdfInput, 'fonts' | 'unit'>): string {
+function buildStyles({ fonts, unit, cssPageSize }: Pick<CollectionPdfInput, 'fonts' | 'unit' | 'cssPageSize'>): string {
   const c = PDF_COLORS
   return `
 ${fontFace('MDC Berkshire', fonts.berkshire, 400)}
@@ -100,7 +83,7 @@ ${fontFace('MDC Nunito', fonts.nunitoBoldItalic, 700, 'italic')}
 ${fontFace('MDC Arabic', fonts.arabic, 400)}
 :root{--u:${unit}px}
 *{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-@page{margin:0}
+@page{${cssPageSize ? `size:${PDF_PAGE.width}pt ${PDF_PAGE.height}pt;` : ''}margin:0}
 html,body{margin:0;padding:0;background:#fff}
 body{font-family:${LATIN_STACK};font-size:${u(12.5)};line-height:1.8;color:${c.body}}
 .page{position:relative;width:${u(PDF_PAGE.width)};height:${u(PAGE_BOX_HEIGHT)};page-break-after:always;break-after:page;background:#fff}
@@ -116,8 +99,8 @@ body{font-family:${LATIN_STACK};font-size:${u(12.5)};line-height:1.8;color:${c.b
 .cover-name{font-weight:700;font-size:${u(24)};line-height:1.3;color:${c.softGold};text-align:center;margin-top:${u(18)};max-width:${u(440)}}
 .cover-meta{font-size:${u(11)};letter-spacing:0.06em;color:${c.coverMuted};text-align:center;margin-top:${u(16)}}
 
-.label{font-weight:700;font-size:${u(10)};letter-spacing:0.14em;text-transform:uppercase;color:${c.gold};line-height:1.4;margin-bottom:${u(6)}}
 .title{font-family:'MDC Berkshire',Georgia,serif;font-weight:400;font-size:${u(TITLE.fontSize)};line-height:${TITLE.lineHeight};color:${c.teal};margin:0 0 ${u(10)} 0}
+.title .num{color:${c.gold}}
 .rule{width:${u(54)};height:${u(2.5)};background:${c.gold};border-radius:${u(2)};margin-bottom:${u(26)}}
 .cont{font-family:'MDC Berkshire',Georgia,serif;font-size:${u(15)};line-height:1.3;color:${c.teal};margin-bottom:${u(8)}}
 .cont-rule{width:${u(34)};height:${u(2)};background:${c.gold};margin-bottom:${u(18)}}
@@ -146,8 +129,8 @@ body{font-family:${LATIN_STACK};font-size:${u(12.5)};line-height:1.8;color:${c.b
 
 // ---- cover page -------------------------------------------------------------------------------
 
-function buildCover({ collectionName, duas, t, now = new Date() }: CollectionPdfInput): string {
-  const meta = `${t('collection.duaCount', { count: duas.length })} · ${t('export.pdfExported', { date: formatDate(now) })}`
+function buildCover({ collectionName, duas, t }: CollectionPdfInput): string {
+  const meta = t('collection.duaCount', { count: duas.length })
   return `<section class="page cover">
 <div class="cover-art">${COVER_ART_SVG}</div>
 <div class="cover-body">
@@ -199,16 +182,19 @@ function buildNoteBlocks(info: string, t: TFunction): Block[] {
   return [label, ...blocks]
 }
 
-function buildDuaUnit(dua: Dua, index: number, total: number, input: CollectionPdfInput): DuaUnit {
-  const { collectionName, options, translationLanguage, t } = input
+function buildDuaUnit(dua: Dua, index: number, input: CollectionPdfInput): DuaUnit {
+  const { options, translationLanguage, t } = input
   const title = dua.title.trim() || t('export.pdfUntitled')
 
-  // heading: "COLLECTION · 3 / 12", the title (Berkshire Swash, deep teal) and a short gold rule
-  const titleLines = Math.max(1, Math.ceil(title.length / Math.floor(CONTENT_WIDTH / (TITLE.fontSize * TITLE.charWidth))))
+  // heading: the number (gold) and the title (Berkshire Swash, deep teal), and a short gold rule
+  const number = `${index + 1}.`
+  const titleLines = Math.max(
+    1,
+    Math.ceil((number.length + 1 + title.length) / Math.floor(CONTENT_WIDTH / (TITLE.fontSize * TITLE.charWidth))),
+  )
   const header = fixedBlock(
-    `<div class="label">${escapeHtml(collectionName)} · ${index + 1} / ${total}</div>` +
-      `<h2 class="title">${escapeHtml(title)}</h2><div class="rule"></div>`,
-    10 * 1.4 + 6 + titleLines * TITLE.fontSize * TITLE.lineHeight + 10 + 2.5 + 26,
+    `<h2 class="title"><span class="num">${number}</span> ${escapeHtml(title)}</h2><div class="rule"></div>`,
+    titleLines * TITLE.fontSize * TITLE.lineHeight + 10 + 2.5 + 26,
   )
   const continuation = fixedBlock(
     `<div class="cont">${escapeHtml(title)} · ${escapeHtml(t('export.pdfContinued'))}</div><div class="cont-rule"></div>`,
@@ -306,7 +292,7 @@ function renderPage(page: PageContent, pageNumber: number): string {
  */
 export function buildCollectionPdfHtml(input: CollectionPdfInput): string {
   const { duas, options } = input
-  const units = duas.map((dua, index) => buildDuaUnit(dua, index, duas.length, input))
+  const units = duas.map((dua, index) => buildDuaUnit(dua, index, input))
   const pages = paginate(units, options.onePerPage)
 
   const body = [

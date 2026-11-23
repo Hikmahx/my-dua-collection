@@ -1,6 +1,13 @@
 import type { ArabicFontId } from '@/constants/arabic-fonts'
 import { buildCollectionPdfHtml } from '@/lib/pdf/collection-pdf-html'
-import { PDF_PAGE, PDF_UNIT_ANDROID, PDF_UNIT_IOS, pdfFileName, type PdfExportOptions } from '@/lib/pdf/pdf-config'
+import {
+  PDF_PAGE,
+  PDF_UNIT_ANDROID,
+  PDF_UNIT_BROWSER,
+  PDF_UNIT_IOS,
+  pdfFileName,
+  type PdfExportOptions,
+} from '@/lib/pdf/pdf-config'
 import { loadPdfFonts } from '@/lib/pdf/pdf-fonts'
 import type { TFunction } from '@/locales'
 import type { Dua } from '@/redux/reducers/duasSlice'
@@ -10,7 +17,7 @@ import * as Sharing from 'expo-sharing'
 import { Platform } from 'react-native'
 
 /** Why an export could not be done, so the screen can say something fitting. */
-export type PdfExportErrorCode = 'unsupported' | 'sharing-unavailable' | 'failed'
+export type PdfExportErrorCode = 'sharing-unavailable' | 'failed'
 
 export class PdfExportError extends Error {
   constructor(
@@ -40,8 +47,8 @@ export interface CreateCollectionPdfParams {
 export async function createCollectionPdf(params: CreateCollectionPdfParams): Promise<string> {
   const { collectionName, duas, options, translationLanguage, arabicFont, t } = params
 
-  // expo-print cannot write a file in the browser
-  if (Platform.OS === 'web') throw new PdfExportError('unsupported')
+  // in a browser there is no file to make: use printCollectionPdfInBrowser
+  if (Platform.OS === 'web') throw new PdfExportError('failed')
 
   try {
     const fonts = await loadPdfFonts(arabicFont)
@@ -83,6 +90,68 @@ export async function shareCollectionPdf(fileUri: string, t: TFunction): Promise
       UTI: 'com.adobe.pdf',
       dialogTitle: t('export.shareTitle'),
     })
+  } catch (error) {
+    throw new PdfExportError('failed', error)
+  }
+}
+
+/**
+ * Prints an HTML document from a hidden frame, so the browser's print dialog (Save as PDF, or a printer) shows the
+ * PDF pages and not the app. The page title is the suggested file name.
+ */
+function printHtmlInBrowser(html: string, fileName: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const frame = document.createElement('iframe')
+    frame.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden'
+    const previousTitle = document.title
+    let finished = false
+
+    const finish = (error?: unknown) => {
+      if (finished) return
+      finished = true
+      document.title = previousTitle
+      frame.remove()
+      if (error) reject(error)
+      else resolve()
+    }
+
+    frame.onload = async () => {
+      try {
+        const win = frame.contentWindow
+        if (!win) throw new Error('No print frame')
+        // the fonts are in the document as data, but need a moment to be ready
+        await win.document.fonts?.ready
+        win.addEventListener('afterprint', () => finish())
+        document.title = fileName
+        win.focus()
+        win.print() // blocks until the dialog is closed
+        // some browsers do not report afterprint: do not keep the frame forever
+        setTimeout(() => finish(), 2000)
+      } catch (error) {
+        finish(error)
+      }
+    }
+    frame.srcdoc = html
+    document.body.appendChild(frame)
+  })
+}
+
+/** Web: opens the browser's print dialog with the PDF pages, where "Save as PDF" saves the file. */
+export async function printCollectionPdfInBrowser(params: CreateCollectionPdfParams): Promise<void> {
+  const { collectionName, duas, options, translationLanguage, arabicFont, t } = params
+  try {
+    const fonts = await loadPdfFonts(arabicFont)
+    const html = buildCollectionPdfHtml({
+      collectionName,
+      duas,
+      options,
+      translationLanguage,
+      fonts,
+      unit: PDF_UNIT_BROWSER,
+      cssPageSize: true,
+      t,
+    })
+    await printHtmlInBrowser(html, pdfFileName(collectionName))
   } catch (error) {
     throw new PdfExportError('failed', error)
   }

@@ -555,7 +555,7 @@ Every search box in the app uses the same code, so they all behave the same way.
 
 | Switch | Effect |
 | --- | --- |
-| Cover page | A first page in the style of the splash screen: the beads logo, **My Dua Collection** (Berkshire Swash), the collection name (Nunito Sans) and the number of duas with the date |
+| Cover page | A first page in the style of the splash screen: the beads logo, **My Dua Collection** (Berkshire Swash), the collection name (Nunito Sans) and the number of duas ("5 Duas") |
 | Translation | The translation in the language chosen in Settings (English when a dua has none in that language) |
 | Transliteration | The transliteration line |
 | Source & reference | e.g. `Al-Anbiya · 21:87` or `Hadith · Qudsi 234` |
@@ -563,9 +563,11 @@ Every search box in the app uses the same code, so they all behave the same way.
 | Times to recite | "Recite 3 times", for duas recited more than once |
 | One dua per page | On: every dua starts a page (like the Salah Resources PDF). Off: short duas share a page; a dua is never cut in two if it fits on one page |
 
-The Arabic text is always included, in the **Arabic font chosen in Settings**. **Export PDF** makes the file, closes the dialog, and opens the share sheet (save to Files, send, print). The file is named after the collection (`Quranic Duas.pdf`).
+The Arabic text is always included, in the **Arabic font chosen in Settings**. **Export PDF** makes the file, closes the dialog, and opens the share sheet (save to Files, send, print). The file is named after the collection, in lowercase with hyphens (`quranic-duas.pdf`). To add the date (`quranic-duas-22-11-2026.pdf`), set `INCLUDE_DATE_IN_PDF_FILE_NAME` to `true` in `lib/pdf/pdf-config.ts`.
 
-**Look of the PDF:** A4, white pages. Each dua has a small gold label (`COLLECTION · 3 / 12`), its title in **Berkshire Swash in deep teal** (`#013241`) with a short gold rule, then the Arabic, the transliteration (bold italic), the translation, the source line (grey) and the notes box. Every page has the beads logo and **My Dua Collection** (Berkshire Swash) at the bottom left and the page number at the bottom right. A dua longer than a page continues on the next page under a short "continued" heading.
+**On web** the browser's print dialog opens with the PDF pages (a hidden frame, so the app itself is not printed); choose **Save as PDF** there. The page title is the suggested file name. (`expo-print`'s own web support just prints the current page, so the app prints the frame itself.)
+
+**Look of the PDF:** A4, white pages. Each dua has its number (gold) and its title in **Berkshire Swash in deep teal** (`#013241`), with a short gold rule under them, then the Arabic, the transliteration (bold italic), the translation, the source line (grey) and the notes box. Every page has the beads logo and **My Dua Collection** (Berkshire Swash) at the bottom left and the page number at the bottom right. A dua longer than a page continues on the next page under a short "continued" heading.
 
 **How it works (no backend):** the PDF is made on the device.
 1. `lib/pdf/pdf-fonts.ts` reads the font files as base64 (the web view that prints knows nothing about the app's fonts, so they are written into the HTML as `@font-face`).
@@ -577,7 +579,7 @@ Files: `components/export/export-collection-modal.tsx` (the dialog), `lib/pdf/` 
 **Good to know:**
 - Arabic needs a real text engine, so the PDF is made from HTML (the phone's own web view shapes the Arabic). A library that draws text itself (`pdf-lib`) would show disconnected letters.
 - expo-print lays the page out at 72 px per inch on iOS and 96 on Android, so every length in the PDF is `n` units times `--u`, set per platform in `lib/pdf/pdf-config.ts` (`PDF_UNIT_IOS`, `PDF_UNIT_ANDROID`). If a platform shows the content too small or too large on the page, change that one number.
-- It works in Expo Go and in development builds. It is not available in the browser (the dialog says so).
+- It works in Expo Go, in development builds and on web (see above).
 - To change what the PDF looks like, edit `buildStyles` in `lib/pdf/collection-pdf-html.ts`. To add a switch: add it to `PdfExportOptions` and `DEFAULT_PDF_OPTIONS` (`pdf-config.ts`), the text keys in `locales/en.ts`, the `OPTION_ROWS` list in the dialog, and use it in `buildDuaUnit`.
 
 ### Project Structure and Naming

@@ -8,6 +8,7 @@ import { useT } from '@/hooks/use-t'
 import {
   createCollectionPdf,
   PdfExportError,
+  printCollectionPdfInBrowser,
   shareCollectionPdf,
 } from '@/lib/pdf/export-collection-pdf'
 import { DEFAULT_PDF_OPTIONS, type PdfExportOptions } from '@/lib/pdf/pdf-config'
@@ -16,7 +17,7 @@ import type { TranslationKey } from '@/locales'
 import type { Dua } from '@/redux/reducers/duasSlice'
 import type { RootState } from '@/redux/store'
 import { useState } from 'react'
-import { Alert, Text, View } from 'react-native'
+import { Alert, Platform, Text, View } from 'react-native'
 import { useSelector } from 'react-redux'
 
 interface ExportCollectionModalProps {
@@ -39,9 +40,9 @@ const OPTION_ROWS: readonly OptionRow[] = [
   { key: 'translation', label: 'export.translation', hint: 'export.translationHint' },
   { key: 'transliteration', label: 'export.transliteration', hint: 'export.transliterationHint' },
   { key: 'source', label: 'export.source', hint: 'export.sourceHint' },
-  { key: 'notes', label: 'export.notes', hint: 'export.notesHint' },
-  { key: 'repeat', label: 'export.repeat', hint: 'export.repeatHint' },
   { key: 'onePerPage', label: 'export.onePerPage', hint: 'export.onePerPageHint' },
+  { key: 'repeat', label: 'export.repeat', hint: 'export.repeatHint' },
+  { key: 'notes', label: 'export.notes', hint: 'export.notesHint' },
 ]
 
 /** Lets the share sheet open after this dialog has finished closing (two native modals cannot overlap on iOS). */
@@ -79,7 +80,6 @@ export function ExportCollectionModal({ visible, collectionName, duas, onClose }
 
   const errorMessage = (caught: unknown) => {
     const code = caught instanceof PdfExportError ? caught.code : 'failed'
-    if (code === 'unsupported') return t('export.unsupportedBody')
     if (code === 'sharing-unavailable') return t('export.sharingUnavailableBody')
     return t('export.errorBody')
   }
@@ -93,16 +93,24 @@ export function ExportCollectionModal({ visible, collectionName, duas, onClose }
 
     setBusy(true)
     setError(null)
+    const params = { collectionName, duas, options, translationLanguage, arabicFont: arabicFont.id, t }
+
+    // Web: the browser's print dialog does the rest ("Save as PDF")
+    if (Platform.OS === 'web') {
+      try {
+        await printCollectionPdfInBrowser(params)
+        onClose()
+      } catch (caught) {
+        console.warn(caught)
+        setError(errorMessage(caught))
+      }
+      setBusy(false)
+      return
+    }
+
     let fileUri: string
     try {
-      fileUri = await createCollectionPdf({
-        collectionName,
-        duas,
-        options,
-        translationLanguage,
-        arabicFont: arabicFont.id,
-        t,
-      })
+      fileUri = await createCollectionPdf(params)
     } catch (caught) {
       console.warn(caught)
       setError(errorMessage(caught))

@@ -65,15 +65,28 @@ export const PDF_COLORS = {
   noteBackground: themeColors.pillBg,
 } as const
 
-/** Turns a collection name into a safe file name: no slashes or other characters files can't have. */
-export function pdfFileName(collectionName: string, fallback = 'My Dua Collection'): string {
-  const cleaned = collectionName
+/** Browsers lay the page out at 96 px per inch too, like Android. */
+export const PDF_UNIT_BROWSER = PDF_UNIT_ANDROID
+
+/** Put the export date at the end of the file name (`quranic-duas-22-11-2026.pdf`)? */
+export const INCLUDE_DATE_IN_PDF_FILE_NAME = false
+
+/**
+ * Turns a collection name into the file name of its PDF: lowercase, words joined with "-", and no characters a
+ * file name can't have. "Quranic Duas" becomes "quranic-duas" (without the ".pdf").
+ */
+export function pdfFileName(collectionName: string, date: Date = new Date(), fallback = 'my-dua-collection'): string {
+  const slug = collectionName
+    .toLowerCase()
     .replace(/[\\/:*?"<>|\u0000-\u001f]/g, ' ')
-    .replace(/\s+/g, ' ')
     .trim()
-    .replace(/^\.+|\.+$/g, '')
-    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^[-.]+|[-.]+$/g, '')
     .slice(0, 80)
-    .trim()
-  return cleaned || fallback
+    .replace(/-+$/, '')
+  const name = slug || fallback
+  if (!INCLUDE_DATE_IN_PDF_FILE_NAME) return name
+  const two = (n: number) => String(n).padStart(2, '0')
+  return `${name}-${two(date.getDate())}-${two(date.getMonth() + 1)}-${date.getFullYear()}`
 }
