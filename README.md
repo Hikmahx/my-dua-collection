@@ -91,7 +91,7 @@ Users can currently:
   <img src="public/readme/add-dua.png" width="260" alt="Choose how to add a dua: upload an image, AI generated or manual" />
 </p>
 
-- The "+" button offers three ways to add a dua: Upload Image, AI generated Dua and Manual. Only **Manual** works for now.
+- The "+" button offers three ways to add a dua: Upload Image, AI generated Dua and Manual. **Upload Image** (camera or gallery) and **AI generated Dua** have their screens and fill in the Manual form like an autofill, with an "Auto-filled" tag on each field and an "Are you sure?" before the source they filled in is changed. The text reading and the AI itself need the backend, so until `EXPO_PUBLIC_API_URL` is set they return a sample dua. See [Adding Duas](README_COMPREHENSIVE.md#adding-duas).
 - The form takes a title, the Arabic text, a translation, the collections it belongs to (yours only, at least one), and an optional source and reference.
 - The reference is checked: Quran references look like `21:87` or `11:39-42` and the surah number must be 114 or less.
 - Saved duas are stored on the device and the collection counts update straight away.
@@ -193,6 +193,7 @@ npx expo start
 
 Then press `i` (iOS simulator), `a` (Android emulator) or scan the QR code with Expo Go.
 
+- Adding a dua from a picture uses `expo-image-picker` and `expo-image-manipulator`, and the camera permission text is set in `app.json`. After pulling this change, run `npm install` and rebuild a development build (`npx expo run:android` / `run:ios`) so the permission is in the app; Expo Go already has it. To try the real backend, put `EXPO_PUBLIC_API_URL=https://your-backend` in `.env` and restart Metro.
 - PDF export uses `expo-print`, `expo-sharing`, `expo-file-system` and `expo-asset`. They are in `package.json`, so `npm install` is enough; if you add them to another project, use `npx expo install expo-print expo-sharing expo-file-system expo-asset`.
 - After changing `metro.config.js` or adding a dependency, restart with `npx expo start -c` to clear the cache.
 - The native splash color is set in `app.json`, so a change to it needs a development build (`npx expo prebuild`), not Expo Go.
@@ -212,6 +213,7 @@ Then press `i` (iOS simulator), `a` (Android emulator) or scan the QR code with 
 - [AsyncStorage](https://react-native-async-storage.github.io/async-storage/) - Offline storage
 - [Expo Haptics](https://docs.expo.dev/versions/latest/sdk/haptics/) and [Expo Audio](https://docs.expo.dev/versions/latest/sdk/audio/) - Tasbih feedback
 - [Google Fonts](https://fonts.google.com/) - Nunito Sans, Berkshire Swash and the Arabic fonts
+- [Expo Image Picker](https://docs.expo.dev/versions/latest/sdk/imagepicker/) and [Expo Image Manipulator](https://docs.expo.dev/versions/latest/sdk/imagemanipulator/) - picture of a dua (camera or gallery)
 - [Expo Print](https://docs.expo.dev/versions/latest/sdk/print/), [Expo Sharing](https://docs.expo.dev/versions/latest/sdk/sharing/), [Expo File System](https://docs.expo.dev/versions/latest/sdk/filesystem/) and [Expo Asset](https://docs.expo.dev/versions/latest/sdk/asset/) - PDF export of a collection
 - [Figma](https://www.figma.com) - UI design
 
@@ -226,7 +228,8 @@ Then press `i` (iOS simulator), `a` (Android emulator) or scan the QR code with 
 - [ ] Settings screen
 - [ ] Explore topic screens and a universal search
 - [ ] AI chat assistant
-- [ ] Image upload (OCR) to add a dua
+- [x] Image upload and AI generated dua screens (the text reading, the AI and the source check need the backend)
+- [ ] Backend for OCR, AI generation and source verification
 - [ ] Audio recitations (the Dua screen's audio button was replaced by **Save to collection**; the audio button comes back when recitations exist)
 - [ ] Reminders and Ramadan mode
 - [x] PDF export of a collection (still to check on a real iOS and Android device, see [PDF export](README_COMPREHENSIVE.md#pdf-export))

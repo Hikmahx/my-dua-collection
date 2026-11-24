@@ -1,6 +1,9 @@
+import { AiDuaStep } from '@/components/add-dua/ai-dua-step'
+import { AutofillBanner } from '@/components/add-dua/autofill-banner'
 import { CollectionField } from '@/components/add-dua/collection-field'
 import { ExistingDuaPicker } from '@/components/add-dua/existing-dua-picker'
 import { FormField, FormInput } from '@/components/add-dua/form-field'
+import { ImageDuaStep } from '@/components/add-dua/image-dua-step'
 import { AddDuaOptionRow } from '@/components/ui/add-dua-option-row'
 import { Dropdown } from '@/components/ui/dropdown'
 import { useAddDuaColors } from '@/hooks/use-add-dua-colors'
@@ -13,6 +16,8 @@ import {
   REFERENCE_PLACEHOLDERS,
   SOURCE_LABELS,
 } from '@/lib/dua-utils'
+import type { DraftOrigin, DuaDraft } from '@/lib/dua-draft'
+import { plainTextToInfo } from '@/lib/rich-text'
 import tw from '@/lib/tailwind'
 import type { Dua, DuaSource } from '@/redux/reducers/duasSlice'
 import type { AppDispatch, RootState } from '@/redux/store'
@@ -35,6 +40,7 @@ import {
   Pressable,
   ScrollView,
   Text,
+  TextInput,
   View,
 } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
@@ -43,6 +49,9 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window')
 
 /** Manual form: a dua that is not in the app yet, or duas that already are. */
 type DuaMode = 'new' | 'existing'
+
+/** The fields of the form that an image scan or the AI can fill in. */
+type AutofillField = 'title' | 'arabicText' | 'transliteration' | 'translation' | 'source' | 'reference' | 'notes'
 
 export default function AddDuaModal() {
   const c = useAddDuaColors()
@@ -70,6 +79,16 @@ export default function AddDuaModal() {
   const [translation, setTranslation] = useState('')
   const [source, setSource] = useState<DuaSource | null>(null)
   const [reference, setReference] = useState('')
+  const [notes, setNotes] = useState('')
+  // Image and AI fill in this same form (like an autofill) and are saved as a dua with that origin
+  const [draftOrigin, setDraftOrigin] = useState<DraftOrigin | null>(null)
+  // The fields that still hold what the image or the AI put there. A field leaves the set once the user edits it
+  const [autofilled, setAutofilled] = useState<ReadonlySet<AutofillField>>(new Set())
+  // The source and reference that came from the image or the AI stay locked until the user confirms a change
+  const [sourceLocked, setSourceLocked] = useState(false)
+  const referenceInput = useRef<TextInput>(null)
+  // What was asked on the AI screen (kept so "Back" from the filled-in form finds it again)
+  const [aiPrompt, setAiPrompt] = useState('')
   const [selectedMethod, setSelectedMethod] = useState<
     'upload' | 'ai' | 'manual' | null
   >(null)
@@ -77,10 +96,18 @@ export default function AddDuaModal() {
 const sheetHeight = useRef(new Animated.Value(SCREEN_HEIGHT * 0.5)).current
 
 useEffect(() => {
+  const fraction =
+    selectedMethod === 'manual'
+      ? duaMode === 'existing'
+        ? 0.86
+        : 0.8
+      : selectedMethod === 'ai'
+        ? 0.72
+        : selectedMethod === 'upload'
+          ? 0.62
+          : 0.4
   Animated.timing(sheetHeight, {
-    toValue:
-      SCREEN_HEIGHT *
-      (duaMode === 'existing' ? 0.86 : selectedMethod === 'manual' ? 0.8 : 0.4),
+    toValue: SCREEN_HEIGHT * fraction,
     duration: 300,
     easing: Easing.out(Easing.ease),
     useNativeDriver: false,
@@ -98,11 +125,111 @@ useEffect(() => {
     setExistingDuaIds((current) => (current.includes(existing.id) ? current : [...current, existing.id]))
   })
 
-  // Tap the selected source again to clear it (and its reference)
-  const toggleSource = useCallback((value: DuaSource) => {
-    setSource((current) => (current === value ? null : value))
-    setReference('')
+  /** The user changed a field: it no longer holds what the image or the AI put there. */
+  const clearAutofill = useCallback((...fields: AutofillField[]) => {
+    setAutofilled((current) => {
+      if (!fields.some((field) => current.has(field))) return current
+      const next = new Set(current)
+      fields.forEach((field) => next.delete(field))
+      return next
+    })
   }, [])
+
+  /** The user types in a field: set it, and it is no longer "auto-filled". */
+  const editField = (field: AutofillField, setter: (value: string) => void) => (value: string) => {
+    setter(value)
+    clearAutofill(field)
+  }
+
+  /** Fills the form with what the image scan or the AI returned. Both end up in this same form to be checked and edited. */
+  const applyDraft = (draft: DuaDraft, origin: DraftOrigin) => {
+    setTitle(draft.title)
+    setArabicText(draft.arabicText)
+    setTransliteration(draft.transliteration ?? '')
+    setTranslation(draft.translation)
+    setSource(draft.source ?? null)
+    setReference(draft.reference ?? '')
+    setNotes(draft.notes ?? '')
+
+    const filled = new Set<AutofillField>()
+    if (draft.title) filled.add('title')
+    filled.add('arabicText')
+    if (draft.transliteration) filled.add('transliteration')
+    if (draft.translation) filled.add('translation')
+    if (draft.source) filled.add('source')
+    if (draft.reference) filled.add('reference')
+    if (draft.notes) filled.add('notes')
+
+    setAutofilled(filled)
+    setSourceLocked(!!draft.source)
+    setDraftOrigin(origin)
+    setDuaMode('new')
+    setSelectedMethod('manual')
+  }
+
+  /** Empties the form and forgets where it came from (leaving the image or AI screen for the method list). */
+  const resetForm = () => {
+    setTitle('')
+    setArabicText('')
+    setTransliteration('')
+    setTranslation('')
+    setSource(null)
+    setReference('')
+    setNotes('')
+    setAiPrompt('')
+    setDraftOrigin(null)
+    setAutofilled(new Set())
+    setSourceLocked(false)
+  }
+
+  // Back: from a filled-in form to the image or AI screen it came from, otherwise to the list of methods
+  const goBack = () => {
+    if (selectedMethod === 'manual' && draftOrigin) {
+      setSelectedMethod(draftOrigin === 'image' ? 'upload' : 'ai')
+      return
+    }
+    if (draftOrigin) resetForm()
+    setSelectedMethod(null)
+  }
+
+  /**
+   * The source and reference of an image or AI dua are locked: changing them asks "are you sure?" once, and after
+   * "Yes" they are the user's own. (A source check on the backend is planned, see the README's To do.)
+   */
+  const confirmSourceChange = (change: () => void) => {
+    if (!sourceLocked) {
+      change()
+      return
+    }
+    Alert.alert(
+      t('addDua.sourceLock.title'),
+      t(draftOrigin === 'ai' ? 'addDua.sourceLock.aiBody' : 'addDua.sourceLock.imageBody'),
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        {
+          text: t('addDua.sourceLock.change'),
+          style: 'destructive',
+          onPress: () => {
+            setSourceLocked(false)
+            clearAutofill('source', 'reference')
+            change()
+          },
+        },
+      ],
+    )
+  }
+
+  // Tap the selected source again to clear it (and its reference)
+  const toggleSource = useCallback(
+    (value: DuaSource) =>
+      confirmSourceChange(() => {
+        setSource((current) => (current === value ? null : value))
+        setReference('')
+        clearAutofill('source', 'reference')
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [sourceLocked, draftOrigin, clearAutofill, t],
+  )
 
   /** The collections to save into, or null (with a message shown) when the form cannot be saved yet. */
   const requireCollections = (): ChosenCollections | null => {
@@ -138,10 +265,11 @@ useEffect(() => {
       translations: { [language]: translation.trim() },
       // The user's collections list their duas themselves (`duaIds`); `collection` is for pre-made ones
       collection: [],
-      origin: 'manual',
+      origin: draftOrigin ?? 'manual',
       isFavorite: false,
       ...(source && { source }),
       ...(source && reference.trim() && { reference: reference.trim() }),
+      ...(notes.trim() && { info: plainTextToInfo(notes) }),
     }
     finishSave(
       dispatch(createDuaInCollections(newDua, chosen.existingIds, chosen.newCollections)),
@@ -261,7 +389,7 @@ useEffect(() => {
           <View style={tw`px-6 pt-6`}>
             <View style={tw`flex-row items-center justify-between mb-6`}>
               <Pressable
-                onPress={() => setSelectedMethod(null)}
+                onPress={goBack}
                 style={({ pressed }) => [tw`flex-row items-center`, { opacity: pressed ? 0.7 : 1 }]}
               >
                 <Text style={tw`text-2xl mr-2 ${c.text}`}>‹</Text>
@@ -272,12 +400,17 @@ useEffect(() => {
               </Pressable>
             </View>
 
-            {selectedMethod !== 'manual' ? (
-              // Upload and AI: once the Arabic is extracted or generated, run
-              // duplicateGuard.checkBeforeSave(arabic, save) before saving, like the manual form
-              <View style={tw`py-8`}>
-                <Text style={tw`text-center ${c.muted}`}>{t('addDua.comingSoon')}</Text>
-              </View>
+            {selectedMethod === 'upload' ? (
+              // Image and AI hand a draft to the manual form (applyDraft), which then runs the same checks (the
+              // duplicate check included) and saves
+              <ImageDuaStep language={language} onDraft={(draft) => applyDraft(draft, 'image')} />
+            ) : selectedMethod === 'ai' ? (
+              <AiDuaStep
+                language={language}
+                prompt={aiPrompt}
+                onPromptChange={setAiPrompt}
+                onDraft={(draft) => applyDraft(draft, 'ai')}
+              />
             ) : (
               <>
                 <View style={tw`mb-5`}>
@@ -296,41 +429,43 @@ useEffect(() => {
                   <ExistingDuaPicker selectedIds={existingDuaIds} onToggle={toggleExistingDua} />
                 ) : (
                   <>
-                    <FormField label={t('addDua.titleLabel')}>
+                    {draftOrigin && <AutofillBanner origin={draftOrigin} />}
+
+                    <FormField label={t('addDua.titleLabel')} autofilled={autofilled.has('title')}>
                       <FormInput
                         placeholder={t('addDua.titlePlaceholder')}
                         value={title}
-                        onChangeText={setTitle}
+                        onChangeText={editField('title', setTitle)}
                       />
                     </FormField>
 
-                    <FormField label={t('addDua.arabicLabel')}>
+                    <FormField label={t('addDua.arabicLabel')} autofilled={autofilled.has('arabicText')}>
                       <FormInput
                         arabic
                         placeholder={t('addDua.arabicPlaceholder')}
                         value={arabicText}
-                        onChangeText={setArabicText}
+                        onChangeText={editField('arabicText', setArabicText)}
                         multiline
                         numberOfLines={4}
                       />
                     </FormField>
 
-                    <FormField label={t('addDua.transliterationLabel')}>
+                    <FormField label={t('addDua.transliterationLabel')} autofilled={autofilled.has('transliteration')}>
                       <FormInput
                         placeholder={t('addDua.transliterationPlaceholder')}
                         value={transliteration}
-                        onChangeText={setTransliteration}
+                        onChangeText={editField('transliteration', setTransliteration)}
                         multiline
                         numberOfLines={3}
                       />
                     </FormField>
 
                     {/* Translation (saved in the language chosen in Settings) */}
-                    <FormField label={t('addDua.translationLabel')}>
+                    <FormField label={t('addDua.translationLabel')} autofilled={autofilled.has('translation')}>
                       <FormInput
                         placeholder={t('addDua.translationPlaceholder')}
                         value={translation}
-                        onChangeText={setTranslation}
+                        onChangeText={editField('translation', setTranslation)}
                         multiline
                         numberOfLines={4}
                       />
@@ -343,7 +478,7 @@ useEffect(() => {
                 {duaMode === 'new' && (
                   <>
                     {/* Source (optional) */}
-                    <FormField label={t('addDua.source')}>
+                    <FormField label={t('addDua.source')} autofilled={autofilled.has('source')}>
                       <View style={tw`flex-row flex-wrap gap-2`}>
                         {(Object.keys(SOURCE_LABELS) as DuaSource[]).map((value) => (
                           <Pressable
@@ -364,13 +499,33 @@ useEffect(() => {
                       </View>
                     </FormField>
 
-                    {/* Reference (optional) - placeholder follows the selected source */}
-                    <FormField label={t('addDua.reference')} last>
+                    {/* Reference (optional) - placeholder follows the selected source. Locked like the source when it
+                        came from the image or the AI: tapping it asks first */}
+                    <FormField label={t('addDua.reference')} autofilled={autofilled.has('reference')}>
+                      <Pressable
+                        disabled={!sourceLocked}
+                        onPress={() => confirmSourceChange(() => setTimeout(() => referenceInput.current?.focus(), 80))}
+                      >
+                        <View pointerEvents={sourceLocked ? 'none' : 'auto'}>
+                          <FormInput
+                            inputRef={referenceInput}
+                            placeholder={source ? REFERENCE_PLACEHOLDERS[source] : t('addDua.chooseSource')}
+                            value={reference}
+                            onChangeText={editField('reference', setReference)}
+                            editable={source !== null && !sourceLocked}
+                          />
+                        </View>
+                      </Pressable>
+                    </FormField>
+
+                    {/* Notes (optional): background or context, saved as the dua's note */}
+                    <FormField label={t('addDua.notesLabel')} autofilled={autofilled.has('notes')} last>
                       <FormInput
-                        placeholder={source ? REFERENCE_PLACEHOLDERS[source] : t('addDua.chooseSource')}
-                        value={reference}
-                        onChangeText={setReference}
-                        editable={source !== null}
+                        placeholder={t('addDua.notesPlaceholder')}
+                        value={notes}
+                        onChangeText={editField('notes', setNotes)}
+                        multiline
+                        numberOfLines={3}
                       />
                     </FormField>
                   </>

@@ -360,15 +360,11 @@ Opened by the **+** in the Dua screen's bottom bar (`components/dua-screen/save-
 The "+" button on the home screen opens a modal with **three methods**:
 
 #### 1. Image Upload (OCR)
-**Flow:**
-- Choose between camera viewfinder or gallery upload
-- OCR processing indicator appears
-- Review scanned text screen:
-  - Editable Arabic text field
-  - Auto-detect translation (if possible)
-  - Add to collections (multi-select)
-  - Add notes/context field
-  - Save button
+**Flow** (`components/add-dua/image-dua-step.tsx`):
+- Choose between the camera (its own viewfinder) and the photo library (`expo-image-picker`; the camera asks for permission the first time, the library needs none). The picture is shrunk to 1600 px wide and saved as a JPEG before it is sent (`lib/pick-dua-image.ts`)
+- A progress overlay on the picture ("Reading the text...") while the text is read, with a **Cancel**. If nothing can be read, the user can **Try again** or pick **Another picture**
+- The result is a **draft** that fills in the manual form (see "Image and AI fill in the manual form" below), where the user reviews it: editable Arabic text, the translation if one was found, collections (multi-select), notes, and the Add Dua button
+- The scan is `scanDuaImage` in `lib/dua-draft.ts`. Without `EXPO_PUBLIC_API_URL` it is a **placeholder** that returns a sample dua; with it, it posts the picture to the backend (OCR runs there, so the Google Vision key never ships in the app). Backend contract: `POST /api/duas/scan` (multipart: `image`, `language`) answering `{ arabicText, title?, transliteration?, translation?, source?, reference?, notes? }`
 
 #### 2. Manual Entry
 **Form Fields:**
@@ -393,17 +389,21 @@ The "+" button on the home screen opens a modal with **three methods**:
 The check is `useDuplicateDuaGuard` (`hooks/use-duplicate-dua-guard.tsx`), shared by all three ways of adding: call `checkBeforeSave(arabicText, save)` right before saving. Manual uses it now. Image and AI must call it once their Arabic text has been extracted or generated, before saving
 
 #### 3. AI Assistant (Advanced Feature)
-**Flow:**
-- Text input field: "I need a dua for..."
-- Submit to AI
-- AI processes and suggests relevant duas
-- Result screen shows:
-  - Suggested dua(s)
-  - Arabic text
-  - Translation
-  - Sources/references
-  - "Refine suggestion" button
-  - "Save to collection" button (multi-select)
+**Flow** (`components/add-dua/ai-dua-step.tsx`):
+- A text box ("Describe the dua you are looking for"), with example chips (travelling, anxiety, parents, exams) that fill it in
+- A note that the AI can make mistakes, then **Generate dua**; "Writing your dua..." shows while it works, and an error message with the option to try again if it fails
+- The result is a **draft** that fills in the manual form (below), where the user reviews and saves it. To ask again, use **Back** (it returns to this screen with the text you asked for still there)
+- The AI call is `generateDua` in `lib/dua-draft.ts`: a **placeholder** without `EXPO_PUBLIC_API_URL`, otherwise `POST /api/duas/generate` with `{ prompt, language }`, answering the same shape as the scan
+
+#### Image and AI fill in the manual form
+Both methods end in the **same form as Manual**, filled in like an autofill (`applyDraft` in `app/modal.tsx`), so the title, Arabic, transliteration, translation, source, reference, notes, collections, validation, duplicate check and save are all the same code:
+- A banner at the top says the form was filled in from a picture, or written by the AI, and to check every field
+- Every filled field has an **Auto-filled** tag; the tag leaves a field as soon as the user edits it
+- The saved dua gets `origin: 'image'` or `origin: 'ai'`
+- **Source lock:** when the draft came with a source, the source chips and the reference are locked. Trying to change either asks **"Are you sure?"** once (the text says whether it was read from the picture or suggested by the AI); after **Yes, change it** the source and reference are the user's own and free to edit. A draft without a source is not locked
+- **Back** from the filled-in form returns to the image or AI screen it came from; Back from there empties the form and returns to the list of methods
+- Anything the backend sends is checked first (`parseDraft`): no Arabic means an error ("No Arabic text was found"), and a source that is not Quran or Hadith, or a reference in the wrong format, is dropped
+- The form has a **Notes (optional)** field for background or context; it is saved as the dua's `info`, one paragraph per line (`plainTextToInfo`)
 
 ### Dua Properties
 
@@ -560,10 +560,10 @@ Every search box in the app uses the same code, so they all behave the same way.
 | Transliteration | The transliteration line |
 | Source & reference | e.g. `Al-Anbiya · 21:87` or `Hadith · Qudsi 234` |
 | One dua per page | On: every dua starts a page (like the Salah Resources PDF). Off: short duas share a page; a dua is never cut in two if it fits on one page |
-| Times to recite | "Recite 3 times" under every dua, next to the source |
+| Times to recite | "Recite 3 times", next to the source, for duas recited more than once |
 | Notes & background | The dua's note (`info`) in a tinted box |
 
-The Arabic text is always included, in the **Arabic font chosen in Settings**. **Export PDF** makes the file, closes the dialog, and opens the share sheet (save to Files, send, print). The file is named after the collection, in lowercase with hyphens (`quranic-duas.pdf`). 
+The dialog scrolls on small screens: a fade with a small arrow at its bottom shows that there are more switches below (this is built into `DialogModal`, so every dialog has it). The Arabic text is always included, in the **Arabic font chosen in Settings**. **Export PDF** makes the file, closes the dialog, and opens the share sheet (save to Files, send, print). The file is named after the collection, in lowercase with hyphens (`quranic-duas.pdf`). 
 
 **On Android** there is also **Save to device** in the dialog: it opens the system folder picker (e.g. Downloads) and saves the PDF there. An emulator often has nothing in its share sheet that can save a file, so use this one there. (iOS: **Save to Files** in the share sheet.)
 
@@ -849,11 +849,17 @@ Files: `components/export/export-collection-modal.tsx` (the dialog), `lib/pdf/` 
 
 ### AI & Advanced Input
 - [ ] **Image OCR:**
-  - [ ] Camera integration
-  - [ ] Gallery image upload
-  - [ ] Text extraction from images
-  - [ ] Review and edit scanned text
-  - [ ] Auto-detect translation
+  - [x] Camera integration (UI done)
+  - [x] Gallery image upload (UI done)
+  - [ ] Text extraction from images (placeholder until the backend `POST /api/duas/scan` exists: Google Vision with the Arabic language hint)
+  - [x] Review and edit scanned text (fills in the manual form, with the Auto-filled tags)
+  - [ ] Auto-detect translation (the backend returns it when it can; matching the scanned Arabic against the built-in duas first would give better translations)
+- [ ] **AI generated dua:**
+  - [x] Prompt screen with examples and a "the AI can make mistakes" note (UI done)
+  - [ ] The AI call (placeholder until the backend `POST /api/duas/generate` exists)
+  - [ ] "Refine suggestion" (ask again with a change, instead of starting over)
+- [ ] **Source verification agent (backend):** an AI agent that checks the source and reference of every image-scanned and AI-generated dua before it is saved. It must not allow a wrong source: when the Quran reference does not match the Arabic, or the hadith does not exist or is not in that collection, it rejects it and tells the user the **right source** (surah and verse, or the hadith collection and number), which the form can then fill in. Until it exists, the form's source lock ("Are you sure?" when the source of an image or AI dua is changed) is the only guard, and the AI warning tells users to check the source
+- [ ] Authenticate the scan and generate calls (send the user's token) and rate-limit them per user on the backend
 - [ ] **AI Chat Assistant:**
   - [x] Chat interface on Explore screen (UI done; replies are a placeholder)
   - [ ] Conversation history (the chat is not saved by design)
