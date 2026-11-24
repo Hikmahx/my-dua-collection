@@ -38,6 +38,14 @@
             "backgroundColor": "#00212E"
           }
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Allow My Dua Collection to use the camera to scan a dua from a photo.",
+          "photosPermission": "Allow My Dua Collection to read a picture of a dua from your photos.",
+          "microphonePermission": false
+        }
       ]
     ],
     "experiments": {
