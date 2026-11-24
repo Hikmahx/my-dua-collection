@@ -95,3 +95,16 @@ export function parseRichText(html: string): RichBlock[] {
     })
     .filter((block) => block.runs.length > 0)
 }
+
+/**
+ * Plain text the user typed (a note) as the HTML a dua's `info` is stored as: one paragraph per line, with the
+ * characters HTML treats specially written as entities, so the text is shown exactly as typed.
+ */
+export function plainTextToInfo(text: string): string {
+  return text
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => `<p>${line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>`)
+    .join('')
+}
