@@ -343,7 +343,14 @@ export const en = {
   'share.saveBody': 'Kindred are listed first when you share. You can also put them in groups (optional).',
   'share.saveYes': 'Yes, save as kindred',
   'share.saveNo': 'No, just this once',
-  'share.send': ({ count }: { count: number }) => `Send to ${count} ${count === 1 ? 'person' : 'people'}`,
+  'share.send': ({ groups, people }: { groups: number; people: number }) =>
+    'Send to ' +
+    [
+      groups > 0 ? `${groups} ${groups === 1 ? 'group' : 'groups'}` : '',
+      people > 0 ? `${people} ${people === 1 ? 'person' : 'people'}` : '',
+    ]
+      .filter(Boolean)
+      .join(' and '),
   'share.sentOne': 'Sent to {name}',
   'share.sentMany': 'Sent to {name} and {count} more',
   'share.alreadyWaiting': 'Already waiting for: {names}',
