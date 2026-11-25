@@ -6,7 +6,7 @@
     "collections": "collection.json",
     "users": "user.json",
     "userFavorites": "user_favorites.json",
-    "friends": "friends.json",
+    "kindred": "kindred.json",
     "shares": "shares.json",
     "exploreArticles": "explore_articles.json",
     "namesOfAllah": "names_of_allah.json"

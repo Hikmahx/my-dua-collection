@@ -39,20 +39,21 @@ export interface UserFavorite {
   createdAt: string
 }
 
-/** The groups a friend can be put in, so a dua can be sent to a whole group at once. */
-export const FRIEND_GROUPS = ['family', 'friends', 'mosque'] as const
-export type FriendGroup = (typeof FRIEND_GROUPS)[number]
+/** The groups a kindred can be put in, so a dua can be sent to a whole group at once. */
+export const KINDRED_GROUPS = ['family', 'friends', 'mosque', 'classmates'] as const
+export type KindredGroup = (typeof KINDRED_GROUPS)[number]
 
 /**
- * Someone `userId` has added as a friend (user_friends). It goes one way: Ali adding Sara does not
- * make Ali a friend of Sara. Unique on userId + friendId. The friend's avatar, email and name are
- * read from their User. friends.json
+ * Someone `userId` has added as kindred (user_kindred): the people they share duas with most.
+ * "Kindred" is both the one and the many ("a kindred", "my kindred"). It goes one way: Ali adding
+ * Sara does not make Ali kindred of Sara. Unique on userId + kindredId. The kindred's avatar, email
+ * and name are read from their User. kindred.json
  */
-export interface UserFriend {
+export interface UserKindred {
   userId: string
-  friendId: string
-  /** A friend can be in several groups, e.g. ['family', 'mosque']. Empty when no group was picked. */
-  groups: FriendGroup[]
+  kindredId: string
+  /** A kindred can be in several groups, e.g. ['family', 'mosque']. Empty when no group was picked. */
+  groups: KindredGroup[]
   createdAt: string
 }
 
@@ -64,7 +65,7 @@ export type ShareStatus = 'pending' | 'accepted' | 'declined'
  * A dua or collection `senderId` sent to `recipientId`. Nothing reaches the recipient's library
  * until they accept: then the app copies it into their library as if they had created it (new
  * id, `origin: 'shared'`, `sharedBy: senderId`) after checking for duplicates. The recipient does
- * not have to be a friend. Sending to a group makes one Share per person. shares.json
+ * not have to be kindred. Sending to a group makes one Share per person. shares.json
  */
 export interface Share {
   id: string
@@ -103,7 +104,7 @@ export interface DataManifest {
   currentUserId: string
   /** Resource name -> the file in data/ that holds it. */
   resources: Record<
-    'duas' | 'collections' | 'users' | 'userFavorites' | 'friends' | 'shares' | 'exploreArticles' | 'namesOfAllah',
+    'duas' | 'collections' | 'users' | 'userFavorites' | 'kindred' | 'shares' | 'exploreArticles' | 'namesOfAllah',
     string
   >
 }

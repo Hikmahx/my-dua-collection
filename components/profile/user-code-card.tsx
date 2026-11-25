@@ -41,7 +41,7 @@ function ActionButton({
   )
 }
 
-/** The user's code, with Copy and Reset code. Friends type the code to share a dua with them. */
+/** The user's code, with Copy and Reset code. Kindred type the code to share a dua with them. */
 export function UserCodeCard({ code, onReset }: UserCodeCardProps) {
   const c = useSettingsColors()
   const [copied, setCopied] = useState(false)

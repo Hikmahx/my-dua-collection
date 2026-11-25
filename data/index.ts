@@ -8,13 +8,13 @@
  */
 import type { DuaContent } from '@/redux/reducers/duasSlice'
 import type { CollectionDef } from '@/constants/collections'
-import type { DataManifest, ExploreArticle, Share, User, UserFavorite, UserFriend } from './types'
+import type { DataManifest, ExploreArticle, Share, User, UserFavorite, UserKindred } from './types'
 
 import manifest from './data.json'
 import collections from './collection.json'
 import duas from './dua.json'
 import exploreArticles from './explore_articles.json'
-import friends from './friends.json'
+import kindred from './kindred.json'
 import namesOfAllah from './names_of_allah.json'
 import shares from './shares.json'
 import userFavorites from './user_favorites.json'
@@ -32,7 +32,7 @@ export const data = {
   collections: collections as CollectionDef[],
   users: users as User[],
   userFavorites: userFavorites as UserFavorite[],
-  friends: friends as UserFriend[],
+  kindred: kindred as UserKindred[],
   shares: shares as Share[],
   exploreArticles: exploreArticles as ExploreArticle[],
   namesOfAllah: namesOfAllah as ExploreArticle[],
