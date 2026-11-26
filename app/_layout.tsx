@@ -24,6 +24,7 @@ import { ARABIC_FONT_ASSETS } from '@/constants/arabic-fonts'
 import { Colors } from '@/constants/theme'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import { useCollectionsPersistence } from '@/hooks/use-collections-persistence'
+import { useKindredPersistence } from '@/hooks/use-kindred-persistence'
 import { useSettingsPersistence } from '@/hooks/use-settings-persistence'
 import { useUserPersistence } from '@/hooks/use-user-persistence'
 import { useTasbihPersistence } from '@/hooks/use-tasbih-persistence'
@@ -99,7 +100,10 @@ function AppShell() {
   // 4) Restore / save the collections the user made (their names and duas)
   const collectionsReady = useCollectionsPersistence()
 
-  const ready = fontsLoaded && settingsReady && duasReady && tasbihReady && collectionsReady
+  // 5) Restore / save the kindred (people shared with) and the shares sent and received
+  const kindredReady = useKindredPersistence()
+
+  const ready = fontsLoaded && settingsReady && duasReady && tasbihReady && collectionsReady && kindredReady
 
   // The native splash (just a background colour, see app.json) only has to cover font loading.
   // After that, <AppSplash /> takes over until the app is ready, then fades out.
