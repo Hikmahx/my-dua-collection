@@ -12,9 +12,11 @@ const ICONS = { success: 'checkmark-circle', error: 'alert-circle', info: 'infor
 /**
  * Draws the toast as a banner at the top of the screen (iOS; on Android the native toast is used and this draws
  * nothing). Put one in the app's root and one inside every Modal or modal screen: a native Modal covers whatever
- * is under it, so the toast has to be drawn inside it. Only the newest host on screen draws.
+ * is under it, so the toast has to be drawn inside it. Only the newest host on screen draws, and a toast stays
+ * with the host that first drew it (it is not drawn a second time by another host when that one goes away).
+ * `enabled={false}` takes the host out at once, e.g. for a sheet that is sliding closed.
  */
-export function ToastHost() {
+export function ToastHost({ enabled = true }: { enabled?: boolean }) {
   const context = useContext(ToastContext)
   const id = useId()
   const insets = useSafeAreaInsets()
@@ -23,9 +25,17 @@ export function ToastHost() {
   const [shown, setShown] = useState<ActiveToast | null>(null)
 
   const registerHost = context?.registerHost
-  useEffect(() => registerHost?.(id), [registerHost, id])
+  useEffect(() => (enabled ? registerHost?.(id) : undefined), [registerHost, id, enabled])
 
-  const active = context?.activeHostId === id ? context.toast : null
+  const toast = context?.toast ?? null
+  const isNewestHost = enabled && context?.activeHostId === id
+  // drawn here when it is already ours, or when it is new and this is the newest host
+  const active = toast && (toast.owner === id || (!toast.owner && isNewestHost)) ? toast : null
+
+  const claim = context?.claim
+  useEffect(() => {
+    if (active && !active.owner) claim?.(active.key, id)
+  }, [active, claim, id])
 
   useEffect(() => {
     if (active) {

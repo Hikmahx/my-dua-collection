@@ -61,6 +61,7 @@ export function ShareDuaSheet({ visible, dua, onClose }: ShareDuaSheetProps) {
           card={card}
           canSendToKindred={!REQUIRE_SIGN_IN_TO_SHARE || profile.isSignedIn}
           onOpenCard={() => setStep('card')}
+          onSent={onClose}
         />
       ) : (
         <ShareCardStep

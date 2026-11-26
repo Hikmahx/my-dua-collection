@@ -14,6 +14,8 @@ export interface ActiveToast {
   key: number
   message: string
   kind: ToastKind
+  /** The host that drew it first. Only that host draws it, so it never pops up again somewhere else. */
+  owner: string | null
 }
 
 interface ToastContextValue {
@@ -23,6 +25,8 @@ interface ToastContextValue {
   toast: ActiveToast | null
   /** Hosts (see ToastHost) say they are on screen; only the newest one draws the toast. */
   registerHost: (id: string) => () => void
+  /** A host that starts drawing a toast claims it; no other host will draw that toast afterwards. */
+  claim: (key: number, hostId: string) => void
   activeHostId: string | null
 }
 
@@ -61,7 +65,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
       clearTimer()
       counter.current += 1
-      setToast({ key: counter.current, message, kind })
+      setToast({ key: counter.current, message, kind, owner: null })
       // VoiceOver does not read a banner by itself
       AccessibilityInfo.announceForAccessibility(message)
       timer.current = setTimeout(dismiss, duration)
@@ -76,9 +80,13 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     return () => setHosts((current) => current.filter((host) => host !== id))
   }, [])
 
+  const claim = useCallback((key: number, hostId: string) => {
+    setToast((current) => (current && current.key === key && !current.owner ? { ...current, owner: hostId } : current))
+  }, [])
+
   const value = useMemo<ToastContextValue>(
-    () => ({ show, dismiss, toast, registerHost, activeHostId: hosts[hosts.length - 1] ?? null }),
-    [show, dismiss, toast, registerHost, hosts],
+    () => ({ show, dismiss, toast, registerHost, claim, activeHostId: hosts[hosts.length - 1] ?? null }),
+    [show, dismiss, toast, registerHost, claim, hosts],
   )
 
   return <ToastContext.Provider value={value}>{children}</ToastContext.Provider>

@@ -90,7 +90,7 @@ export function BottomSheet({ visible, onClose, backgroundColor, handleColor, he
           {children}
         </Animated.View>
         {/* a Modal covers the app's own toasts, so it draws them itself */}
-        <ToastHost />
+        <ToastHost enabled={visible} />
       </View>
     </Modal>
   )

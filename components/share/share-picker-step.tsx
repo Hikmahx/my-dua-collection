@@ -18,6 +18,8 @@ interface SharePickerStepProps {
   /** False when sending to kindred needs a sign-in the user has not done (REQUIRE_SIGN_IN_TO_SHARE). */
   canSendToKindred: boolean
   onOpenCard: () => void
+  /** Called right after a share is sent, so the sheet closes at once. */
+  onSent: () => void
 }
 
 /**
@@ -25,13 +27,13 @@ interface SharePickerStepProps {
  * fixed at the top, your kindred (or groups) scrolling in the middle, and fixed at the bottom either
  * the row of apps and actions (scrolls sideways) or, once someone is picked, the Send button.
  */
-export function SharePickerStep({ picker, card, canSendToKindred, onOpenCard }: SharePickerStepProps) {
+export function SharePickerStep({ picker, card, canSendToKindred, onOpenCard, onSent }: SharePickerStepProps) {
   const c = useShareColors()
   const t = useT()
   const inCodeMode = picker.mode === 'code'
   const toast = useToast()
 
-  /** Sends, then says so with a toast: who got it, and who already had it waiting. */
+  /** Sends, says so with a toast (who got it, and who already had it waiting), and closes the sheet. */
   const send = () => {
     const { names, alreadyPending } = picker.send()
     const sentText =
@@ -42,9 +44,11 @@ export function SharePickerStep({ picker, card, canSendToKindred, onOpenCard }: 
           : t('share.sentMany', { name: names[0], count: names.length - 1 })
     const waitingText = alreadyPending.length > 0 ? t('share.alreadyWaiting', { names: alreadyPending.join(', ') }) : undefined
     const message = [sentText, waitingText].filter(Boolean).join('\n')
-    if (!message) return
-    if (sentText) toast.success(message, !!waitingText)
-    else toast.info(message)
+    if (message) {
+      if (sentText) toast.success(message, !!waitingText)
+      else toast.info(message)
+    }
+    onSent()
   }
 
   return (
