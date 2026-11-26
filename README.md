@@ -189,6 +189,7 @@ Users can currently:
 - **Arabic text** — one `ArabicText` component, because Amiri's diacritics are clipped unless the line height is generous.
 - **Splash** — a plain native splash, then an animated splash drawn from an SVG imported as a component.
 - **Sharing** — one sheet (`components/share/`) with the state in two hooks (`useSharePicker`, `useShareCard`). The card is drawn once off screen at a fixed width and photographed with `react-native-view-shot`; kindred and shares are a Redux slice (`kindred`, saved on the device) that every change goes through `useKindredActions`, so the backend replaces it in one place.
+- **Islamic calendar** — `lib/islamic-season.ts` works out Ramadan, Dhul Hijjah, Eid and the days until the next one from the phone's Umm al-Qura calendar (no API), with a ±1 day adjustment in Settings for communities that follow their own moon sighting. Screens and reminders read it through `useIslamicSeason()`.
 - **Toasts** — `useToast()` shows the phone's own toast on Android and an in-app banner on iOS (`ToastProvider` in the root layout; every Modal holds a `ToastHost` because a native Modal covers the rest of the app). Alerts stay for confirmations and errors.
 - **Feedback** — `expo-haptics` for vibration and `expo-audio` for the tap tick and the target chime, without pausing the user's music.
 
@@ -247,7 +248,8 @@ Then press `i` (iOS simulator), `a` (Android emulator) or scan the QR code with 
 <!-- - [x] Image upload and AI generated dua screens (the text reading, the AI and the source check need the backend) -->
 - [ ] Backend for OCR, AI generation and source verification
 - [ ] Audio recitations (the Dua screen's audio button was replaced by **Save to collection**; the audio button comes back when recitations exist)
-- [ ] Reminders and Ramadan mode
+<!-- - [x] Ramadan and Dhul Hijjah logic (`lib/islamic-season.ts`: is it Ramadan, the 1st of Ramadan, Eid, days until the next one) and the ±1 day Hijri date adjustment in Settings; no screens yet -->
+- [ ] Reminders and Ramadan mode screens
 <!-- - [x] PDF export of a collection (still to check on a real iOS and Android device, see [PDF export](README_COMPREHENSIVE.md#pdf-export)) -->
 <!-- - [x] Share cards and the share sheet (kindred, groups, Add by code, apps, save image, copy text); still to check on real devices -->
 <!-- - [x] Toasts (success messages for add dua, collections, PDF export and the share sheet); still to check on real devices -->

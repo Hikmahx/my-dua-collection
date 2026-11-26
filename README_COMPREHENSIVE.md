@@ -687,6 +687,15 @@ Files: `components/export/export-collection-modal.tsx` (the dialog), `lib/pdf/` 
 - Dhul Hijjah mode (10 days)
 - Other Islamic months
 
+**How the app knows (built, no screens yet):**
+
+- `lib/islamic-season.ts` is the one place that works out the Islamic year. `getIslamicSeason(date, adjustment)` returns today's Hijri date, `isRamadan` and `ramadanDay`, `isDhulHijjah` and `dhulHijjahDay`, `isFirstOfRamadan` (the day to say "Ramadan Mubarak"), `isEid` (Eid al-Fitr, 1 Shawwal, or Eid al-Adha, 10 Dhul Hijjah), `occasion` (also the 1st of Dhul Hijjah and the Day of Arafah), `daysUntilRamadan` and `daysUntilDhulHijjah`, the dates they start (`ramadanStartsOn`, `dhulHijjahStartsOn`, local midnight, for scheduling reminders), and `next`: whichever of the two starts first from tomorrow on. During Ramadan `daysUntilRamadan` is next year's, so check `isRamadan` first. These are pure functions, so the reminders and the screens all read the same answer.
+- Screens use the hook `useIslamicSeason()`, which follows the setting below and works the answer out again at midnight (and when the app comes back to the front), so an app left open overnight is never a day behind.
+- **No API is used.** Dates come from `lib/hijri.ts`: the phone's own Umm al-Qura calendar (the official Saudi calendar, worked out by calculation), with a built-in tabular calendar as the fallback. It works offline.
+- **Hijri date adjustment** (Settings, "Islamic calendar"): -1, 0 or +1 day. Many communities, Nigeria included, start Ramadan and Eid from a local moon sighting, which can be a day different from Umm al-Qura. "1 day behind" = months start a day later; "1 day ahead" = a day earlier. The date in Settings, Ramadan, Dhul Hijjah and Eid all follow it, and it is saved on the device (`hijriAdjustment` in `settings:v1`).
+- A Hijri day really starts at sunset; the app changes day at midnight, like a calendar.
+- **Later, with the backend:** an official start date for Ramadan, Dhul Hijjah and Eid that you update after the sighting announcement. The app would fetch it and use it instead of the calculated date (that is also what a push "Ramadan Mubarak" would follow).
+
 **Ramadan Mode Features:**
 - **Explore Screen:** Ramadan card appears at top
 - **Home Screen:** AI priority collection emphasizes Ramadan duas
@@ -822,7 +831,7 @@ The share icon on the Dua screen opens the **share sheet**, laid out like Instag
 
 ### Planned integrations
 
-- Islamic calendar API for date conversion (Hijri <-> Gregorian)
+- Islamic calendar API for date conversion (Hijri <-> Gregorian): not needed for now, the phone's Umm al-Qura calendar is used (see [Month Mode](#month-mode)); a backend setting for the officially announced start dates is planned instead
 - Prayer times API (optional integration for reminder timing)
 - Translation APIs for multiple languages
 - Text-to-speech for audio generation
@@ -977,8 +986,12 @@ The share icon on the Dua screen opens the **share sheet**, laid out like Instag
 
 ### Special Features & Optimization
 - [ ] **Month Mode System:**
-  - [ ] Ramadan mode detection
-  - [ ] Dhul Hijjah mode
+  <!-- - [x] Ramadan mode detection (logic: `lib/islamic-season.ts`, `useIslamicSeason()`; no screens yet) -->
+  <!-- - [x] Dhul Hijjah detection (logic only) -->
+  <!-- - [x] "Is today the 1st of Ramadan or Eid" and the days until the next one (logic only) -->
+  <!-- - [x] ±1 day Hijri date adjustment in Settings -->
+  - [ ] Official start dates from the backend, updated after the moon-sighting announcement
+  - [ ] Check the dates and the adjustment on a real iPhone and Android phone (the phone's calendar decides the dates)
   - [ ] Ramadan countdown
   - [ ] Special occasion cards on Explore screen
 - [ ] **Smart Reminders:**

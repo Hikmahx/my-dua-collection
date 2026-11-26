@@ -5,6 +5,7 @@ import {
 } from '@/constants/languages'
 import { DEFAULT_ARABIC_FONT, type ArabicFontId } from '@/constants/arabic-fonts'
 import { DEFAULT_FONT_SIZES, type FontSizeTarget } from '@/constants/settings-config'
+import type { HijriAdjustment } from '@/lib/islamic-season'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 /** Add more modes here later (e.g. 'system'). */
@@ -19,6 +20,8 @@ export interface SettingsState {
   arabicFont: ArabicFontId
   dailyReminder: boolean
   monthlyReminders: boolean
+  /** Days added to the Hijri date to match the user's own moon sighting: -1, 0 or +1 (see lib/islamic-season.ts). */
+  hijriAdjustment: HijriAdjustment
 }
 
 // Dark mode is the default
@@ -31,6 +34,7 @@ export const initialSettingsState: SettingsState = {
   arabicFont: DEFAULT_ARABIC_FONT,
   dailyReminder: true,
   monthlyReminders: false,
+  hijriAdjustment: 0,
 }
 
 const settingsSlice = createSlice({
@@ -61,6 +65,9 @@ const settingsSlice = createSlice({
     setMonthlyReminders(state, action: PayloadAction<boolean>) {
       state.monthlyReminders = action.payload
     },
+    setHijriAdjustment(state, action: PayloadAction<HijriAdjustment>) {
+      state.hijriAdjustment = action.payload
+    },
     /** Puts the saved settings back on launch. */
     hydrateSettings(state, action: PayloadAction<Partial<SettingsState>>) {
       Object.assign(state, action.payload)
@@ -77,6 +84,7 @@ export const {
   setArabicFont,
   setDailyReminder,
   setMonthlyReminders,
+  setHijriAdjustment,
   hydrateSettings,
 } = settingsSlice.actions
 export default settingsSlice.reducer
