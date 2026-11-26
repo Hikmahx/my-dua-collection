@@ -9,6 +9,10 @@ interface BottomSheetProps {
   backgroundColor: string
   /** Color of the small grab handle at the top. */
   handleColor: string
+  /** A fixed height instead of fitting the content (so a list inside can fill the space). It still rides above the keyboard. */
+  height?: number
+  /** Drawn in the Modal root under the backdrop and the sheet, e.g. a view placed off screen so it can be captured as a picture. */
+  behind?: ReactNode
   children: ReactNode
 }
 
@@ -16,7 +20,7 @@ const SLIDE_IN_MS = 240
 const SLIDE_OUT_MS = 200
 
 /** A panel that slides up from the bottom over a dimmed screen (and above the keyboard). Tap the dim area or back to close. */
-export function BottomSheet({ visible, onClose, backgroundColor, handleColor, children }: BottomSheetProps) {
+export function BottomSheet({ visible, onClose, backgroundColor, handleColor, height: fixedHeight, behind, children }: BottomSheetProps) {
   const { height } = useWindowDimensions()
   const insets = useSafeAreaInsets()
   const t = useT()
@@ -56,6 +60,7 @@ export function BottomSheet({ visible, onClose, backgroundColor, handleColor, ch
   return (
     <Modal visible transparent animationType='none' statusBarTranslucent onRequestClose={onClose}>
       <View style={{ flex: 1 }}>
+        {behind}
         <Animated.View
           style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.55)', opacity: progress }]}
         >
@@ -68,7 +73,9 @@ export function BottomSheet({ visible, onClose, backgroundColor, handleColor, ch
             left: 0,
             right: 0,
             bottom: keyboardHeight,
-            maxHeight: height * 0.8 - keyboardHeight,
+            ...(fixedHeight
+              ? { height: Math.min(fixedHeight, height * 0.92 - keyboardHeight) }
+              : { maxHeight: height * 0.8 - keyboardHeight }),
             backgroundColor,
             borderTopLeftRadius: 24,
             borderTopRightRadius: 24,
