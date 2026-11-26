@@ -1,3 +1,4 @@
+import { ToastHost } from '@/components/ui/toast-host'
 import { useT } from '@/hooks/use-t'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Animated, Keyboard, Modal, Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native'
@@ -88,6 +89,8 @@ export function BottomSheet({ visible, onClose, backgroundColor, handleColor, he
           </View>
           {children}
         </Animated.View>
+        {/* a Modal covers the app's own toasts, so it draws them itself */}
+        <ToastHost />
       </View>
     </Modal>
   )

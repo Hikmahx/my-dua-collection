@@ -5,6 +5,7 @@ import { languageName } from '@/constants/settings-config'
 import { useArabicFont } from '@/hooks/use-arabic-font'
 import { useSettingsColors } from '@/hooks/use-settings-colors'
 import { useT } from '@/hooks/use-t'
+import { useToast } from '@/hooks/use-toast'
 import {
   createCollectionPdf,
   PdfExportError,
@@ -57,6 +58,7 @@ const wait = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, 
  */
 export function ExportCollectionModal({ visible, collectionName, duas, onClose }: ExportCollectionModalProps) {
   const t = useT()
+  const toast = useToast()
   const c = useSettingsColors()
   const arabicFont = useArabicFont()
   const translationLanguage = useSelector((state: RootState) => state.settings.translationLanguage)
@@ -127,7 +129,7 @@ export function ExportCollectionModal({ visible, collectionName, duas, onClose }
         const saved = await savePdfToDevice(fileUri, pdfFileName(collectionName))
         if (saved) {
           onClose()
-          Alert.alert(t('export.savedTitle'), t('export.savedBody'))
+          toast.success(t('export.savedBody'))
         }
       } catch (caught) {
         console.warn(caught)

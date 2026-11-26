@@ -1,3 +1,4 @@
+import { ToastHost } from '@/components/ui/toast-host'
 import { useT } from '@/hooks/use-t'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import tw from '@/lib/tailwind'
@@ -108,6 +109,8 @@ export function DialogModal({ visible, title, onClose, children, footer }: Dialo
 
           {footer && <View style={tw`mt-[20px]`}>{footer}</View>}
         </View>
+        {/* a Modal covers the app's own toasts, so it draws them itself */}
+        <ToastHost />
       </View>
     </Modal>
   )

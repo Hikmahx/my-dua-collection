@@ -32,7 +32,7 @@ export type CodeStep =
 const ENTER: CodeStep = { name: 'enter', loading: false }
 
 export interface SentSummary {
-  /** e.g. 'Sent to Maryam A. and 2 more' */
+  /** The people a share was made for, e.g. 'Maryam A.' */
   names: string[]
   /** People who already had this item waiting, so they were not sent a second one. */
   alreadyPending: string[]
@@ -51,7 +51,6 @@ export function useSharePicker(target: { type: ShareTarget; id: string }) {
   const [picks, setPicks] = useState<Picks>(NO_PICKS)
   const [oneOff, setOneOff] = useState<User[]>([])
   const [codeStep, setCodeStep] = useState<CodeStep>(ENTER)
-  const [sent, setSent] = useState<SentSummary | null>(null)
 
   const setMode = useCallback((next: PickerMode) => {
     setModeState(next)
@@ -101,8 +100,6 @@ export function useSharePicker(target: { type: ShareTarget; id: string }) {
     leaveCodeMode()
   }
 
-  const dismissSent = useCallback(() => setSent(null), [])
-
   /** Back to how it was when the sheet opened. */
   const reset = useCallback(() => {
     setModeState('people')
@@ -110,22 +107,21 @@ export function useSharePicker(target: { type: ShareTarget; id: string }) {
     setCodeStep(ENTER)
     setPicks(NO_PICKS)
     setOneOff([])
-    setSent(null)
   }, [])
 
   const recipientIds = resolveRecipients(entries, picks)
   const everyone = [...oneOff, ...entries.map((entry) => entry.user)]
 
-  /** Sends the item to everyone who is picked, then clears the picks. */
-  const send = () => {
+  /** Sends the item to everyone who is picked, clears the picks, and says who got it. */
+  const send = (): SentSummary => {
     const ids = resolveRecipients(entries, picks)
     const result = actions.sendShares(target, ids)
     const nameOf = (id: string) => {
       const user = everyone.find((candidate) => candidate.id === id)
       return user ? shortName(user) : id
     }
-    setSent({ names: result.created.map((share) => nameOf(share.recipientId)), alreadyPending: result.alreadyPending.map(nameOf) })
     setPicks(NO_PICKS)
+    return { names: result.created.map((share) => nameOf(share.recipientId)), alreadyPending: result.alreadyPending.map(nameOf) }
   }
 
   return {
@@ -151,8 +147,6 @@ export function useSharePicker(target: { type: ShareTarget; id: string }) {
     toggleSaveGroup,
     answerSave,
     cancelCode: leaveCodeMode,
-    sent,
-    dismissSent,
     send,
     reset,
     senderId,

@@ -36,6 +36,7 @@ A comprehensive Islamic dua management application designed to help Muslims orga
   - [AI Assistant](#ai-assistant)
   - [Smart Reminders](#smart-reminders)
   - [Month Mode](#month-mode)
+  - [Toasts](#toasts)
   - [Share Features](#share-features)
 - [Technical Stack](#technical-stack)
   - [Built with](#built-with)
@@ -700,6 +701,16 @@ Files: `components/export/export-collection-modal.tsx` (the dialog), `lib/pdf/` 
 - Similar priority collection for the 10 blessed days
 - Specific duas for these days highlighted
 
+### Toasts
+
+Short messages that go away by themselves: "Dua added successfully!", "PDF saved", "Saved to your photos", "Text copied", "Sent to Maryam A.".
+
+- **Use it from any screen:** `const toast = useToast()` then `toast.success(message)`, `toast.error(message)` or `toast.info(message)` (`hooks/use-toast.ts`). A second argument `true` keeps the toast on screen a little longer, for a message with two parts.
+- **Android** shows the phone's own toast (`ToastAndroid`); it cannot be styled. **iOS** has no native toast, so the app draws a banner at the top of the screen (`components/ui/toast-host.tsx`, colors in `constants/toast-theme.ts`). Tap it to close it; VoiceOver reads it out.
+- **Toast or Alert?** A toast is for what went well and needs no answer. Keep `Alert` for a confirmation (delete, change a locked source), a missing field, and an error the person has to read.
+- **Where the iOS banner is drawn:** `ToastProvider` (in `app/_layout.tsx`) keeps the toast, and a `ToastHost` draws it. A native Modal covers everything under it, so the root layout, `BottomSheet`, `DialogModal` and the Add dua screen (`app/modal.tsx`) each hold a `ToastHost`; the one opened last draws the toast, and when it closes the next one takes over. A new Modal or modal screen needs a `<ToastHost />` inside it.
+- **Where toasts are used today:** Add dua (added, and existing duas added), Save to collection (collections updated), Edit collection (saved, deleted), PDF export (saved), and the share sheet (saved to photos, copied, sent, and what went wrong). Errors that need reading stay `Alert`s.
+
 ### Share Features
 
 The share icon on the Dua screen opens the **share sheet**, laid out like Instagram's: a fixed search field with a **groups icon** at the top, your kindred scrolling in the middle, and a row of apps and actions fixed at the bottom that scrolls sideways.
@@ -724,7 +735,7 @@ The share icon on the Dua screen opens the **share sheet**, laid out like Instag
 | Copy text | Copies the dua as text: title, Arabic, transliteration, translation, source, and the app's name (the card's switches apply). |
 | Card | Opens the card editor (below). |
 | More | The system share sheet with the card picture: any other messaging app, Messages, AirDrop, Nearby Share, Files... |
-| Send to kindred | Pick people (or a group, or someone by code) and tap **Send**. One share is created per person (see [Flow: shares](#flow-shares)). |
+| Send to kindred | Pick people (or a group, or someone by code) and tap **Send**. One share is created per person (see [Flow: shares](#flow-shares)), and a toast says who got it (and who already had it waiting). |
 
 **Beautiful Card Generator** (`components/share/share-card.tsx`)
 
@@ -1000,6 +1011,8 @@ The share icon on the Dua screen opens the **share sheet**, laid out like Instag
 - [x] Share duas with kindred: the share sheet (kindred grid, groups, Add by code, "Save as kindred?" the first time a person found by code is not kindred yet), sending creates pending shares (dummy data; see [Flow: shares](#flow-shares))
 - [ ] Receive shares: a screen for pending shares with accept and decline, the duplicate checks and the copy (the rules are already in `lib/share-rules.ts`)
 - [ ] Manage kindred: see and edit your kindred and their groups, remove someone
+- [x] Toasts: `useToast()`, native on Android and an in-app banner on iOS; success-only alerts replaced, share sheet messages moved to toasts (see [Toasts](#toasts))
+- [ ] Check toasts on a real iPhone and Android phone (the banner inside a Modal and after a modal screen closes)
 - [ ] Backend for kindred, user-code lookup and shares (the lookup limit, `shares` and `user_kindred` tables)
 - [ ] Prayer time integration (optional)
 - [ ] Qibla direction finder

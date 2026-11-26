@@ -5,14 +5,12 @@ import { GoldButton } from '@/components/ui/gold-button'
 import { SearchField } from '@/components/ui/search-field'
 import { useShareColors } from '@/hooks/use-share-colors'
 import { useT } from '@/hooks/use-t'
+import { useToast } from '@/hooks/use-toast'
 import type { ShareCardController } from '@/hooks/use-share-card'
 import type { SharePicker } from '@/hooks/use-share-picker'
 import tw from '@/lib/tailwind'
 import { Ionicons } from '@expo/vector-icons'
-import { useEffect } from 'react'
 import { Pressable, Text, View } from 'react-native'
-
-const SENT_NOTICE_MS = 4000
 
 interface SharePickerStepProps {
   picker: SharePicker
@@ -20,21 +18,6 @@ interface SharePickerStepProps {
   /** False when sending to kindred needs a sign-in the user has not done (REQUIRE_SIGN_IN_TO_SHARE). */
   canSendToKindred: boolean
   onOpenCard: () => void
-}
-
-/** A line under the grid: the result of the last action, or who the dua was just sent to. */
-function Notice({ kind, text, extra }: { kind: 'success' | 'error'; text: string; extra?: string }) {
-  const c = useShareColors()
-  const color = kind === 'success' ? c.success : c.danger
-  return (
-    <View accessibilityLiveRegion='polite' style={tw`px-[20px] pb-[10px] items-center`}>
-      <View style={tw`flex-row items-center`}>
-        <Ionicons name={kind === 'success' ? 'checkmark-circle' : 'alert-circle'} size={16} color={color} />
-        <Text style={[tw`font-nunito-semibold text-[13px] ml-[6px] flex-shrink`, { color }]}>{text}</Text>
-      </View>
-      {extra ? <Text style={[tw`font-nunito text-[12px] mt-[2px] text-center`, { color: c.muted }]}>{extra}</Text> : null}
-    </View>
-  )
 }
 
 /**
@@ -46,21 +29,23 @@ export function SharePickerStep({ picker, card, canSendToKindred, onOpenCard }: 
   const c = useShareColors()
   const t = useT()
   const inCodeMode = picker.mode === 'code'
-  const { sent, dismissSent } = picker
+  const toast = useToast()
 
-  useEffect(() => {
-    if (!sent) return
-    const timer = setTimeout(dismissSent, SENT_NOTICE_MS)
-    return () => clearTimeout(timer)
-  }, [sent, dismissSent])
-
-  const sentText = sent
-    ? sent.names.length === 0
-      ? undefined
-      : sent.names.length === 1
-        ? t('share.sentOne', { name: sent.names[0] })
-        : t('share.sentMany', { name: sent.names[0], count: sent.names.length - 1 })
-    : undefined
+  /** Sends, then says so with a toast: who got it, and who already had it waiting. */
+  const send = () => {
+    const { names, alreadyPending } = picker.send()
+    const sentText =
+      names.length === 0
+        ? undefined
+        : names.length === 1
+          ? t('share.sentOne', { name: names[0] })
+          : t('share.sentMany', { name: names[0], count: names.length - 1 })
+    const waitingText = alreadyPending.length > 0 ? t('share.alreadyWaiting', { names: alreadyPending.join(', ') }) : undefined
+    const message = [sentText, waitingText].filter(Boolean).join('\n')
+    if (!message) return
+    if (sentText) toast.success(message, !!waitingText)
+    else toast.info(message)
+  }
 
   return (
     <View style={tw`flex-1`}>
@@ -105,18 +90,9 @@ export function SharePickerStep({ picker, card, canSendToKindred, onOpenCard }: 
 
       {/* fixed at the bottom */}
       <View style={[tw`pt-[10px]`, { borderTopWidth: 1, borderTopColor: c.rowBorder }]}>
-        {card.status ? <Notice kind={card.status.kind} text={card.status.message} /> : null}
-        {sentText ? (
-          <Notice
-            kind='success'
-            text={sentText}
-            extra={sent && sent.alreadyPending.length > 0 ? t('share.alreadyWaiting', { names: sent.alreadyPending.join(', ') }) : undefined}
-          />
-        ) : null}
-
         {inCodeMode ? null : picker.recipientIds.length > 0 ? (
           <View style={tw`px-[20px] pb-[4px]`}>
-            <GoldButton label={t('share.send', picker.pickCounts)} onPress={picker.send} />
+            <GoldButton label={t('share.send', picker.pickCounts)} onPress={send} />
           </View>
         ) : (
           <ShareActionsRow card={card} onOpenCard={onOpenCard} />

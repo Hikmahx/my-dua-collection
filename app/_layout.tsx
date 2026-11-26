@@ -18,6 +18,8 @@ import { useEffect, useState } from 'react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import 'react-native-reanimated'
 import { Provider, useDispatch, useSelector } from 'react-redux'
+import { ToastHost } from '@/components/ui/toast-host'
+import { ToastProvider } from '@/components/ui/toast-provider'
 
 import { AppSplash } from '@/components/splash/app-splash'
 import { ARABIC_FONT_ASSETS } from '@/constants/arabic-fonts'
@@ -43,7 +45,9 @@ export default function RootLayout() {
     <Provider store={store}>
       {/* needed for the drag-to-reorder list on the Edit collection screen */}
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <AppShell />
+        <ToastProvider>
+          <AppShell />
+        </ToastProvider>
       </GestureHandlerRootView>
     </Provider>
   )
@@ -145,6 +149,8 @@ function AppShell() {
         </ThemeProvider>
       )}
       {!splashDone && <AppSplash ready={ready} onFinish={() => setSplashDone(true)} />}
+      {/* toasts of the screens (a Modal or a modal screen has its own ToastHost) */}
+      {ready && <ToastHost />}
     </>
   )
 }

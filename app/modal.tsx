@@ -6,10 +6,12 @@ import { FormField, FormInput } from '@/components/add-dua/form-field'
 import { ImageDuaStep } from '@/components/add-dua/image-dua-step'
 import { AddDuaOptionRow } from '@/components/ui/add-dua-option-row'
 import { Dropdown } from '@/components/ui/dropdown'
+import { ToastHost } from '@/components/ui/toast-host'
 import { useAddDuaColors } from '@/hooks/use-add-dua-colors'
 import { useCollectionChoice, type ChosenCollections } from '@/hooks/use-collection-choice'
 import { useDuplicateDuaGuard } from '@/hooks/use-duplicate-dua-guard'
 import { useT } from '@/hooks/use-t'
+import { useToast } from '@/hooks/use-toast'
 import {
   createDuaId,
   isValidReference,
@@ -59,6 +61,7 @@ export default function AddDuaModal() {
   const dispatch = useDispatch<AppDispatch>()
   const language = useSelector((state: RootState) => state.settings.translationLanguage)
   const t = useT()
+  const toast = useToast()
   // Opened from a collection's "Add dua": the dua goes into that collection
   const { collection } = useLocalSearchParams<{ collection?: string }>()
   const collections = useCollectionChoice(collection)
@@ -249,7 +252,7 @@ useEffect(() => {
       Alert.alert(t('addDua.saveFailedTitle'), t('addDua.saveFailedBody'))
       return
     }
-    Alert.alert(t('addDua.successTitle'), successBody)
+    toast.success(successBody)
     router.back()
   }
 
@@ -325,6 +328,8 @@ useEffect(() => {
 
   return (
     <View style={tw`flex-1`}>
+      {/* This screen covers the app's own toasts, so it draws them itself */}
+      <ToastHost />
       {/* Faded black backdrop - tap to close */}
       <Pressable
         style={[

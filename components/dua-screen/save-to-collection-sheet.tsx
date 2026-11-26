@@ -6,6 +6,7 @@ import { useCollections } from '@/hooks/use-collections'
 import { useNewCollectionInput } from '@/hooks/use-new-collection-input'
 import { useSettingsColors } from '@/hooks/use-settings-colors'
 import { useT } from '@/hooks/use-t'
+import { useToast } from '@/hooks/use-toast'
 import { createCollectionId } from '@/lib/collection-utils'
 import tw from '@/lib/tailwind'
 import type { Dua, NewCollectionDraft } from '@/redux/reducers/duasSlice'
@@ -35,6 +36,7 @@ interface SaveToCollectionSheetProps {
  */
 export function SaveToCollectionSheet({ dua, visible, onClose }: SaveToCollectionSheetProps) {
   const t = useT()
+  const toast = useToast()
   const c = useSettingsColors()
   const dispatch = useDispatch<AppDispatch>()
   const { userCollections } = useCollections()
@@ -102,6 +104,7 @@ export function SaveToCollectionSheet({ dua, visible, onClose }: SaveToCollectio
         Alert.alert(t('saveToCollection.needOneTitle'), t('saveToCollection.needOneBody'))
         return
       }
+      toast.success(t('toast.collectionsUpdated'))
       close()
     }
 

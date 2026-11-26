@@ -115,11 +115,6 @@ export function ShareCardStep({ card, available, onBack }: ShareCardStepProps) {
       </ScrollView>
 
       <View style={[tw`px-[20px] pt-[10px]`, { borderTopWidth: 1, borderTopColor: c.rowBorder }]}>
-        {card.status ? (
-          <Text accessibilityLiveRegion='polite' style={[tw`font-nunito-semibold text-[13px] text-center mb-[8px]`, { color: card.status.kind === 'success' ? c.success : c.danger }]}>
-            {card.status.message}
-          </Text>
-        ) : null}
         <GoldButton label={t('share.card.share')} onPress={card.shareWithSystemSheet} disabled={card.busy !== null} />
         <PillButton
           label={t('share.action.save')}

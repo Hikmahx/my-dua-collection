@@ -6,6 +6,7 @@ import {
 } from '@/constants/share-config'
 import { CARD_THEMES } from '@/constants/share-theme'
 import { useT } from '@/hooks/use-t'
+import { useToast } from '@/hooks/use-toast'
 import { copyText } from '@/lib/clipboard'
 import { formatSourceLine } from '@/lib/dua-utils'
 import { getCardContent } from '@/lib/share/card-layout'
@@ -20,38 +21,31 @@ import type { SocialTarget } from '@/lib/share/social-targets'
 import { buildShareCaption, buildShareText } from '@/lib/share/share-text'
 import type { Dua } from '@/redux/reducers/duasSlice'
 import type { RootState } from '@/redux/store'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import type { View } from 'react-native'
 import { useSelector } from 'react-redux'
 
-/** One line under the share sheet's actions: what just happened. */
-export interface ShareStatus {
+/** What an action reports: shown as a toast. */
+interface ShareResult {
   kind: 'success' | 'error'
   message: string
 }
 
-const STATUS_MS = 2600
-
 /**
  * The card of a dua and everything that can be done with it: its look (theme and what is shown),
  * and the actions of the share sheet: save the picture, copy the text, send the picture to an app
- * or to the system share sheet. `busy` is the action that is running (the picture takes a moment).
+ * or to the system share sheet. `busy` is the action that is running (the picture takes a moment). What
+ * happened (saved, copied, a problem) is shown as a toast.
  */
 export function useShareCard(dua: Dua) {
   const t = useT()
+  const toast = useToast()
   const language = useSelector((state: RootState) => state.settings.translationLanguage)
   const [themeId, setThemeId] = useState<CardThemeId>(DEFAULT_CARD_THEME)
   const [options, setOptions] = useState<CardOptions>(DEFAULT_CARD_OPTIONS)
   const [busy, setBusy] = useState<string | null>(null)
-  const [status, setStatus] = useState<ShareStatus | null>(null)
   const cardRef = useRef<View | null>(null)
   const sizeRef = useRef<CardSize>({ width: 0, height: 0 })
-
-  useEffect(() => {
-    if (!status) return
-    const timer = setTimeout(() => setStatus(null), STATUS_MS)
-    return () => clearTimeout(timer)
-  }, [status])
 
   const content = useMemo(
     () => getCardContent(dua, language, options, formatSourceLine(dua)),
@@ -59,13 +53,14 @@ export function useShareCard(dua: Dua) {
   )
 
   /** Runs one action: shows it as busy, and turns a failure into a message. */
-  const run = async (id: string, action: () => Promise<ShareStatus | null>) => {
+  const run = async (id: string, action: () => Promise<ShareResult | null>) => {
     if (busy) return
     setBusy(id)
     try {
-      setStatus(await action())
+      const result = await action()
+      if (result) toast[result.kind](result.message)
     } catch {
-      setStatus({ kind: 'error', message: t('share.status.error') })
+      toast.error(t('share.status.error'))
     } finally {
       setBusy(null)
     }
@@ -86,7 +81,6 @@ export function useShareCard(dua: Dua) {
       sizeRef.current = size
     },
     busy,
-    status,
 
     saveImage: () =>
       run('save', async () => {

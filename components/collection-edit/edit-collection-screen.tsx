@@ -1,4 +1,5 @@
 import { useT } from '@/hooks/use-t'
+import { useToast } from '@/hooks/use-toast'
 import { DeleteCollectionDialog } from '@/components/collection-edit/delete-collection-dialog'
 import { ReorderableDuaList, type ReorderableDua } from '@/components/collection-edit/reorderable-dua-list'
 import { BackButton } from '@/components/ui/back-button'
@@ -40,6 +41,7 @@ export function EditCollectionScreen({ collectionId }: { collectionId: string })
   const [confirmingDelete, setConfirmingDelete] = useState(false)
   const leaving = useRef(false)
   const t = useT()
+  const toast = useToast()
 
   // Nothing to edit (an unknown id): go back
   useEffect(() => {
@@ -75,6 +77,7 @@ export function EditCollectionScreen({ collectionId }: { collectionId: string })
       return
     }
     dispatch(updateCollection({ id: collection.id, name: name.trim(), duaIds: items.map((item) => item.id) }))
+    toast.success(t('toast.collectionSaved'))
     close()
   }
 
@@ -82,6 +85,7 @@ export function EditCollectionScreen({ collectionId }: { collectionId: string })
     leaving.current = true
     setConfirmingDelete(false)
     dispatch(removeCollection(collection.id))
+    toast.success(t('toast.collectionDeleted'))
     // back to Home: the Collection screen underneath is for the collection that is now gone
     router.dismissTo('/')
   }
