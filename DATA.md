@@ -5,7 +5,7 @@ Everything the app reads as data lives here. Each file is one resource and will 
 - `data.json` is the entry point. `index.ts` loads the files and exports them as `data`. `types.ts` has the types (the `Dua` type is in `redux/reducers/duasSlice.ts` and the collection type is in `constants/collections.ts`).
 - **Required** means the field is always there. **Optional** means it can be missing, and a missing optional field is left out of the object, not set to `""`. The one exception is an API reply, where `null` can stand in for a missing value, and the app treats `null` and missing the same way.
 - Field names are camelCase. Dates are ISO 8601 strings in UTC (`2026-10-25T07:33:00Z`).
-- Only `dua.json`, `collection.json`, `explore_articles.json` and `names_of_allah.json` are read by the app today. The other files are ready-made data for login, favorites, friends and sharing.
+- `dua.json`, `collection.json`, `explore_articles.json` and `names_of_allah.json` are read by the app, and so are `user.json`, `kindred.json` and `shares.json`: the share sheet loads them into the `kindred` slice (saved on the device as `kindred:v1`) and looks people up in `user.json`. `user_favorites.json` is still ready-made data for login and favorites.
 
 ## data.json
 
@@ -15,7 +15,7 @@ The entry point.
 |---|---|---|---|
 | `version` | number | Required | Format version of the data. Raise it when a file changes in a way that breaks older code. |
 | `currentUserId` | string | Required | The sample user's id. The app does not sign this user in at launch (it starts as a guest). Must be an `id` in `user.json`. |
-| `resources` | object | Required | Resource name to file name: `duas`, `collections`, `users`, `userFavorites`, `friends`, `shares`, `exploreArticles`, `namesOfAllah`. |
+| `resources` | object | Required | Resource name to file name: `duas`, `collections`, `users`, `userFavorites`, `kindred`, `shares`, `exploreArticles`, `namesOfAllah`. |
 
 JSON files cannot import each other, so a new resource is added in `data.json` and in `index.ts`.
 
@@ -63,9 +63,9 @@ People who signed in with Google or Facebook. An array of `User` objects.
 
 | Field | Type | Required | Notes |
 |---|---|---|---|
-| `id` | string (UUID) | Required | Unique. This is what friends, favorites and shares point to. |
+| `id` | string (UUID) | Required | Unique. This is what kindred, favorites and shares point to. |
 | `userCode` | string | Required | Unique, 6 characters without the hyphen (`"BG7K3M"`). See [User code](#user-code). |
-| `email` | string | Optional | Missing when the provider did not give one (Facebook can leave it out). Shown in the friend picker. |
+| `email` | string | Optional | Missing when the provider did not give one (Facebook can leave it out). Searchable in the share sheet. |
 | `firstName` | string | Required | |
 | `lastName` | string | Optional | Missing when the provider gave a single name. |
 | `avatar` | object | Required | The same `AvatarConfig` as the Settings avatar. |
@@ -87,17 +87,17 @@ One row per favorite dua. An array of `UserFavorite` objects. A row is unique on
 | `position` | number | Required | Where the dua is in this user's favorites: a whole number from 0, with no gaps or repeats for the same user. It is the order the user arranged them in (Reorder on the Favorites screen), and the Dua screen goes through the favorites in this order. A newly favorited dua goes last. |
 | `createdAt` | date string | Required | When the dua was favorited. It does not decide the order. |
 
-## friends.json
+## kindred.json
 
-People a user has added as a friend (`user_friends`). An array of `UserFriend` objects. A row is unique on `userId` + `friendId`.
+People a user has saved as **kindred** (`user_kindred`): the people they share duas with. "Kindred" is both the one and the many ("a kindred", "my kindred"). An array of `UserKindred` objects. A row is unique on `userId` + `kindredId`.
 
-Friendship goes one way. If Ali adds Sara, Sara is not Ali's friend until she adds him. The friend's avatar, email and name are not stored here: the friend picker reads them from `user.json`.
+Saving goes one way. If Ali saves Sara, Sara is not Ali's kindred until she saves him. The kindred's avatar, email and name are not stored here: the share sheet reads them from `user.json`.
 
 | Field | Type | Required | Notes |
 |---|---|---|---|
-| `userId` | string | Required | The user who added the friend. |
-| `friendId` | string | Required | The friend's user `id`. Never the same as `userId`. |
-| `groups` | string[] | Required | Any of `"family"`, `"friends"`, `"mosque"` (`FRIEND_GROUPS`), no repeats. Can be an empty array when no group was picked. |
+| `userId` | string | Required | The user who saved the kindred. |
+| `kindredId` | string | Required | The kindred's user `id`. Never the same as `userId`. |
+| `groups` | string[] | Required | Any of `"family"`, `"friends"`, `"mosque"`, `"classmates"` (`KINDRED_GROUPS`), no repeats. Can be an empty array when no group was picked. Picking a group in the share sheet picks everyone in it. |
 | `createdAt` | date string | Required | |
 
 ## shares.json
@@ -112,7 +112,7 @@ A share is a request. Nothing reaches the recipient's library until they accept.
 | `type` | `"dua"` or `"collection"` | Required | |
 | `targetId` | string | Required | The dua `id` or collection `id` that was sent, depending on `type`. |
 | `senderId` | string | Required | A user `id`. |
-| `recipientId` | string | Required | A user `id`, never the same as `senderId`. The recipient does not have to be a friend. |
+| `recipientId` | string | Required | A user `id`, never the same as `senderId`. The recipient does not have to be kindred. |
 | `status` | `"pending"`, `"accepted"` or `"declined"` | Required | |
 | `createdAt` | date string | Required | |
 | `respondedAt` | date string | Optional | Set when the recipient accepts or declines, and missing while `status` is `pending`. |
@@ -129,19 +129,20 @@ In the mock data, `targetId` points to built-in duas and collections, because th
 - **Typing:** case, spaces and hyphens or dashes are ignored, so `bg 7k3m` finds `BG7K3M`. A text that cannot be a code is rejected without a request.
 - **Confirmation:** a found user shows the avatar and first name plus last initial. When nobody has the code, the app says: "No user with that code. Check it and try again."
 - **Abuse:** about 10 lookups a minute per user, and a user's own code is ignored.
-- **Reset:** a user can get a new code. The old code stops working at once. Friends and shares use `id`, so they are not affected.
-- The rules are in code in `lib/user-code.ts` (`generateUserCode`, `generateUniqueUserCode`, `normalizeUserCode`, `parseUserCodeInput`, `formatUserCode`).
+- **Reset:** a user can get a new code. The old code stops working at once. Kindred and shares use `id`, so they are not affected.
+- **Save as kindred?** After a code lookup is confirmed, the app asks whether to save the person as kindred (with optional groups). Yes adds a `kindred.json` row, No leaves it a one-off share. A person who is already kindred is not asked.
+- The rules are in code in `lib/user-code.ts` (`generateUserCode`, `generateUniqueUserCode`, `normalizeUserCode`, `parseUserCodeInput`, `formatUserCode`); the lookup and its limit of 10 a minute are in `lib/kindred.ts` (`findUserByCode`, `createLookupLimiter`).
 
 ### Sharing
 
-- The sender picks friends, a group or a code. One `Share` is created per person, with `status: "pending"`.
+- The sender picks kindred in the share sheet's grid, a group, or someone by code. One `Share` is created per person, with `status: "pending"` (someone who already has the same item waiting from the sender is skipped). The rules are in code in `lib/kindred.ts` (`buildShares`).
 - The recipient accepts or declines. A declined share changes nothing in their library.
 - On accept, the item is copied into the recipient's library as if they had created it:
   - A shared dua gets a new `id`, `origin: "shared"` and `sharedBy` set to the sender. It goes into a collection the recipient chooses.
   - A shared collection gets a new `id`, `isUserCreated: true` and `sharedBy`, and its duas are copied with it.
   - If the item was itself shared to the sender, `sharedBy` is the person who sent it on (the direct sender).
   - A copy is its own item: later edits by either person do not reach the other.
-- **Duplicate checks, on accept:**
+- **Duplicate checks, on accept** (in code in `lib/share-rules.ts`; no screen uses them yet):
   - A **collection** is a duplicate if the recipient already has one with the same name. The comparison ignores case and extra spaces.
   - A **dua** is a duplicate if the recipient's chosen collection already holds a dua with the same `source` and the same `reference`.
 

@@ -98,9 +98,10 @@ Users should be able to:
   - Search functionality
 
 - **Sharing & Export:**
-  - Generate beautiful dua cards with Arabic text, translation, transliteration, and app watermark
-  - Share to social media and messaging
-  - Save as image or copy text
+  - Generate beautiful dua cards with Arabic text, translation, transliteration, and app watermark. Done: see [Share Features](#share-features)
+  - Share to social media and messaging apps (WhatsApp, Instagram, Facebook, X, Telegram, Messenger, and any other app through the system share sheet)
+  - Save the card as an image or copy the text
+  - Share with your **kindred** (people you share duas with, in groups such as Family, Friends, Mosque and Classmates), or with someone by their user code
   - Print entire collections (from the share sheet that opens after a PDF export)
   - Download collections in PDF format with source and background for each dua (with customizable options). Done: see [PDF export](#pdf-export)
 
@@ -431,7 +432,7 @@ Both methods end in the **same form as Manual**, filled in like an autofill (`ap
      - Some duas (morning/evening adhkar) have preset, fixed counters (+/- doesn't show)
      - Others have preset counters that can be adjusted by user (saved & updatable)
    - **Save to collection (+):** Opens the [Save to collection sheet](#save-to-collection-sheet) (it replaced the audio button; audio comes back with recitations)
-   - **Share Icon:** Generate and share dua card
+   - **Share Icon:** Opens the [share sheet](#share-features): send the dua to your kindred, or share its card to any app, save it as an image or copy the text
    - **Bookmark Icon:** Save to favorites
    - **Collections:** the + is drawn in the accent color when the dua is in one of the user's collections
    - **Context & Commentary Icon (ℹ️):** Opens overlay with:
@@ -483,8 +484,8 @@ export interface Dua {
 - **Data folder:** `data/data.json` is the entry point. It lists which file holds each resource and the sample user (`currentUserId`; the app does not sign this user in at launch, it starts as a guest). JSON files cannot import each other, so `data/index.ts` does the loading and exports `data` and `currentUserId`; `data/types.ts` has the types. Each resource is a table on the future backend, and all of it uses generated values (example.com emails, UUID ids), so replacing `data/index.ts` with API calls should not touch the screens. Every field, whether it is required or optional, and the rules for user codes, sharing and duplicate checks are in [`data/README.md`](data/README.md). In short:
   - `dua.json` and `collection.json` are the built-in duas and the home-grid collections (`COLLECTION_DEFS` reads from `collection.json`). A dua or collection that was shared to the user has an optional `sharedBy` (the sender's user id).
   - `user.json` has the people who signed in with Google or Facebook, each with a `userCode` (like `BG-7K3M`) that others type to find them.
-  - `user_favorites.json`, `friends.json` and `shares.json` hold favorites, friends (with `family`, `friends` and `mosque` groups) and shares. A share stays `pending` until the recipient accepts, and then the item is copied into their library.
-  - Only duas and collections are read by the app today. The rest is ready-made data for the login, favorites, sharing and friend-picker work; favorites still live in `duas:v2` on the device until then.
+  - `user_favorites.json`, `kindred.json` and `shares.json` hold favorites, kindred (with `family`, `friends`, `mosque` and `classmates` groups) and shares. A share stays `pending` until the recipient accepts, and then the item is copied into their library.
+  - Duas and collections are read by the app, and so are `kindred.json`, `shares.json` and `user.json` (the share sheet reads them through the `kindred` slice, saved on the device as `kindred:v1`). The rest is ready-made data for the login and favorites work; favorites still live in `duas:v2` on the device until then.
 - **Settings:** `settingsSlice` holds `translationLanguage` (default `'en'`, called `language` in older saves, which are converted), `appLanguage` (default `'en'`), `arabicFont` and `showTransliteration`.
 - **App language:** all app text goes through `t('key')` (`hooks/use-t.ts`, texts in `locales/en.ts`; `{name}` placeholders, or a function for plurals). A text a language does not have falls back to English. To add a language: create `locales/<code>.ts` with the same keys, register it in `locales/index.ts`, and add its code to `APP_LANGUAGE_CODES` in `constants/languages.ts` (it then appears in the App language sheet). Right-to-left layout is not set up yet. Built-in collection names and Quran/Hadith source names are content, not app text, and are still English.
 - **Shared building blocks:** the "new collection name" field of the add-dua form and of the Save to collection sheet is one hook, `useNewCollectionInput` (open/close, typed name, empty and duplicate checks). The pickers for App language, Translation language and Arabic text style all use `components/settings/option-sheet.tsx` (on `components/ui/bottom-sheet.tsx`). The Delete, Save and Keep buttons of the collection screens are `components/ui/pill-button.tsx`. The Tasbih "Choose a dua" picker is built from reusable parts: `components/ui/picker-sheet.tsx` (the bottom sheet with title, close button and optional search), `components/ui/pick-row.tsx` (a choice with a tick) and, on top of those, `components/ui/dropdown.tsx` (a field that opens a short list of options, used for Existing / New in the add-dua form). The add-dua form's own parts are in `components/add-dua/` (`FormField` and `FormInput`, `CollectionField`, the existing-dua list and the duplicate modal), with the state in `useCollectionChoice` and the colors in `useAddDuaColors`.
@@ -588,7 +589,7 @@ Files: `components/export/export-collection-modal.tsx` (the dialog), `lib/pdf/` 
 
 - File names are lowercase with hyphens (`explore-card.tsx`, `theme-colors.ts`). Redux reducer files stay camelCase (`duasSlice.ts`). Route files in `app/` follow Expo Router
 - `components/ui/` holds reusable UI, `components/icons/` holds icons, `constants/` holds static data and theme values, `lib/` holds helpers and storage, `hooks/` holds hooks, `data/` holds the app's data (`data.json` is the entry point; see Data folder)
-- Components used by one feature live in a folder named after it: `components/tasbih/`, and `components/dua-list/` (shared by the Collection and Bookmark screens)
+- Components used by one feature live in a folder named after it: `components/tasbih/`, `components/share/` (the share sheet and the share card) and `components/dua-list/` (shared by the Collection and Bookmark screens)
 - Screens stay thin: shared pieces (cards, filter menu, tab selector, backgrounds, lists) are separate components
 
 ## Key Features
@@ -701,17 +702,71 @@ Files: `components/export/export-collection-modal.tsx` (the dialog), `lib/pdf/` 
 
 ### Share Features
 
-**Beautiful Card Generator:**
-- Arabic text (formatted beautifully)
-- Translation
-- Transliteration
-- App watermark/branding
+The share icon on the Dua screen opens the **share sheet**, laid out like Instagram's: a fixed search field with a **groups icon** at the top, your kindred scrolling in the middle, and a row of apps and actions fixed at the bottom that scrolls sideways.
 
-**Share Options:**
-- Share to social media (Instagram, Twitter, Facebook, WhatsApp)
-- Share to messaging apps
-- Save as image to device
-- Copy text to clipboard
+**Kindred.** "Kindred" is the app's word for the people you share duas with ("a kindred", "my kindred": the word is the same for one and many). Someone becomes kindred when you save them as such. Kindred can be put in **groups**: Family, Friends, Mosque and Classmates (`KINDRED_GROUPS` in `data/types.ts`; a person can be in several, or none). The groups are one-way like the rest: if Ali saves Sara as kindred, Sara is not Ali's kindred until she saves him.
+
+**The sheet**
+
+| Part | What it does |
+|---|---|
+| Search field | Filters your kindred by name or email. In "Add by code" it takes the user code instead. |
+| Groups icon (right of the search) | Switches the middle between **kindred** and **groups**. Tapping a group picks it (a tick) and so everyone in it; tap again to let them go. A group is picked by itself: picking Friends does not mark Classmates, even when someone is in both. Tapping a person in the kindred view takes them out of a picked group, or adds them on their own. |
+| Middle grid | Three columns, scrolls up and down. First cell is **Add by code**; below it your kindred A-Z (people found by code and not saved show with "One-off"). Tap to pick. |
+| Bottom row | Scrolls sideways: **WhatsApp, Instagram, Facebook, X, Telegram, Messenger**, **Save image**, **Copy text**, **Card** and **More**. Once someone is picked, the row is replaced by **Send to 1 group**, **Send to 3 people** or **Send to 2 groups and 1 person**. |
+
+**Share Options** (the bottom row)
+
+| Option | What happens |
+|---|---|
+| WhatsApp, Instagram, Facebook, X, Telegram, Messenger | The **card picture** goes to that app (the app opens with the picture ready; X also gets a short caption). Done with `react-native-share`, which needs a development build. Where it is not available (Expo Go) or the app is not installed, the system share sheet opens instead, so it still works. See `lib/share/social-share.ts`. |
+| Save image | The card is saved to the device's photos (`expo-media-library`; it only asks for permission to add pictures, never to read them). |
+| Copy text | Copies the dua as text: title, Arabic, transliteration, translation, source, and the app's name (the card's switches apply). |
+| Card | Opens the card editor (below). |
+| More | The system share sheet with the card picture: any other messaging app, Messages, AirDrop, Nearby Share, Files... |
+| Send to kindred | Pick people (or a group, or someone by code) and tap **Send**. One share is created per person (see [Flow: shares](#flow-shares)). |
+
+**Beautiful Card Generator** (`components/share/share-card.tsx`)
+
+- Title, the dua's Arabic (in the Arabic font chosen in Settings), transliteration, translation, and the source (for example `Al-Anbiya · 21:87`).
+- The **app watermark** at the bottom: the prayer-beads logo and "My Dua Collection" (`SHARE_APP_NAME` in `constants/share-config.ts`; `SHARE_APP_URL` is empty until the app is in the stores, and is added to the shared text once it is set).
+- A frame, an ornament under the title and a pattern of eight-pointed stars that fades out towards the middle, so the text always sits on a calm ground.
+- Three styles, **Emerald** (the brand gradient), **Night** and **Cream** (`constants/share-theme.ts`). The card keeps its own colors in light and dark mode, because it is a picture people send around.
+- At least 4:5 (the Instagram portrait shape); a long dua makes it taller and its text a little smaller (`getCardTextScale` in `lib/share/card-layout.ts`).
+- The picture is always taken from a copy of the card drawn **off screen at 360 px wide** and saved at **1080 px wide** (`CARD_EXPORT_WIDTH`), so it looks the same on every phone, whatever size the preview is.
+- The **Card** screen shows a preview and lets the person change the style and switch the transliteration, translation and source on or off (a part the dua does not have is not offered). These choices apply to every action in the sheet, including Copy text.
+
+**Add by code** (the "Flow: user code" below) is built into the sheet: tap the dashed **+ Add by code** cell, type the code in the search field and tap **Find**.
+
+**Trying it with the dummy data.** The app starts as a guest, and the share sheet then sends as the sample user in `data/data.json` (Ibrahim Yusuf, who has five kindred). Codes to type: `SA-4K7M` (Sara A.: not kindred, so it asks **Save as kindred?**), `MA-GEXW` (Maryam A.: already kindred, so the question is skipped), `IY-6C9A` (your own code, ignored), `ZZ-2222` (nobody: "No user with that code..."), `hello` (cannot be a code). More than 10 lookups in a minute are refused, as the backend will do. Set `REQUIRE_SIGN_IN_TO_SHARE` in `constants/share-config.ts` to `true` to ask guests to sign in before sending to kindred (the apps in the bottom row still work).
+
+#### Flow: user code (adding kindred)
+
+- **Getting a code.** At first sign-in the backend builds the code: your two initials plus 4 random characters (`generateUniqueUserCode` in `lib/user-code.ts`). It checks that nobody has it and tries again if someone does. A name change never changes it. The profile shows it as `BG-7K3M` with a **Copy** button and a **Reset code** option.
+- **Adding someone while sharing.**
+  - The receiver tells the sender their code.
+  - The sender taps Share, then **Add by code**, and types it. Case, spaces and hyphens don't matter, so `bg 7k3m` works.
+  - If the text can't be a code, the app says so without making a request. The sender's own code is ignored.
+  - The backend looks the code up, limited to about 10 lookups a minute per user (`createLookupLimiter` in `lib/kindred.ts` is the same rule for the dummy data).
+  - If nobody has it, the app says: "No user with that code. Check it and try again."
+  - If someone does, a confirmation shows their avatar and first name plus last initial.
+  - After confirming, the app asks **Save as kindred?** (with the groups to put them in, optional). **Yes** adds a kindred row; **No** leaves it as a one-off share. If they're already kindred, the app skips the question.
+- **Resetting.** A new code replaces the old one, and the old code stops working immediately. Kindred and shares are unaffected.
+
+#### Flow: shares
+
+- **Sending.** The sender opens a dua and taps Share. They pick kindred in the grid, a group, or someone by code. Each person gets one share with `status: "pending"` (`buildShares` in `lib/kindred.ts`; someone who already has the same item waiting from the sender is skipped, and the sheet says so).
+- **Receiving.** The recipient sees pending shares and can accept or decline. A declined share changes nothing. **No screen for this yet:** it is the next piece of work (see the to do list).
+- **On accept** (the rules are in code in `lib/share-rules.ts`):
+  - Collection: its name is compared with the recipient's collections, ignoring case and extra spaces (`hasDuplicateCollection`).
+  - Dua: the recipient picks a collection, and the app checks whether it already holds a dua with the same `source` and `reference` (`findDuplicateDua`).
+  - If there's no duplicate, the item is copied into their library as if they made it: the copy gets a new id and `sharedBy` set to the sender; a dua copy also gets `origin: "shared"`; a collection copy gets `isUserCreated: true`, and its duas come with it (`buildSharedDuaCopy`, `buildSharedCollectionCopy`).
+  - The share becomes `accepted` and gets a `respondedAt` date (`respondToShare`).
+- **After.** The copy is the recipient's own. Edits by either person don't reach the other, and if it was shared onward, `sharedBy` is the person who sent it on.
+
+**Files.** `components/share/` has the sheet (`share-dua-sheet.tsx`, with the two screens `share-picker-step.tsx` and `share-card-step.tsx`), the grid, the Add by code steps (`code-flow.tsx`), the bottom row (`share-actions-row.tsx`) and the card (`share-card.tsx`, `share-card-background.tsx`). The state is in two hooks: `useSharePicker` (who is picked, the code flow) and `useShareCard` (the card and its actions). Every change to kindred and shares goes through `useKindredActions` (like `useUserActions`), so a backend replaces it in one place. The `kindred` Redux slice holds the `kindred` and `shares` tables and is saved as `kindred:v1`. `lib/kindred.ts` has the pure rules (they are tested), `lib/share/` has taking the picture, saving, the apps and the shared text, and `constants/share-config.ts` / `share-theme.ts` the settings and colors.
+
+**Native modules.** The share sheet adds `react-native-view-shot` (takes the picture), `expo-media-library` (saves it), `react-native-share` (sends it straight to an app) and `expo-build-properties` (needed by react-native-share's config plugin). Their settings are in `app.json` (the photo permission texts, and the apps the share plugin may open). After pulling this change run `npm install` and rebuild a development build (`npx expo prebuild` then `npx expo run:android` / `run:ios`). In Expo Go the app still works, but the apps in the bottom row open the system share sheet instead, and on Android saving to photos is limited.
 
 **Collection Export:**
 - **PDF Download:** see [PDF export](#pdf-export)
@@ -750,7 +805,7 @@ Files: `components/export/export-collection-modal.tsx` (the dialog), `lib/pdf/` 
 
 - **Additional Libraries:**
   - PDF generation: `expo-print` (HTML to PDF on the device), `expo-sharing`, `expo-file-system`, `expo-asset` (see [PDF export](#pdf-export)). `pdf-lib` was ruled out because it cannot shape Arabic text
-  - Share functionality (react-native-share)
+  - Share functionality: `react-native-share` (send the card picture straight to WhatsApp, Instagram, Facebook, X, Telegram, Messenger), `react-native-view-shot` (takes the picture of the card), `expo-media-library` (saves it), `expo-sharing` (system share sheet). See [Share Features](#share-features)
   - Image picker (react-native-image-picker / image_picker)
   - Audio player (react-native-sound / audioplayers)
 
@@ -820,10 +875,10 @@ Files: `components/export/export-collection-modal.tsx` (the dialog), `lib/pdf/` 
 - [ ] **Collection Management:**
   <!-- - [x] Collection screen: name, dua count, numbered list with source line, search
   - [x] Filter by surah or hadith name (menu above Appearance), and search by those names -->
-  - [x] Create custom collections (together with their first dua)
-  - [x] Add a dua to one or more collections from the Dua screen's **Save to collection** sheet (the + in the bottom bar)
+  <!-- - [x] Create custom collections (together with their first dua) -->
+  <!-- - [x] Add a dua to one or more collections from the Dua screen's **Save to collection** sheet (the + in the bottom bar) -->
   - [ ] Collection description
-  - [ ] Sort duas within collections
+  <!-- - [x] Sort duas within collections -->
   - [ ] Edit/delete collections
 - [ ] **Dua Detail View:**
   - [ ] Arabic text display
@@ -833,35 +888,35 @@ Files: `components/export/export-collection-modal.tsx` (the dialog), `lib/pdf/` 
   - [ ] Bookmark icon
   - [ ] Share button
   - [ ] Open it from the Collection and Bookmark lists
-- [ ] **Tasbih Counter:**
+<!-- - [ ] **Tasbih Counter:** -->
   <!-- - [x] Simple counter screen -->
-  - [ ] Customizable counters per dua
-  - [ ] Preset counters for morning/evening adhkar
-- [ ] **Bookmark System:**
+  <!-- - [ ] Customizable counters per dua -->
+  <!-- - [ ] Preset counters for morning/evening adhkar -->
+<!-- - [ ] **Bookmark System:** -->
   <!-- - [x] Bookmark screen with all saved duas, the collections each one is in, search, and the surah / hadith filter -->
-  - [ ] Save/unsave duas
-  - [ ] Remove a bookmark from the list
+  <!-- - [ ] Save/unsave duas -->
+  <!-- - [x] Remove a bookmark from the list -->
 - [ ] **Profile Screen:**
-  - [ ] Basic settings (appearance, language)
+  <!-- - [x] Basic settings (appearance, language) -->
   - [ ] Today's Islamic date
 <!-- - [x] Local caching for offline access -->
 - [ ] Cloud sync for collections
 
 ### AI & Advanced Input
 - [ ] **Image OCR:**
-  - [x] Camera integration (UI done)
-  - [x] Gallery image upload (UI done)
+  <!-- - [x] Camera integration (UI done) -->
+  <!-- - [x] Gallery image upload (UI done) -->
   - [ ] Text extraction from images (placeholder until the backend `POST /api/duas/scan` exists: Google Vision with the Arabic language hint)
-  - [x] Review and edit scanned text (fills in the manual form, with the Auto-filled tags)
+  <!-- - [x] Review and edit scanned text (fills in the manual form, with the Auto-filled tags) -->
   - [ ] Auto-detect translation (the backend returns it when it can; matching the scanned Arabic against the built-in duas first would give better translations)
 - [ ] **AI generated dua:**
-  - [x] Prompt screen with examples and a "the AI can make mistakes" note (UI done)
+  <!-- - [x] Prompt screen with examples and a "the AI can make mistakes" note (UI done) -->
   - [ ] The AI call (placeholder until the backend `POST /api/duas/generate` exists)
   - [ ] "Refine suggestion" (ask again with a change, instead of starting over)
 - [ ] **Source verification agent (backend):** an AI agent that checks the source and reference of every image-scanned and AI-generated dua before it is saved. It must not allow a wrong source: when the Quran reference does not match the Arabic, or the hadith does not exist or is not in that collection, it rejects it and tells the user the **right source** (surah and verse, or the hadith collection and number), which the form can then fill in. Until it exists, the form's source lock ("Are you sure?" when the source of an image or AI dua is changed) is the only guard, and the AI warning tells users to check the source
 - [ ] Authenticate the scan and generate calls (send the user's token) and rate-limit them per user on the backend
 - [ ] **AI Chat Assistant:**
-  - [x] Chat interface on Explore screen (UI done; replies are a placeholder)
+  <!-- - [x] Chat interface on Explore screen (UI done; replies are a placeholder) -->
   - [ ] Conversation history (the chat is not saved by design)
   - [ ] Suggested prompts
   - [ ] Dua recommendations
@@ -894,17 +949,20 @@ Files: `components/export/export-collection-modal.tsx` (the dialog), `lib/pdf/` 
   - [ ] Hadith/Quran references
   - [ ] Scholarly commentary
   - [ ] Benefits and virtues
-- [ ] **Share Card Generator:**
-  - [ ] Beautiful card design
-  - [ ] Include Arabic, translation, transliteration
-  - [ ] App watermark
-  - [ ] Save as image
-  - [ ] Share to social media
-- [x] **PDF Export:**
+- [x] **Share Card Generator:** (built; still to check on real iOS and Android devices, see [Share Features](#share-features))
+  - [x] Beautiful card design (three styles, off-screen capture at 1080 px)
+  - [x] Include Arabic, translation, transliteration (and source)
+  - [x] App watermark
+  - [x] Save as image
+  - [x] Share to social media (WhatsApp, Instagram, Facebook, X, Telegram, Messenger, and any app through More)
+  - [x] Copy text to clipboard
+  - [ ] Check the picture and the direct share to each app on real devices (the card is drawn off screen, and iOS and Android differ)
+  - [ ] Share a whole collection (the same sheet, with a collection card)
+<!-- - [x] **PDF Export:**
   - [x] Export entire collections (pre-made and the user's own)
   - [x] Customizable content (cover page, translation, transliteration, source, notes, times to recite, one dua per page)
   - [x] Print-ready formatting (A4, page numbers, app logo and name on every page)
-  - [ ] Check the layout on real iOS and Android devices (see [PDF export](#pdf-export))
+  - [ ] Check the layout on real iOS and Android devices (see [PDF export](#pdf-export)) -->
 
 ### Special Features & Optimization
 - [ ] **Month Mode System:**
@@ -939,7 +997,10 @@ Files: `components/export/export-collection-modal.tsx` (the dialog), `lib/pdf/` 
 - [ ] Widget support (daily dua on home screen)
 - [ ] Apple Watch / Wear OS companion app
 - [ ] Family sharing features
-- [ ] Share duas with friends (the first time a dua is shared with someone, the app asks if they should be added as a friend)
+- [x] Share duas with kindred: the share sheet (kindred grid, groups, Add by code, "Save as kindred?" the first time a person found by code is not kindred yet), sending creates pending shares (dummy data; see [Flow: shares](#flow-shares))
+- [ ] Receive shares: a screen for pending shares with accept and decline, the duplicate checks and the copy (the rules are already in `lib/share-rules.ts`)
+- [ ] Manage kindred: see and edit your kindred and their groups, remove someone
+- [ ] Backend for kindred, user-code lookup and shares (the lookup limit, `shares` and `user_kindred` tables)
 - [ ] Prayer time integration (optional)
 - [ ] Qibla direction finder
 - [ ] Integration with Quran apps

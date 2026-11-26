@@ -18,6 +18,7 @@ A mobile app for organizing, finding and practicing Islamic supplications (duas)
   - [Bookmark](#bookmark)
   - [Explore](#explore)
   - [Tasbih](#tasbih)
+  - [Share](#share)
   - [Settings](#settings)
   - [Dark and Light Mode](#dark-and-light-mode)
 - [Architecture](#architecture)
@@ -45,6 +46,7 @@ Users can currently:
 - Search duas by title, transliteration, Arabic (without needing the diacritics), translation, or surah and hadith name.
 - See the favorite duas together with the collections each one belongs to.
 - Add a dua by hand (title, Arabic, translation, collections, and an optional source and reference) and keep it on the device.
+- Share a dua: send it to your **kindred** (the people you share with, in groups like Family, Friends, Mosque and Classmates) or to someone by their user code, or turn it into a beautiful card (Arabic, transliteration, translation, source and the app's watermark) to save as an image, copy as text, or send to WhatsApp, Instagram, Facebook, X, Telegram, Messenger and more.
 - Count dhikr with the Tasbih: a progress ring, targets of 33, 100 or any custom number, sound and vibration feedback, and a shake when the target is reached.
 - Read the full dua being counted and switch to another one, from 10 presets or a search across every dua.
 - Browse the Explore topics and search them.
@@ -149,6 +151,16 @@ Users can currently:
 
 ---
 
+### Share
+
+- The share icon on a dua opens a sheet like Instagram's: search with a **groups** icon at the top, your kindred in a scrolling grid, and a row at the bottom that scrolls sideways with **WhatsApp, Instagram, Facebook, X, Telegram, Messenger, Save image, Copy text, Card** and **More**.
+- Pick people (or a whole group) and tap **Send**: each gets a pending share. Not in your list yet? **Add by code**: type their user code (`bg 7k3m` works), confirm who it is, and choose **Save as kindred?** (Yes keeps them, No is a one-off share).
+- The **card** is a picture at least 4:5, in three styles (Emerald, Night, Cream), with the Arabic in your chosen font, the app's watermark, and switches for transliteration, translation and source. The **Card** button shows a preview.
+- Everything uses dummy people from `data/` until the backend exists. Receiving a share (accept or decline) is the next piece.
+- Needs a development build for the direct share to each app and for saving to photos on Android; in Expo Go the apps open the system share sheet instead. See [Share Features](README_COMPREHENSIVE.md#share-features).
+
+---
+
 ### Settings
 
 - The tab is a placeholder for now.
@@ -176,6 +188,7 @@ Users can currently:
 - **Icons** — SVG files are the source of truth, and the React Native components are generated from them with a script, so the same icons work as collection covers, Explore topics and a future icon picker.
 - **Arabic text** — one `ArabicText` component, because Amiri's diacritics are clipped unless the line height is generous.
 - **Splash** — a plain native splash, then an animated splash drawn from an SVG imported as a component.
+- **Sharing** — one sheet (`components/share/`) with the state in two hooks (`useSharePicker`, `useShareCard`). The card is drawn once off screen at a fixed width and photographed with `react-native-view-shot`; kindred and shares are a Redux slice (`kindred`, saved on the device) that every change goes through `useKindredActions`, so the backend replaces it in one place.
 - **Feedback** — `expo-haptics` for vibration and `expo-audio` for the tap tick and the target chime, without pausing the user's music.
 
 ---
@@ -195,6 +208,7 @@ Then press `i` (iOS simulator), `a` (Android emulator) or scan the QR code with 
 
 - Adding a dua from a picture uses `expo-image-picker` and `expo-image-manipulator`, and the camera permission text is set in `app.json`. After pulling this change, run `npm install` and rebuild a development build (`npx expo run:android` / `run:ios`) so the permission is in the app; Expo Go already has it. To try the real backend, put `EXPO_PUBLIC_API_URL=https://your-backend` in `.env` and restart Metro.
 - PDF export uses `expo-print`, `expo-sharing`, `expo-file-system` and `expo-asset`. They are in `package.json`, so `npm install` is enough; if you add them to another project, use `npx expo install expo-print expo-sharing expo-file-system expo-asset`.
+- Sharing uses `react-native-view-shot`, `expo-media-library`, `react-native-share` and `expo-build-properties` (config plugins are in `app.json`). After pulling this change, run `npm install` and rebuild a development build (`npx expo prebuild`, then `npx expo run:android` / `run:ios`); Expo Go works too, but the apps in the share row open the system share sheet instead.
 - After changing `metro.config.js` or adding a dependency, restart with `npx expo start -c` to clear the cache.
 - The native splash color is set in `app.json`, so a change to it needs a development build (`npx expo prebuild`), not Expo Go.
 
@@ -214,6 +228,7 @@ Then press `i` (iOS simulator), `a` (Android emulator) or scan the QR code with 
 - [Expo Haptics](https://docs.expo.dev/versions/latest/sdk/haptics/) and [Expo Audio](https://docs.expo.dev/versions/latest/sdk/audio/) - Tasbih feedback
 - [Google Fonts](https://fonts.google.com/) - Nunito Sans, Berkshire Swash and the Arabic fonts
 - [Expo Image Picker](https://docs.expo.dev/versions/latest/sdk/imagepicker/) and [Expo Image Manipulator](https://docs.expo.dev/versions/latest/sdk/imagemanipulator/) - picture of a dua (camera or gallery)
+- [React Native Share](https://react-native-share.github.io/react-native-share/), [react-native-view-shot](https://github.com/gre/react-native-view-shot) and [Expo Media Library](https://docs.expo.dev/versions/latest/sdk/media-library/) - share cards (picture, save, send to apps)
 - [Expo Print](https://docs.expo.dev/versions/latest/sdk/print/), [Expo Sharing](https://docs.expo.dev/versions/latest/sdk/sharing/), [Expo File System](https://docs.expo.dev/versions/latest/sdk/filesystem/) and [Expo Asset](https://docs.expo.dev/versions/latest/sdk/asset/) - PDF export of a collection
 - [Figma](https://www.figma.com) - UI design
 
@@ -233,7 +248,8 @@ Then press `i` (iOS simulator), `a` (Android emulator) or scan the QR code with 
 - [ ] Audio recitations (the Dua screen's audio button was replaced by **Save to collection**; the audio button comes back when recitations exist)
 - [ ] Reminders and Ramadan mode
 - [x] PDF export of a collection (still to check on a real iOS and Android device, see [PDF export](README_COMPREHENSIVE.md#pdf-export))
-- [ ] Share cards
+- [x] Share cards and the share sheet (kindred, groups, Add by code, apps, save image, copy text); still to check on real devices
+- [ ] Receive shares (pending shares, accept or decline) and manage kindred
 - [ ] Backend and cloud sync
 
 The full list is in [README_COMPREHENSIVE.md](README_COMPREHENSIVE.md#to-do).
