@@ -3,7 +3,7 @@ import { themeColors as p } from '@/constants/theme-colors'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import tw from '@/lib/tailwind'
 import { Feather } from '@expo/vector-icons'
-import { Pressable, TextInput, View, type StyleProp, type ViewStyle } from 'react-native'
+import { Pressable, TextInput, View, type StyleProp, type TextInputProps, type ViewStyle } from 'react-native'
 
 const searchTheme = {
   dark: {
@@ -27,6 +27,12 @@ interface SearchFieldProps {
   onChangeText: (text: string) => void
   placeholder: string
   autoFocus?: boolean
+  /** 'characters' for a field that takes a code. */
+  autoCapitalize?: TextInputProps['autoCapitalize']
+  maxLength?: number
+  returnKeyType?: TextInputProps['returnKeyType']
+  /** The keyboard's search / go button. */
+  onSubmitEditing?: () => void
   style?: StyleProp<ViewStyle>
 }
 
@@ -36,6 +42,10 @@ export function SearchField({
   onChangeText,
   placeholder,
   autoFocus,
+  autoCapitalize,
+  maxLength,
+  returnKeyType = 'search',
+  onSubmitEditing,
   style,
 }: SearchFieldProps) {
   const isDark = useColorScheme() === 'dark'
@@ -55,9 +65,12 @@ export function SearchField({
         onChangeText={onChangeText}
         placeholder={placeholder}
         placeholderTextColor={c.placeholder}
-        returnKeyType='search'
+        returnKeyType={returnKeyType}
         autoCorrect={false}
         autoFocus={autoFocus}
+        autoCapitalize={autoCapitalize}
+        maxLength={maxLength}
+        onSubmitEditing={onSubmitEditing}
         style={[tw`flex-1 font-nunito text-[14px] ml-[12px] p-0`, { color: c.text }]}
       />
       {value.length > 0 && (
