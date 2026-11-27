@@ -35,7 +35,6 @@ export function NotificationSettings({ variant }: { variant?: SettingsVariant })
         icon='calendar-month-outline'
         title={t('notifications.monthly')}
         subtitle={t('notifications.monthlySubtitle')}
-        chevron
         control={
           <ToggleSwitch
             value={monthlyReminders}
