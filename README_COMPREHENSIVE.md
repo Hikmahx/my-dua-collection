@@ -334,7 +334,7 @@ Opened by the **+** in the Dua screen's bottom bar (`components/dua-screen/save-
 
 3. **Notifications:**
    - Notification settings and preferences
-   - Daily reminder and other months configuration and toggle
+   - Daily reminder and special reminders toggle (the special reminders row was "Monthly reminders"; the saved setting is still `monthlyReminders`)
 
 4. **Appearance:**
    - Dark/Light mode toggle
@@ -672,8 +672,11 @@ Files: `components/export/export-collection-modal.tsx` (the dialog), `lib/pdf/` 
 - Pre-Iftar dua (15 minutes before)
 - Suhoor time reminder
 - Taraweeh prayer reminder
-- Last 10 nights special notifications
+- Last 10 nights special notifications (the odd nights, 21 to 29, for Laylatul Qadr; sent on the evening before, because the Hijri day starts at sunset)
 - Zakat al-Fitr reminder
+
+**Special Reminders (one toggle in Notifications):**
+- Covers Ramadan and the other special days: Islamic new year, Ashura (9th and 10th Muharram), the last 10 nights of Ramadan, Mawlid, Isra and Mi'raj and more
 
 **Configuration:**
 - Managed in Profile > Notifications
@@ -689,11 +692,11 @@ Files: `components/export/export-collection-modal.tsx` (the dialog), `lib/pdf/` 
 
 **How the app knows (built, no screens yet):**
 
-- `lib/islamic-season.ts` is the one place that works out the Islamic year. `getIslamicSeason(date, adjustment)` returns today's Hijri date, `isRamadan` and `ramadanDay`, `isDhulHijjah` and `dhulHijjahDay`, `isFirstOfRamadan` (the day to say "Ramadan Mubarak"), `isEid` (Eid al-Fitr, 1 Shawwal, or Eid al-Adha, 10 Dhul Hijjah), `occasion` (also the 1st of Dhul Hijjah and the Day of Arafah), `daysUntilRamadan` and `daysUntilDhulHijjah`, the dates they start (`ramadanStartsOn`, `dhulHijjahStartsOn`, local midnight, for scheduling reminders), and `next`: whichever of the two starts first from tomorrow on. During Ramadan `daysUntilRamadan` is next year's, so check `isRamadan` first. These are pure functions, so the reminders and the screens all read the same answer.
+- `lib/islamic-season.ts` is the one place that works out the Islamic year. `getIslamicSeason(date, adjustment)` returns today's Hijri date, `isRamadan` and `ramadanDay`, `isDhulHijjah` and `dhulHijjahDay`, `isFirstOfRamadan` (the day to say "Ramadan Mubarak"), `isEid` (Eid al-Fitr, 1 Shawwal, or Eid al-Adha, 10 Dhul Hijjah), `occasion` (also the 1st of Dhul Hijjah, the Day of Arafah, the Islamic new year, the 9th and 10th of Muharram as `tasua` and `ashura`, `mawlid` on 12 Rabi' al-Awwal and `israMiraj` on 27 Rajab), `ramadanNight` (the night of Ramadan that starts this evening), `isLastTenNights` and `isLaylatulQadrNight` (the odd nights 21 to 29), `daysUntilRamadan` and `daysUntilDhulHijjah`, the dates they start (`ramadanStartsOn`, `dhulHijjahStartsOn`, local midnight, for scheduling reminders), and `next`: whichever of the two starts first from tomorrow on. During Ramadan `daysUntilRamadan` is next year's, so check `isRamadan` first. These are pure functions, so the reminders and the screens all read the same answer.
 - Screens use the hook `useIslamicSeason()`, which follows the setting below and works the answer out again at midnight (and when the app comes back to the front), so an app left open overnight is never a day behind.
 - **No API is used.** Dates come from `lib/hijri.ts`: the phone's own Umm al-Qura calendar (the official Saudi calendar, worked out by calculation), with a built-in tabular calendar as the fallback. It works offline.
 - **Hijri date adjustment** (Settings, "Islamic calendar"): -1, 0 or +1 day. Many communities, Nigeria included, start Ramadan and Eid from a local moon sighting, which can be a day different from Umm al-Qura. "1 day behind" = months start a day later; "1 day ahead" = a day earlier. The date in Settings, Ramadan, Dhul Hijjah and Eid all follow it, and it is saved on the device (`hijriAdjustment` in `settings:v1`).
-- A Hijri day really starts at sunset; the app changes day at midnight, like a calendar.
+- A Hijri day really starts at sunset; the app changes day at midnight, like a calendar. That is why the night fields look at tomorrow's date: the 27th night starts on the evening of the 26th, so `ramadanNight` is 27 for the whole of the 26th. It is null on the last evening of a 29-day Ramadan (the next night is Eid eve). After midnight the night number is a day ahead of the real one until sunset, which a reminder sent in the evening never hits.
 - **Later, with the backend:** an official start date for Ramadan, Dhul Hijjah and Eid that you update after the sighting announcement. The app would fetch it and use it instead of the calculated date (that is also what a push "Ramadan Mubarak" would follow).
 
 **Ramadan Mode Features:**
@@ -717,7 +720,7 @@ Short messages that go away by themselves: "Dua added successfully!", "PDF saved
 - **Use it from any screen:** `const toast = useToast()` then `toast.success(message)`, `toast.error(message)` or `toast.info(message)` (`hooks/use-toast.ts`). A second argument `true` keeps the toast on screen a little longer, for a message with two parts.
 - **Android** shows the phone's own toast (`ToastAndroid`); it cannot be styled. **iOS** has no native toast, so the app draws a banner at the top of the screen (`components/ui/toast-host.tsx`, colors in `constants/toast-theme.ts`). Tap it to close it; VoiceOver reads it out.
 - **Toast or Alert?** A toast is for what went well and needs no answer. Keep `Alert` for a confirmation (delete, change a locked source), a missing field, and an error the person has to read.
-- **Where the iOS banner is drawn:** `ToastProvider` (in `app/_layout.tsx`) keeps the toast, and a `ToastHost` draws it. A native Modal covers everything under it, so the root layout, `BottomSheet`, `DialogModal` and the Add dua screen (`app/modal.tsx`) each hold a `ToastHost`; the one opened last draws a new toast. A toast stays with the host that first drew it: if that host closes (for example a sheet), the toast goes with it instead of reappearing on the next host. `BottomSheet` passes `enabled={visible}` so its host steps aside the moment the sheet starts closing; a toast raised just before closing it (like "Sent to …") is then drawn once by the screen behind. A new Modal or modal screen needs a `<ToastHost />` inside it.
+- **Where the iOS banner is drawn:** `ToastProvider` (in `app/_layout.tsx`) keeps the toast, and a `ToastHost` draws it. A native Modal covers everything under it, so the root layout, `BottomSheet`, `DialogModal` and the Add dua screen (`app/modal.tsx`) each hold a `ToastHost`; the one opened last draws the toast, and when it closes the next one takes over. A new Modal or modal screen needs a `<ToastHost />` inside it.
 - **Where toasts are used today:** Add dua (added, and existing duas added), Save to collection (collections updated), Edit collection (saved, deleted), PDF export (saved), and the share sheet (saved to photos, copied, sent, and what went wrong). Errors that need reading stay `Alert`s.
 
 ### Share Features
@@ -989,6 +992,7 @@ The share icon on the Dua screen opens the **share sheet**, laid out like Instag
   <!-- - [x] Ramadan mode detection (logic: `lib/islamic-season.ts`, `useIslamicSeason()`; no screens yet) -->
   <!-- - [x] Dhul Hijjah detection (logic only) -->
   <!-- - [x] "Is today the 1st of Ramadan or Eid" and the days until the next one (logic only) -->
+  <!-- - [x] Islamic new year, Ashura, Mawlid, Isra and Mi'raj and the last 10 nights of Ramadan (logic only; no scheduled reminders yet) -->
   <!-- - [x] ±1 day Hijri date adjustment in Settings -->
   - [ ] Official start dates from the backend, updated after the moon-sighting announcement
   - [ ] Check the dates and the adjustment on a real iPhone and Android phone (the phone's calendar decides the dates)
@@ -997,6 +1001,13 @@ The share icon on the Dua screen opens the **share sheet**, laid out like Instag
 - [ ] **Smart Reminders:**
   - [ ] Daily dua reminders
   - [ ] Ramadan-specific reminders
+  - [ ] Countdown notifications (not UI, needs `expo-notifications` local scheduling; the dates come from `lib/islamic-season.ts`):
+    - [ ] Ramadan: 100, 50, 30, 7 and 1 days before
+    - [ ] Eid al-Fitr and Eid al-Adha: 3 days before
+    - [ ] Dhul Hijjah, Ashura and Day of Arafah: 3, 2 and 1 days before, sent the evening before so people can plan suhoor
+    - [ ] One toggle per target (Ramadan, Eid, Dhul Hijjah, Ashura), at most one notification a day
+    - [ ] iOS keeps about 64 pending notifications, so schedule a rolling window and refresh it when the app opens and when the Hijri adjustment changes
+    - [ ] Word the far-out ones as "about 100 days" (the calculated date can move a day after the moon sighting)
   - [ ] Custom notification schedules
   - [ ] Push notification integration
 - [ ] **Additional Tools:**
