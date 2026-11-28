@@ -3,9 +3,6 @@ import { getLanguage } from '@/constants/languages'
 export const APP_NAME = 'My Dua Collection'
 export const SUPPORT_EMAIL = 'hikmayousuph@gmail.com'
 
-/** Shown under "Daily reminder". Reminders can't be scheduled yet, so the toggle only saves the choice. */
-export const DAILY_REMINDER_TIME = '8:00 AM'
-
 export type FontSizeTarget = 'arabic' | 'translation' | 'transliteration'
 
 /** The three font size sliders, in the order they appear (sizes in px). */
