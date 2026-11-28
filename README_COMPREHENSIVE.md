@@ -333,8 +333,9 @@ Opened by the **+** in the Dua screen's bottom bar (`components/dua-screen/save-
    - Gregorian date
 
 3. **Notifications:**
-   - Notification settings and preferences
-   - Daily reminder and special reminders toggle (the special reminders row was "Monthly reminders"; the saved setting is still `monthlyReminders`)
+   - Notification preferences (opens the preferences screen) and the Notification centre
+   - Daily reminder toggle (its time is set on the preferences screen) and special reminders toggle (the special reminders row was "Monthly reminders"; the saved setting is still `monthlyReminders`)
+   - Turning a reminder on asks for notification permission first (see [Smart Reminders](#smart-reminders))
 
 4. **Appearance:**
    - Dark/Light mode toggle
@@ -590,7 +591,7 @@ Files: `components/export/export-collection-modal.tsx` (the dialog), `lib/pdf/` 
 
 - File names are lowercase with hyphens (`explore-card.tsx`, `theme-colors.ts`). Redux reducer files stay camelCase (`duasSlice.ts`). Route files in `app/` follow Expo Router
 - `components/ui/` holds reusable UI, `components/icons/` holds icons, `constants/` holds static data and theme values, `lib/` holds helpers and storage, `hooks/` holds hooks, `data/` holds the app's data (`data.json` is the entry point; see Data folder)
-- Components used by one feature live in a folder named after it: `components/tasbih/`, `components/share/` (the share sheet and the share card) and `components/dua-list/` (shared by the Collection and Bookmark screens)
+- Components used by one feature live in a folder named after it: `components/tasbih/`, `components/share/` (the share sheet and the share card), `components/notifications/` (the permission sheet, time picker, bell and rows) and `lib/reminders/` (what is scheduled and when) and `components/dua-list/` (shared by the Collection and Bookmark screens)
 - Screens stay thin: shared pieces (cards, filter menu, tab selector, backgrounds, lists) are separate components
 
 ## Key Features
@@ -663,25 +664,56 @@ Files: `components/export/export-collection-modal.tsx` (the dialog), `lib/pdf/` 
 
 ### Smart Reminders
 
-**Daily Reminders:**
-- Customizable time and frequency
-- Choose specific collection or random dua
-- Notification preview
+**Daily Reminders (built):**
+- One reminder a day at a time the user picks (8:00 AM until they change it), each day about a different dua, rotating through the user's duas. The notification shows the dua's title and the start of its translation, and tapping it opens that dua.
+- Still to do: choose a specific collection or a random dua, and a notification preview.
 
-**Ramadan-Specific Reminders:**
+**Ramadan-Specific Reminders (not built):**
 - Pre-Iftar dua (15 minutes before)
 - Suhoor time reminder
 - Taraweeh prayer reminder
-- Last 10 nights special notifications (the odd nights, 21 to 29, for Laylatul Qadr; sent on the evening before, because the Hijri day starts at sunset)
 - Zakat al-Fitr reminder
+- These need prayer times (see the optional prayer times integration), so they wait for that. The countdown to Ramadan, "Ramadan Mubarak" and the last 10 nights are built (below).
 
-**Special Reminders (one toggle in Notifications):**
-- Covers Ramadan and the other special days: Islamic new year, Ashura (9th and 10th Muharram), the last 10 nights of Ramadan, Mawlid, Isra and Mi'raj and more
+**Special Reminders (built, one toggle in Notifications):**
+- Everything that is not the daily reminder is one toggle, **Special reminders** (saved as `monthlyReminders`, off until the user turns it on). It covers Ramadan, Eid, Dhul Hijjah and the other special days.
+- The list is `REMINDER_TARGETS` in `lib/reminders/targets.ts`; the words are the `reminder.*` texts in `locales/en.ts`.
 
-**Configuration:**
-- Managed in Profile > Notifications
-- Toggle on/off for each type
-- Time selection for daily reminders
+| Special day | Before | On the day |
+|---|---|---|
+| Ramadan | 100, 50, 30, 7 and 1 days before (morning) | "Ramadan Mubarak!" (morning) |
+| Last 10 nights of Ramadan | | Evening of the 20th ("the last ten nights begin tonight") and the evenings before the odd nights, 23, 25, 27 and 29 ("Laylatul Qadr may be tonight"), because the Hijri day starts at sunset |
+| Eid al-Fitr, Eid al-Adha | 3 days before (morning) | "Eid Mubarak!" (morning) |
+| Dhul Hijjah (first ten days) | 3, 2 and 1 days before (evening) | morning |
+| Day of Arafah | 3, 2 and 1 days before (evening) | morning |
+| Ashura | 3, 2 and 1 days before (evening) | Tasu'a (9th) and Ashura (10th), morning |
+| Islamic new year, Mawlid, Isra and Mi'raj | | morning |
+
+- Mornings are 7:30 AM and evenings 5:00 PM (`constants/reminder-config.ts`). The far-out ones say "about 100 days", and the countdowns say the start can move a day after the moon sighting.
+- **At most one special reminder a day.** If two fall on the same day the day itself wins over a night, and a night wins over a countdown.
+- The words about Mawlid and Isra and Mi'raj are neutral ("the day many Muslims remember...") because scholars differ on marking them.
+
+**How it works (built):**
+- **Local notifications only.** Everything is scheduled on the phone with `expo-notifications`, so it works offline and needs no server (`lib/reminders/scheduler.ts` is the only file that talks to the library). Push notifications, for example "Maryam shared a dua with you", need the backend and are still to do.
+- **What is built where:** `lib/reminders/build-reminders.ts` works out the list (a pure function, tested), `useReminderScheduling` (`hooks/use-reminder-scheduling.ts`, mounted in `app/_layout.tsx`) schedules it, `useNotificationRouting` handles a tap, `NotificationPermissionProvider` asks for permission, and the `notifications` Redux slice (saved as `notifications:v1`) holds the notification centre and what is scheduled.
+- **A rolling window.** The daily reminder is scheduled 14 days ahead (a different dua each day), and the special ones about 4 months ahead (`SPECIAL_HORIZON_DAYS`, enough for the 100 days before Ramadan). iOS keeps at most 64 pending notifications, so no more than 60 are ever scheduled and the farthest special ones are left out until they come closer.
+- **Scheduled again** (everything is replaced, nothing is added to) when the app opens or comes to the front, when the day changes, when the permission is allowed or taken away, and when the daily reminder or its time, the Special reminders toggle, the Hijri date adjustment, the language or the duas change. So if the app is not opened for two weeks the daily reminders run out, and open it again to top them up.
+- **Android** has two notification channels (Daily dua and Special days), created at start-up, so the user can change each one in the phone's settings. The small notification icon is `assets/images/android-icon-monochrome.png` (`app.json`); if it looks wrong, replace it with a 96x96 white-on-transparent icon.
+- **Expo Go:** local notifications work, but a development build is the safe way to test them.
+
+**Permission (built):**
+- Turning a reminder on first shows the app's own explanation ("Get gentle reminders?" and what is sent), then the system question. A "Not now" leaves the toggle off. A "no" to the system question shows "Reminders are turned off" with **Open settings**. If the system will not ask again, that message is shown straight away.
+- A toggle shows as off while notifications are not allowed, even when the saved choice is on, because nothing would be sent. The Settings row says "Turned off. Tap to allow notifications", and the preferences screen has a banner with a button to allow them.
+
+**Notification preferences screen (built, Settings > Notification preferences):**
+- Permission banner, Daily reminder toggle and **Reminder time** (a time picker saved in settings: `dailyReminderTime`), Special reminders toggle, the Notification centre, and **Send a test notification** (arrives in a few seconds; delete the row once you have tried it).
+- Sound and vibration are not settings: notifications use the phone's own sound and vibration.
+
+**Notification centre (built):**
+- A bell with the number of unread notifications on the Home header, and a row in Settings. It lists the reminders that have been sent, newest first, kept on the device (the last 100).
+- A reminder goes into the centre when its time has passed and the app next opens (or at once if the app is open when it arrives), so it is there even if the notification was swiped away.
+- Tapping an item marks it read and, for the daily reminder, opens that dua. **Mark all as read** and **Clear all** are in the header.
+- Notifications about a share wait for the share inbox, which is not built yet.
 
 ### Month Mode
 
@@ -828,6 +860,7 @@ The share icon on the Dua screen opens the **share sheet**, laid out like Instag
 
 - **Additional Libraries:**
   - PDF generation: `expo-print` (HTML to PDF on the device), `expo-sharing`, `expo-file-system`, `expo-asset` (see [PDF export](#pdf-export)). `pdf-lib` was ruled out because it cannot shape Arabic text
+  - Reminders: `expo-notifications` (local notifications, scheduled on the phone) and `@react-native-community/datetimepicker` (the reminder time). See [Smart Reminders](#smart-reminders)
   - Share functionality: `react-native-share` (send the card picture straight to WhatsApp, Instagram, Facebook, X, Telegram, Messenger), `react-native-view-shot` (takes the picture of the card), `expo-media-library` (saves it), `expo-sharing` (system share sheet). See [Share Features](#share-features)
   - Image picker (react-native-image-picker / image_picker)
   - Audio player (react-native-sound / audioplayers)
@@ -999,17 +1032,16 @@ The share icon on the Dua screen opens the **share sheet**, laid out like Instag
   - [ ] Ramadan countdown
   - [ ] Special occasion cards on Explore screen
 - [ ] **Smart Reminders:**
-  - [ ] Daily dua reminders
-  - [ ] Ramadan-specific reminders
-  - [ ] Countdown notifications (not UI, needs `expo-notifications` local scheduling; the dates come from `lib/islamic-season.ts`):
-    - [ ] Ramadan: 100, 50, 30, 7 and 1 days before
-    - [ ] Eid al-Fitr and Eid al-Adha: 3 days before
-    - [ ] Dhul Hijjah, Ashura and Day of Arafah: 3, 2 and 1 days before, sent the evening before so people can plan suhoor
-    - [ ] One toggle per target (Ramadan, Eid, Dhul Hijjah, Ashura), at most one notification a day
-    - [ ] iOS keeps about 64 pending notifications, so schedule a rolling window and refresh it when the app opens and when the Hijri adjustment changes
-    - [ ] Word the far-out ones as "about 100 days" (the calculated date can move a day after the moon sighting)
-  - [ ] Custom notification schedules
-  - [ ] Push notification integration
+  <!-- - [x] Permission prompt that explains why before asking, and a message when the user says no -->
+  <!-- - [x] Notification preferences screen with the daily reminder time picker -->
+  <!-- - [x] Daily dua reminders (a different dua each day, tapping opens it) -->
+  <!-- - [x] Special reminders: Ramadan countdown (100, 50, 30, 7, 1 days), "Ramadan Mubarak", the last 10 nights, Eid, Dhul Hijjah, Arafah and Ashura countdowns, Islamic new year, Mawlid, Isra and Mi'raj; one toggle, at most one a day, a rolling window under iOS's 64 limit, scheduled again when a setting or the Hijri adjustment changes -->
+  <!-- - [x] Notification centre (bell with a badge on Home, a list kept on the device, tapping a reminder opens its dua) -->
+  - [ ] Tapping a share notification opens the share inbox
+  - [ ] Ramadan-specific reminders (pre-Iftar, suhoor, Taraweeh, Zakat al-Fitr): need prayer times
+  - [ ] Daily reminder: choose a collection, or random
+  - [ ] Choose which special days to be reminded about (today it is one toggle)
+  - [ ] Push notification integration (backend)
 - [ ] **Additional Tools:**
   - [ ] 99 Names of Allah reference
   - [ ] Plain tasbih counter on Explore

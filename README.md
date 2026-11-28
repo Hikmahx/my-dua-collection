@@ -19,6 +19,7 @@ A mobile app for organizing, finding and practicing Islamic supplications (duas)
   - [Explore](#explore)
   - [Tasbih](#tasbih)
   - [Share](#share)
+  - [Notifications](#notifications)
   - [Settings](#settings)
   - [Dark and Light Mode](#dark-and-light-mode)
 - [Architecture](#architecture)
@@ -47,6 +48,7 @@ Users can currently:
 - See the favorite duas together with the collections each one belongs to.
 - Add a dua by hand (title, Arabic, translation, collections, and an optional source and reference) and keep it on the device.
 - Share a dua: send it to your **kindred** (the people you share with, in groups like Family, Friends, Mosque and Classmates) or to someone by their user code, or turn it into a beautiful card (Arabic, transliteration, translation, source and the app's watermark) to save as an image, copy as text, or send to WhatsApp, Instagram, Facebook, X, Telegram, Messenger and more.
+- Reminders: a daily dua at the time you choose and special reminders for Ramadan (the countdown, "Ramadan Mubarak" and the last ten nights), Eid, Dhul Hijjah, Arafah, Ashura, the Islamic new year, Mawlid and Isra and Mi'raj, with a notification centre that keeps what was sent.
 - Count dhikr with the Tasbih: a progress ring, targets of 33, 100 or any custom number, sound and vibration feedback, and a shake when the target is reached.
 - Read the full dua being counted and switch to another one, from 10 presets or a search across every dua.
 - Browse the Explore topics and search them.
@@ -161,6 +163,16 @@ Users can currently:
 
 ---
 
+### Notifications
+
+- **Settings > Notification preferences** has the daily reminder with a time picker, the Special reminders toggle, a banner to allow notifications, and a button that sends a test notification. The same toggles are on the Settings tab.
+- Turning a reminder on first explains why the app wants to send notifications, then asks the system. If the answer is no, a message offers **Open settings**.
+- The **daily reminder** is about a different dua each day; tapping it opens that dua. **Special reminders** (one toggle) are the Ramadan countdown, "Ramadan Mubarak", the odd nights of the last ten of Ramadan, Eid, Dhul Hijjah, Arafah and Ashura countdowns, the Islamic new year, Mawlid and Isra and Mi'raj, at most one a day. They follow the Hijri date adjustment in Settings.
+- The **bell** on the Home header opens the notification centre: what has been sent, newest first, with the number unread on the bell. Tap one to open its dua, or mark all as read or clear them.
+- Everything is scheduled on the phone (`expo-notifications`), so it works offline. The daily reminders are scheduled two weeks ahead and topped up whenever the app opens. Use a development build to test; see [Smart Reminders](README_COMPREHENSIVE.md#smart-reminders).
+
+---
+
 ### Settings
 
 - The tab is a placeholder for now.
@@ -189,6 +201,7 @@ Users can currently:
 - **Arabic text** — one `ArabicText` component, because Amiri's diacritics are clipped unless the line height is generous.
 - **Splash** — a plain native splash, then an animated splash drawn from an SVG imported as a component.
 - **Sharing** — one sheet (`components/share/`) with the state in two hooks (`useSharePicker`, `useShareCard`). The card is drawn once off screen at a fixed width and photographed with `react-native-view-shot`; kindred and shares are a Redux slice (`kindred`, saved on the device) that every change goes through `useKindredActions`, so the backend replaces it in one place.
+- **Reminders** — local notifications from `expo-notifications`. `lib/reminders/build-reminders.ts` (pure, tested) works out what to send, `useReminderScheduling` schedules it in a rolling window and again whenever the app opens or a setting changes, `NotificationPermissionProvider` asks for permission with an explanation first, and the `notifications` slice keeps the notification centre on the device.
 - **Islamic calendar** — `lib/islamic-season.ts` works out Ramadan, Dhul Hijjah, Eid, other special days (Islamic new year, Ashura, Mawlid, Isra and Mi'raj), the last 10 nights of Ramadan and the days until the next season from the phone's Umm al-Qura calendar (no API), with a ±1 day adjustment in Settings for communities that follow their own moon sighting. Screens and reminders read it through `useIslamicSeason()`.
 - **Toasts** — `useToast()` shows the phone's own toast on Android and an in-app banner on iOS (`ToastProvider` in the root layout; every Modal holds a `ToastHost` because a native Modal covers the rest of the app). Alerts stay for confirmations and errors.
 - **Feedback** — `expo-haptics` for vibration and `expo-audio` for the tap tick and the target chime, without pausing the user's music.
@@ -210,6 +223,7 @@ Then press `i` (iOS simulator), `a` (Android emulator) or scan the QR code with 
 
 - Adding a dua from a picture uses `expo-image-picker` and `expo-image-manipulator`, and the camera permission text is set in `app.json`. After pulling this change, run `npm install` and rebuild a development build (`npx expo run:android` / `run:ios`) so the permission is in the app; Expo Go already has it. To try the real backend, put `EXPO_PUBLIC_API_URL=https://your-backend` in `.env` and restart Metro.
 - PDF export uses `expo-print`, `expo-sharing`, `expo-file-system` and `expo-asset`. They are in `package.json`, so `npm install` is enough; if you add them to another project, use `npx expo install expo-print expo-sharing expo-file-system expo-asset`.
+- Reminders use `expo-notifications` and `@react-native-community/datetimepicker` (in `package.json`; the plugin is in `app.json`), so `npm install` is enough, but test them in a development build (`npx expo prebuild`, then `npx expo run:android` / `run:ios`).
 - Sharing uses `react-native-view-shot`, `expo-media-library`, `react-native-share` and `expo-build-properties` (config plugins are in `app.json`). After pulling this change, run `npm install` and rebuild a development build (`npx expo prebuild`, then `npx expo run:android` / `run:ios`); Expo Go works too, but the apps in the share row open the system share sheet instead.
 - After changing `metro.config.js` or adding a dependency, restart with `npx expo start -c` to clear the cache.
 - The native splash color is set in `app.json`, so a change to it needs a development build (`npx expo prebuild`), not Expo Go.
@@ -249,8 +263,8 @@ Then press `i` (iOS simulator), `a` (Android emulator) or scan the QR code with 
 - [ ] Backend for OCR, AI generation and source verification
 - [ ] Audio recitations (the Dua screen's audio button was replaced by **Save to collection**; the audio button comes back when recitations exist)
 <!-- - [x] Ramadan and Dhul Hijjah logic (`lib/islamic-season.ts`: is it Ramadan, the 1st of Ramadan, Eid, days until the next one) and the ±1 day Hijri date adjustment in Settings; no screens yet -->
-- [ ] Reminders and Ramadan mode screens
-- [ ] Scheduled countdown notifications (not UI: local scheduling with `expo-notifications`, see [Countdown notifications](README_COMPREHENSIVE.md#to-do))
+<!-- - [x] Reminders: daily dua, special reminders (Ramadan countdown, "Ramadan Mubarak", last ten nights, Eid, Arafah, Ashura and more), permission flow, preferences screen and notification centre; still to check on real devices -->
+<!-- - [ ] Check the reminders on real devices, and Ramadan mode screens -->
 <!-- - [x] PDF export of a collection (still to check on a real iOS and Android device, see [PDF export](README_COMPREHENSIVE.md#pdf-export)) -->
 <!-- - [x] Share cards and the share sheet (kindred, groups, Add by code, apps, save image, copy text); still to check on real devices -->
 <!-- - [x] Toasts (success messages for add dua, collections, PDF export and the share sheet); still to check on real devices -->
