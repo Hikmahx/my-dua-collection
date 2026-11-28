@@ -5,6 +5,7 @@ import {
 } from '@/constants/languages'
 import { DEFAULT_ARABIC_FONT, type ArabicFontId } from '@/constants/arabic-fonts'
 import { DEFAULT_FONT_SIZES, type FontSizeTarget } from '@/constants/settings-config'
+import { DEFAULT_DAILY_REMINDER_TIME } from '@/constants/reminder-config'
 import type { HijriAdjustment } from '@/lib/islamic-season'
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
@@ -19,6 +20,8 @@ export interface SettingsState {
   fontSizes: Record<FontSizeTarget, number> // px
   arabicFont: ArabicFontId
   dailyReminder: boolean
+  /** When the daily reminder goes out (the phone's local time). */
+  dailyReminderTime: { hour: number; minute: number }
   monthlyReminders: boolean
   /** Days added to the Hijri date to match the user's own moon sighting: -1, 0 or +1 (see lib/islamic-season.ts). */
   hijriAdjustment: HijriAdjustment
@@ -33,6 +36,7 @@ export const initialSettingsState: SettingsState = {
   fontSizes: DEFAULT_FONT_SIZES,
   arabicFont: DEFAULT_ARABIC_FONT,
   dailyReminder: true,
+  dailyReminderTime: { ...DEFAULT_DAILY_REMINDER_TIME },
   monthlyReminders: false,
   hijriAdjustment: 0,
 }
@@ -62,6 +66,9 @@ const settingsSlice = createSlice({
     setDailyReminder(state, action: PayloadAction<boolean>) {
       state.dailyReminder = action.payload
     },
+    setDailyReminderTime(state, action: PayloadAction<{ hour: number; minute: number }>) {
+      state.dailyReminderTime = action.payload
+    },
     setMonthlyReminders(state, action: PayloadAction<boolean>) {
       state.monthlyReminders = action.payload
     },
@@ -83,6 +90,7 @@ export const {
   setFontSize,
   setArabicFont,
   setDailyReminder,
+  setDailyReminderTime,
   setMonthlyReminders,
   setHijriAdjustment,
   hydrateSettings,
