@@ -21,6 +21,11 @@ export function sanitizeSettings(value: unknown): Partial<SettingsState> {
   if (typeof saved.showTransliteration === 'boolean') result.showTransliteration = saved.showTransliteration
   if (isArabicFontId(saved.arabicFont)) result.arabicFont = saved.arabicFont
   if (typeof saved.dailyReminder === 'boolean') result.dailyReminder = saved.dailyReminder
+  const time = saved.dailyReminderTime as { hour?: unknown; minute?: unknown } | undefined
+  if (time && Number.isInteger(time.hour) && Number.isInteger(time.minute)) {
+    const { hour, minute } = time as { hour: number; minute: number }
+    if (hour >= 0 && hour <= 23 && minute >= 0 && minute <= 59) result.dailyReminderTime = { hour, minute }
+  }
   if (typeof saved.monthlyReminders === 'boolean') result.monthlyReminders = saved.monthlyReminders
   if (isHijriAdjustment(saved.hijriAdjustment)) result.hijriAdjustment = saved.hijriAdjustment
 

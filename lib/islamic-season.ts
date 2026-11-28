@@ -117,6 +117,21 @@ export function daysUntilMonthStart(month: number, date: Date = new Date(), adju
   return offset
 }
 
+/**
+ * Days from `date` until a Hijri date (month + day) comes round: 0 if it is that day, and when it has already passed
+ * this year, the days until next year's. Used to place a reminder on the day of Ashura, Arafah, Eid and so on.
+ */
+export function daysUntilHijriDate(
+  month: number,
+  day: number,
+  date: Date = new Date(),
+  adjustment: HijriAdjustment = 0,
+): number {
+  const today = adjustedHijri(date, adjustment)
+  if (today.month === month && today.day <= day) return day - today.day
+  return daysUntilMonthStart(month, date, adjustment) + (day - 1)
+}
+
 /** What `occasion` today is, from its Hijri date. */
 export function occasionOf({ month, day }: Pick<HijriDate, 'month' | 'day'>): IslamicOccasion | null {
   if (month === MUHARRAM && day === 1) return 'islamicNewYear'
