@@ -1,4 +1,5 @@
 import { useT } from '@/hooks/use-t'
+import { NotificationBell } from '@/components/notifications/notification-bell'
 import { CollectionCard } from '@/components/ui/collection-card'
 import { FeaturedDuaBanner } from '@/components/ui/featured-dua-banner'
 import { FilterMenu } from '@/components/ui/filter-menu'
@@ -129,18 +130,23 @@ export default function HomeScreen() {
             <Text style={tw`font-nunito-extrabold text-[21px] ${textColor}`}>
               {t('tabs.home')}
             </Text>
-            <Pressable
-              ref={filterButtonRef}
-              hitSlop={12}
-              style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
-              onPress={openMenu}
-            >
-              <MaterialCommunityIcons
-                name='tune-variant'
-                size={26}
-                color={isDark ? '#FFFFFF' : '#11181C'}
-              />
-            </Pressable>
+            <View style={tw`flex-row items-center`}>
+              <View style={tw`mr-[20px]`}>
+                <NotificationBell color={isDark ? '#FFFFFF' : '#11181C'} />
+              </View>
+              <Pressable
+                ref={filterButtonRef}
+                hitSlop={12}
+                style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
+                onPress={openMenu}
+              >
+                <MaterialCommunityIcons
+                  name='tune-variant'
+                  size={26}
+                  color={isDark ? '#FFFFFF' : '#11181C'}
+                />
+              </Pressable>
+            </View>
           </View>
 
           {/* Featured banner */}

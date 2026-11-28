@@ -27,6 +27,10 @@ import { Colors } from '@/constants/theme'
 import { useColorScheme } from '@/hooks/use-color-scheme'
 import { useCollectionsPersistence } from '@/hooks/use-collections-persistence'
 import { useKindredPersistence } from '@/hooks/use-kindred-persistence'
+import { useNotificationRouting } from '@/hooks/use-notification-routing'
+import { useNotificationsPersistence } from '@/hooks/use-notifications-persistence'
+import { useReminderScheduling } from '@/hooks/use-reminder-scheduling'
+import { NotificationPermissionProvider } from '@/components/notifications/notification-permission-provider'
 import { useSettingsPersistence } from '@/hooks/use-settings-persistence'
 import { useUserPersistence } from '@/hooks/use-user-persistence'
 import { useTasbihPersistence } from '@/hooks/use-tasbih-persistence'
@@ -46,7 +50,9 @@ export default function RootLayout() {
       {/* needed for the drag-to-reorder list on the Edit collection screen */}
       <GestureHandlerRootView style={{ flex: 1 }}>
         <ToastProvider>
-          <AppShell />
+          <NotificationPermissionProvider>
+            <AppShell />
+          </NotificationPermissionProvider>
         </ToastProvider>
       </GestureHandlerRootView>
     </Provider>
@@ -107,7 +113,15 @@ function AppShell() {
   // 5) Restore / save the kindred (people shared with) and the shares sent and received
   const kindredReady = useKindredPersistence()
 
-  const ready = fontsLoaded && settingsReady && duasReady && tasbihReady && collectionsReady && kindredReady
+  // 6) Restore / save the notification centre and what is scheduled
+  const notificationsReady = useNotificationsPersistence()
+
+  const ready =
+    fontsLoaded && settingsReady && duasReady && tasbihReady && collectionsReady && kindredReady && notificationsReady
+
+  // 7) Keep the reminders scheduled on the phone right, and open the right screen when one is tapped
+  useReminderScheduling(ready)
+  useNotificationRouting(ready)
 
   // The native splash (just a background colour, see app.json) only has to cover font loading.
   // After that, <AppSplash /> takes over until the app is ready, then fades out.
@@ -136,6 +150,8 @@ function AppShell() {
             <Stack.Screen name='edit-collection/[id]' options={{ headerShown: false }} />
             <Stack.Screen name='dua/[id]' options={{ headerShown: false }} />
             <Stack.Screen name='profile' options={{ headerShown: false }} />
+            <Stack.Screen name='notification-preferences' options={{ headerShown: false }} />
+            <Stack.Screen name='notifications' options={{ headerShown: false }} />
             <Stack.Screen
               name='modal'
               options={{
